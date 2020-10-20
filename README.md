@@ -144,24 +144,25 @@
 ### branch
 
 ```bash
-(master) -> (develop) -> (develop-front / back / data) -> (feature/feature명)
+(master) -> (develop) -> (feature/feature명)
 ```
 
 * master : 배포 가능한 상태로 유지
 * develop : 개발용 최상위 branch
 * front / back / data
-  * front : Frontend 개발 branch
-  * back : Backend 개발 branch
+    * front : Frontend 개발 branch
+    * back : Backend 개발 branch
+    * data : 데이터 분석 개발 branch
 * Fetaure : 기능별 branch
 * Hotfix : 급한 버그 수정이 필요한 경우 버그 수정 branch
 
 ### commit
 
 ```bash
-[이름] Feature / 행위 + 설명 으로 구성
+[이름] Feature / 행위 + 설명 | 지라 이슈 번호로 구성 
     예시]
-        [LDH] Login / FIX bugs from login modal
-        [LDH] README / ADD README.md
+        [LDH] Login / FIX bugs from login modal | S03P31A505-54
+        [LDH] README / ADD README.md | S03P31A505-54
 ```
 
 ### merge
@@ -171,6 +172,8 @@ merge 하기 전에 현재 작업 진행 상황 공유
 merge 권한은 모두가 가지고 있지만 같은 팀의 다른 사람에게 리뷰 신청 후 merge 하기
 merge 후 불필요한 branch 지우기
 ```
+
+
 
 
 
