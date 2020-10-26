@@ -57,8 +57,8 @@ class Spot(models.Model):
 
 
 class UserSpotFavorite(models.Model): # 즐겨찾기
-    user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column="user_pk")
-    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column="spot_pk")
+    user_pk = models.ForeignKey(User, related_name="liked_person", on_delete=models.CASCADE, db_column="user_pk")
+    spot_pk = models.ForeignKey(Spot, related_name="liked_spot", on_delete=models.CASCADE, db_column="spot_pk")
 
     class Meta:
         managed = False

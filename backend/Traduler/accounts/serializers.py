@@ -54,15 +54,21 @@ class SpotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSpotFavoriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSpotFavorite
-        fields = ['spots']
+
+# Favorite Spot Serializer
+# class UserSpotFavoriteSerializer(serializers.ModelSerializer):
+#     spot_detail1 = SpotSerializer(source='spot_pk', read_only=True)
+#     spot_detail2 = serializers.SerializerMethodField()
+
+#     def get_spot_detail2(self, user_spots):
+#         return SpotSerializer(user_spots.spot_pk)
+
+#     class Meta:
+#         model = UserSpotFavorite
+#         fields = ['id', 'user_pk', 'spot_detail1', 'spot_detail2']
 
 
-
-
-
+# drf - register
 # class RegisterSerializer(serializers.Serializer):
 #     username = serializers.CharField(required=True, write_only=True)
 #     password1 = serializers.CharField(required=True, write_only=True)
