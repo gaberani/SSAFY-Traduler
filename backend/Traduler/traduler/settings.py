@@ -44,22 +44,34 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
 
+    # django-rest-auth
+    'rest_framework.authtoken',
+    'rest_auth',
+
     # swagger
     'drf_yasg',
 
     # CORS
     'corsheaders',
+
+    # Apps
+    'accounts',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # CORS Middleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# 일단 전부 허용해줬습니다.
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'traduler.urls'
 
@@ -125,3 +137,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'accounts.User'
+
+
+# DRF auth settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
