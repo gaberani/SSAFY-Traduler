@@ -48,6 +48,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
 
+    # django-rest-auth-Registration
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+
+    'allauth.socialaccount',
+
     # swagger
     'drf_yasg',
 
@@ -57,6 +65,8 @@ INSTALLED_APPS = [
     # Apps
     'accounts',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -142,6 +152,13 @@ AUTH_USER_MODEL = 'accounts.User'
 
 
 # DRF auth settings
+
+ACCOUNT_ADAPTER = 'accounts.adapter.UserAccountAdapter'
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer'
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
