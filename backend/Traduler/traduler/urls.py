@@ -18,7 +18,7 @@ from django.urls import path, include
 
 from rest_framework import routers
 from accounts.views import AccountViewSet
-from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet
+from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet, CustomSpotViewSet
 
 router = routers.DefaultRouter()
 
@@ -29,6 +29,7 @@ router.register('accounts', AccountViewSet)
 router.register('spots', SpotViewSet)
 router.register('category', CategoryViewSet)
 router.register('area', AreaViewSet)
+router.register('custom_spots', CustomSpotViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
