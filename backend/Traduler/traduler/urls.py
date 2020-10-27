@@ -18,15 +18,17 @@ from django.urls import path, include
 
 from rest_framework import routers
 from accounts.views import AccountViewSet
-from spots.views import SpotViewSet
+from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet
 
 router = routers.DefaultRouter()
 
 #accounts
-router.register("accounts", AccountViewSet)
+router.register('accounts', AccountViewSet)
 
 #spots
-router.register("spots", SpotViewSet)
+router.register('spots', SpotViewSet)
+router.register('category', CategoryViewSet)
+router.register('area', AreaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
