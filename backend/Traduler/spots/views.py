@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 
-from .models import Spot, Category, Area, SpotComment
+from .models import Spot, Category, Area, SpotComment, UserSpotFavorite
 from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer
 
 # Create your views here.
@@ -51,6 +51,25 @@ class SpotViewSet(viewsets.ModelViewSet):
         average_score = filtered_comments.aggregate(Avg('score'))
 
         return Response({"spot": serialized_spot.data, "comments":serialized_comments.data, "score": average_score})
+
+    @action(detail=True, methods=['POST','DELETE'])
+    def like(self, request, pk):
+        spot = self.queryset.get(id=pk)
+        user = request.user
+        if request.method == "POST":
+            new_like = UserSpotFavorite.objects.create(user_pk=user, spot_pk=spot)
+            return Response('resource created successfully', status=201)
+        else:
+            unlike = UserSpotFavorite.objects.get(user_pk=user, spot_pk=spot)
+            unlike.delete()
+            return Response('resource deleted successfully', status=204)
+
+
+
+
+
+
+
 
 
 
