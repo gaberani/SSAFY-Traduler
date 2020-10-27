@@ -16,13 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from rest_framework import routers
+from accounts.views import AccountViewSet
+
+router = routers.DefaultRouter()
+
+#accounts
+router.register("accounts", AccountViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
+
+    # path('accounts/', include('accounts.urls')),
+
+
 
     # rest-auth
     path('rest-auth/', include('rest_auth.urls')),
-    path('rest-auth/signup/', include('rest_auth.registration.urls'))
+    path('rest-auth/signup/', include('rest_auth.registration.urls')),
 ]
 
 
@@ -55,3 +66,8 @@ if settings.DEBUG:
         re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
     ]
+
+
+urlpatterns += [
+    path('', include(router.urls))
+]
