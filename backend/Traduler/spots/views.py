@@ -5,8 +5,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 
-from .models import Spot, Category, Area, SpotComment, UserSpotFavorite
-from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer
+from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
+from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
 
 # Create your views here.
 class AreaViewSet(viewsets.ModelViewSet):
@@ -65,6 +65,9 @@ class SpotViewSet(viewsets.ModelViewSet):
             return Response('resource deleted successfully', status=204)
 
 
+class CustomSpotViewSet(viewsets.ModelViewSet):
+    queryset = CustomSpot.objects.all()
+    serializer_class = CustomSpotSerializer
 
 
 
