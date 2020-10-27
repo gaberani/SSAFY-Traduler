@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Spot, Category, Area
+from .models import Spot, Category, Area, SpotComment
 
 
 class SpotSerializer(serializers.ModelSerializer):
@@ -17,4 +17,9 @@ class AreaSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = "__all__"
+
+class SpotCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpotComment
         fields = "__all__"
