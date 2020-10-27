@@ -1,9 +1,6 @@
 <template>
   <v-app>
     <Header/>
-    <h1>Lorem Ipsum Dolor</h1>
-    <h3>ㅎㅎㅎㅎㅎ</h3>
-    <h2>강원도는 어때요?</h2>
     <router-view :key="$route.fullPath"></router-view>
   </v-app>
 </template>
