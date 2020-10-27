@@ -3,6 +3,7 @@ from django.db.models import Avg
 
 from rest_framework import viewsets
 from rest_framework.decorators import permission_classes, action
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
@@ -12,6 +13,7 @@ from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, Spot
 class AreaViewSet(viewsets.ModelViewSet):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -52,7 +54,7 @@ class SpotViewSet(viewsets.ModelViewSet):
 
         return Response({"spot": serialized_spot.data, "comments":serialized_comments.data, "score": average_score})
 
-    @action(detail=True, methods=['POST','DELETE'])
+    @action(detail=True, methods=['POST','DELETE'], permission_classes=[IsAuthenticated])
     def like(self, request, pk):
         spot = self.queryset.get(id=pk)
         user = request.user
