@@ -4,15 +4,18 @@ from rest_framework import viewsets
 from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 
-from .models import Spot, Category
-from .serializer import SpotSerializer
+from .models import Spot, Category, Area
+from .serializer import SpotSerializer, CategorySerializer, AreaSerializer
 
 # Create your views here.
+class AreaViewSet(viewsets.ModelViewSet):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
-
-
+    serializer_class = CategorySerializer
 
 
 
