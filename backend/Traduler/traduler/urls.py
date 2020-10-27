@@ -17,19 +17,18 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rest_framework import routers
-from accounts.views import AccountViewSet
+from accounts.views import AccountViewSet,SpotViewSet
 
 router = routers.DefaultRouter()
 
 #accounts
 router.register("accounts", AccountViewSet)
 
+#spots
+router.register("spots", SpotViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # path('accounts/', include('accounts.urls')),
-
-
 
     # rest-auth
     path('rest-auth/', include('rest_auth.urls')),
