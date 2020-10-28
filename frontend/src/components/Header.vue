@@ -22,13 +22,24 @@
 export default {
     name: 'Header',
     methods: {
-        gotoSpot() {
-            this.$router.push("/spot")
-        },
+      gotoSpot() {
+        this.$router.push("/spot")
+      },
+      gotoLogin() {
+        this.$router.push({name:"Login"})
+      }
     }
 }
 </script>
 
 <style>
+@import url(../fonts/jalnan/stylesheet.css);
 
+html, body {
+  font-family:'jalnanregular';
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'jalnanregular';
+}
 </style>
