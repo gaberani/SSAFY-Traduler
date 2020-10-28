@@ -37,7 +37,6 @@
             label="비밀번호를 입력해주세요"
             required
           ></v-text-field>
-					<p class="">히히히</p>
         </v-col>
 				<v-col cols="6" md="3"></v-col>
 				<v-col
