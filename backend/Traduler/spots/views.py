@@ -54,9 +54,10 @@ class SpotViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
         serialized_spot = self.serializer_class(spot)
+        cur_page = request.GET.get("curPage")
 
         filtered_comments = self.comment_queryset.filter(spot_pk=pk)
-        serialized_comments = self.comment_serializer(filtered_comments, many=True)
+        paginated_comments = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
         average_score = filtered_comments.aggregate(Avg('score'))
 
@@ -90,17 +91,22 @@ class SpotViewSet(viewsets.ModelViewSet):
             return Response('resource deleted successfully', status=204)
 
 
+
 class CustomSpotViewSet(viewsets.ModelViewSet):
     queryset = CustomSpot.objects.all()
     serializer_class = CustomSpotSerializer
 
     permission_classes=[]
 
+
 class SpotCommentViewSet(viewsets.ModelViewSet):
     queryset = SpotComment.objects.all()
     serializer_class = SpotCommentSerializer
 
     permission_classes=[]
+
+    
+
 
 
 
