@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db.models import Avg
 
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
