@@ -17,9 +17,19 @@ const routes = [
     component: () => import('@/views/Home')
   },
   {
+    path: '/spotresult',
+    name: 'SpotResult',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/SpotResult.vue')
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/users/UsersLogin')
+  },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('@/views/users/UsersSignup')
   },
     // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
 ]
