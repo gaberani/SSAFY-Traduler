@@ -10,13 +10,16 @@ from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomS
 from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
 
 # Create your views here.
-class AreaViewSet(viewsets.ModelViewSet):
+
+# area code ONLY READ
+class AreaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
 
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+# category code ONLY READ
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -26,6 +29,8 @@ class SpotViewSet(viewsets.ModelViewSet):
     serializer_class = SpotSerializer
     comment_queryset = SpotComment.objects.all()
     comment_serializer = SpotCommentSerializer
+
+    permission_classes=[]
 
     def list(self, request, *args, **kwargs):
         title = request.GET.get('title', None)
@@ -54,6 +59,21 @@ class SpotViewSet(viewsets.ModelViewSet):
 
         return Response({"spot": serialized_spot.data, "comments":serialized_comments.data, "score": average_score})
 
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
     @action(detail=True, methods=['POST','DELETE'], permission_classes=[IsAuthenticated])
     def like(self, request, pk):
         spot = self.queryset.get(id=pk)
@@ -70,6 +90,16 @@ class SpotViewSet(viewsets.ModelViewSet):
 class CustomSpotViewSet(viewsets.ModelViewSet):
     queryset = CustomSpot.objects.all()
     serializer_class = CustomSpotSerializer
+
+    permission_classes=[]
+
+class SpotCommentViewSet(viewsets.ModelViewSet):
+    queryset = SpotComment.objects.all()
+    serializer_class = SpotCommentSerializer
+
+    permission_classes=[]
+
+
 
 
 
