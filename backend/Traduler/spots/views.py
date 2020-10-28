@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
 from .serializers import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
-from .mixin import *
+from traduler.mixin import *
 # Create your views here.
 
 # area code ONLY READ

@@ -12,7 +12,7 @@ from spots.models import UserSpotFavorite, Spot
 from spots.serializers import SpotSerializer
 
 from django.db.models import Prefetch
-
+from traduler.mixin import *
 
 
 from django.forms.models import model_to_dict
