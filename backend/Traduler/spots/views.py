@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Avg
 
+
 from rest_framework import viewsets
 from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
 from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
-
+from .mixin import *
 # Create your views here.
 
 # area code ONLY READ
@@ -36,6 +37,8 @@ class SpotViewSet(viewsets.ModelViewSet):
         title = request.GET.get('title', None)
         category_code = request.GET.get('category', None)
         area_code = request.GET.get('area',None)
+        cur_page = request.GET.get('curPage', 1)
+
         filtered_spots = self.queryset
         if title:
             filtered_spots = filtered_spots.filter(title__icontains=title)
@@ -44,9 +47,9 @@ class SpotViewSet(viewsets.ModelViewSet):
         if area_code:
             filtered_spots = filtered_spots.filter(area_code__area_code__startswith=area_code)
 
-        serialized_spots = self.serializer_class(filtered_spots, many=True)
+        paginated_result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9)
 
-        return Response(serialized_spots.data)
+        return Response(paginated_result)
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
