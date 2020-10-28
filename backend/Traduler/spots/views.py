@@ -54,7 +54,7 @@ class SpotViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
         serialized_spot = self.serializer_class(spot)
-        cur_page = request.GET.get("curPage")
+        cur_page = request.GET.get("curPage", 1)
 
         filtered_comments = self.comment_queryset.filter(spot_pk=pk)
         paginated_comments = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
@@ -105,7 +105,7 @@ class SpotCommentViewSet(viewsets.ModelViewSet):
 
     permission_classes=[]
 
-    
+
 
 
 
