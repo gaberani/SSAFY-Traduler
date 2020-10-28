@@ -15,4 +15,4 @@ def pageProcess(queryset, serializer_class, cur_page, perPage):
     serialized_queryset = serializer_class(curPage_queryset, many=True)
 
     page = {"curPage": cur_page, "perPageNum": perPageNum, "totalCount": total_count, "startPage": start_page, "endPage": end_page, "prev_bool": prev_bool, "next_bool":next_bool}
-    return {"page": page, "result":serialized_queryset.data }
+    return page, serialized_queryset.data

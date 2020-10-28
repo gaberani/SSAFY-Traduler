@@ -47,9 +47,9 @@ class SpotViewSet(viewsets.ModelViewSet):
         if area_code:
             filtered_spots = filtered_spots.filter(area_code__area_code__startswith=area_code)
 
-        paginated_result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9)
+        page, result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9)
 
-        return Response(paginated_result)
+        return Response({"page": page, "result": result})
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
@@ -57,11 +57,11 @@ class SpotViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get("curPage", 1)
 
         filtered_comments = self.comment_queryset.filter(spot_pk=pk)
-        paginated_comments = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
+        page, result = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
         average_score = filtered_comments.aggregate(Avg('score'))
 
-        return Response({"spot": serialized_spot.data, "comments":serialized_comments.data, "score": average_score})
+        return Response({"spot": serialized_spot.data, "page": page, "comments": result, "score": average_score})
 
     
     def create(self, request, *args, **kwargs):
