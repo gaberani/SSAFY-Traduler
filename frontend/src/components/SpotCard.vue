@@ -31,7 +31,7 @@
         </v-card>
     </template>
     <!-- modal -->
-      <v-card style="">
+      <v-card style="border-radius:15px;">
         <div class="modalheader">
             <v-card-title class="modaltitle">{{spot.title}}</v-card-title>
             <v-btn
@@ -40,7 +40,7 @@
                 @click="dialog = false"
                 class="modalclose"
             >
-                <i class="fas fa-times" style="font-size:1.5rem; color:#FF5E5E"></i>
+                <i class="fas fa-times" style="font-size:1.5rem; color:white;"></i>
             </v-btn>
         </div>
         <v-divider style="background-color:#FF5E5E;"></v-divider>
@@ -190,18 +190,16 @@ export default {
 .imgbtn:hover{cursor: pointer; }
 .modalclose {
     float:right;
-    margin-right:-81%;
 }
 .modaltitle {
     display:inline;
     color:white;
-    margin-left:-2%;
     font-family: 'SCDream5';
     font-size:1.2vw;
 }
 .modalheader {
-    background-color:red;
-    width:55%;
+    background-color:#FF5E5E;
+    width:100%;
 }
 .modalimg {
     width:55%;
@@ -219,7 +217,8 @@ export default {
 .modalinput {
     border: 2px #FF5E5E solid;
     margin-left:10px;
-    font-family: 'SCDream4'
+    font-family: 'SCDream4';
+    border-radius: 15px;
 }
 .commentbtn {
     background-color:  #FF5E5E;
@@ -257,6 +256,7 @@ export default {
     font-size:1rem;
     margin-left:10px;
     width: 50px;
-    font-family: 'SCDream4'
+    font-family: 'SCDream4';
+    border-radius: 15px;
 }
 </style>
