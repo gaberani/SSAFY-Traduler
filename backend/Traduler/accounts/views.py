@@ -6,9 +6,10 @@ from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import UserSerializer, SpotSerializer
-from .models import UserSpotFavorite, Spot
-
+from .serializers import UserSerializer
+# from .models import UserSpotFavorite, Spot
+from spots.models import UserSpotFavorite, Spot
+from spots.serializers import SpotSerializer
 
 from django.db.models import Prefetch
 

@@ -12,7 +12,8 @@ import re
 from allauth.account import app_settings as allauth_settings
 from allauth.account.adapter import get_adapter
 
-from .models import Spot, UserSpotFavorite
+# from .models import Spot, UserSpotFavorite
+from spots.models import Area, Category, ContentType, Spot, UserSpotFavorite
 
 
 class UserSerializer(serializers.ModelSerializer):
