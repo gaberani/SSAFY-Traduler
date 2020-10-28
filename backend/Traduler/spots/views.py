@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, I
 from rest_framework.response import Response
 
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
-from .serializer import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
+from .serializers import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
 from .mixin import *
 # Create your views here.
 
