@@ -8,31 +8,27 @@
         <div class="mb-3 mt-3">
             <!-- 경상도부분 나중에 랜덤으로 -->
             <h1 style="display:inline; color:#FF5E5E">경상도</h1>
-            <span style="font-weight:bold;">는 어때요?</span>
+            <h3 style="display:inline; ">는 어때요?</h3>
             <button class="plusbtn">더보기</button>
         </div>
         <div >
             <!-- v-for -->
-            <center>
             <SpotCard/>
             <SpotCard/>
             <SpotCard/>
-            </center>
         </div>
       </div>
       <div>
-        <div class="mb-3 mt-3">
+        <div class="mb-3 mt-2">
             <h1 style="display:inline; color:#FF9617">BEST</h1>
-            <span style="font-weight:bold;">여행지</span>
+            <h3 style="display:inline; ">여행지</h3>
             <button class="plusbtn">더보기</button>
         </div>
         <div >
             <!-- v-for -->
-            <center>
             <SpotCard/>
             <SpotCard/>
             <SpotCard/>
-            </center>
         </div>
       </div>
   </div>
@@ -60,5 +56,6 @@ export default {
     background-color: #FF5E5E;
     color:white;
     outline:none;
+    font-family: 'SCDream6'
 }
 </style>

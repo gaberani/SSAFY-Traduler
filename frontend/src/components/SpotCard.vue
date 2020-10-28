@@ -7,33 +7,33 @@
         <v-card
             class="spotcard"
             width="31.333333%"
+            height="30vh 30vw"
         >
             <v-img
-                src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-                height="30%"
+                :src="spot.image"
                 v-bind="attrs"
                 v-on="on"
                 class="imgbtn"
             >
                 <button style="margin-left:84%; margin-top:3%; outline:none;">
                 <!-- 아이콘 바꾸기 -->
-                    <i class="fas fa-star" style="font-size:1.8vw; color:yellow;"></i>
+                    <i class="fas fa-star" @click.stop="likespot" style="font-size:1.8vw; color:yellow;"></i>
                 </button>
             </v-img>
 
-            <v-card-title class="cardtitle"  >
-                <button v-bind="attrs" v-on="on" class="titlebtn">Top western road trips</button>
+            <v-card-title class="cardtitle" v-bind="attrs" v-on="on" >
+                <p v-bind="attrs" v-on="on" class="titlebtn">{{spot.title}}</p>
             </v-card-title>
 
             <v-card-subtitle class="cardcontent">
-            1,000 miles of wonder
+            {{spot.address}}
             </v-card-subtitle>
         </v-card>
     </template>
     <!-- modal -->
       <v-card style="">
         <div class="modalheader">
-            <v-card-title class="modaltitle">여행지 이름</v-card-title>
+            <v-card-title class="modaltitle">{{spot.title}}</v-card-title>
             <v-btn
                 color="blue darken-1"
                 text
@@ -43,30 +43,37 @@
                 <i class="fas fa-times" style="font-size:1.5rem; color:#FF5E5E"></i>
             </v-btn>
         </div>
-        <v-divider style="background-color:#FF5E5E"></v-divider>
-        <div class="modalbody" style="height: 30%;">
+        <v-divider style="background-color:#FF5E5E;"></v-divider>
+        <div class="modalbody" style="height: 22vw;">
             <div class="modalimg" >
                 <v-img
-                src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-                height="30%"
+                :src="spot.image"
+                height="21vw"
                 >
                 </v-img>
             </div>
-            <div class="modaldetail">
+            <div class="modaldetail mt-3" style="position:absolute" >
                 <center>
-                    <span class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:1px #1793FF solid; border-radius:18px;">4.72</span>
-                    <span class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:1px #FF1313 solid; border-radius:18px;">
-                        <i class="fas fa-star" style="font-size:1.7vw; color:yellow;"></i>872
-                    </span>
-                    <h3>3333</h3>
-                    <h3>3333</h3>
-                    <h3>3333</h3>
-                    <h3>3333</h3>
-                    <h3>3333</h3>
+                    <div>
+                        <span class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
+                            4.72</span>
+                        <span class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
+                            <i class="fas fa-star" style="font-size:1.7vw; color:yellow; "></i>872
+                        </span>
+                    </div>
                 </center>
+                    <div class="mt-2">
+                        <center>
+                            <h2 style="font-size:1.5vw">{{spot.title}}</h2>
+                            <p style="font-size:1.1vw; margin-bottom:2px;font-family: 'SCDream6'">{{spot.address}}</p>
+                            <p style="font-size:1.1vw; margin-bottom:2px;font-family: 'SCDream6'">{{spot.tel}}</p>
+                        </center>
+                        <p v-html="spot.overview" style="font-size:1vw; font-family: 'SCDream4'; margin-top:5px; margin-left:10px;"></p>
+                    </div>
+                
             </div>
         </div>
-        <v-divider style="margin-top:-8px;"></v-divider>
+        <v-divider style="margin-top:-1vw;"></v-divider>
         <div class="modalcomment">
             <div>
                 <select class="selectrate" >
@@ -86,23 +93,23 @@
                 <button class="commentbtn">작성</button>
             </div>
             <div style="margin-left:20px; margin-top:10px;">
-                <!-- v-for 댓글 -->
+                <!-- v-for 댓글 폰트크기 비율에 맞춰서 조정해야함-->
                 <!-- 예시 -->
                 <div class="mb-1">
                     <span class="commentbdg">4.5</span>
-                    <span >여기 좆노잼이에용,,,</span>
+                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
                 </div>
                 <div class="mb-1">
                     <span class="commentbdg">4.5</span>
-                    <span >여기 좆노잼이에용,,,</span>
+                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
                 </div>
                 <div class="mb-1">
                     <span class="commentbdg">4.5</span>
-                    <span >여기 좆노잼이에용,,,</span>
+                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
                 </div>
                 <div class="mb-1">
                     <span class="commentbdg">4.5</span>
-                    <span >여기 좆노잼이에용,,,</span>
+                    <span style="font-family: 'SCDream4'">여기 좆노잼이에용,,,</span>
                 </div>
             </div>
         </div>
@@ -122,10 +129,14 @@
 <script>
 export default {
     methods: {
-        showModal () {
-            console.log("Eeee")
-            
+        likespot() {
+            console.log('like!!')
         }
+    },
+    props: {
+        spot: {
+            type:Object,
+        },
     },
     data () {
       return {
@@ -136,23 +147,47 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .cardtitle {
-    font-size:1.3vw;
+    font-size:1vw;
+    margin-top:0.5%;
+    margin-left:2%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding:0;
+    display:inline-block;
+    font-family: 'SCDream5'
+}
+.v-application p {
+    margin-bottom: 3px;
 }
 .cardcontent {
-    font-size:1vw;
+    margin-left:2%;
+    font-size:0.8vh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding:0;
+    white-space: nowrap;
+    font-family: 'SCDream4'
 }
 .spotcard {
     display:inline-block;
     margin-left:1%;
     margin-right:1%;
+    margin-bottom:2%;
 }
 .titlebtn {
     outline:none;
 }
 .titlebtn:hover{background-color:rgb(224, 224, 224);}
-.imgbtn:hover{cursor: pointer;}
+.imgbtn {
+    max-width:100%;
+    /* max-height:; */
+     /* max-height:75%; */
+    height:30vh;
+}
+.imgbtn:hover{cursor: pointer; }
 .modalclose {
     float:right;
     margin-right:-81%;
@@ -161,6 +196,8 @@ export default {
     display:inline;
     color:white;
     margin-left:-2%;
+    font-family: 'SCDream5';
+    font-size:1.2vw;
 }
 .modalheader {
     background-color:red;
@@ -173,6 +210,8 @@ export default {
 .modaldetail {
     width:45%;
     display:inline-block;
+    height:20vw;
+    overflow: auto;
 }
 .modalcomment {
     margin-top:15px;
@@ -180,6 +219,7 @@ export default {
 .modalinput {
     border: 2px #FF5E5E solid;
     margin-left:10px;
+    font-family: 'SCDream4'
 }
 .commentbtn {
     background-color:  #FF5E5E;
@@ -188,6 +228,7 @@ export default {
     color:white;
     border-radius: 10px;
     margin-left:10px;
+    font-family: 'SCDream4'
 }
 .commentbdg {
     display: inline-block;
@@ -199,6 +240,7 @@ export default {
     width:35px;
     border-radius:12px;
     margin-right: 12px;
+    font-family: 'SCDream5'
 }
 .detailplus {
     width:70px;
@@ -207,12 +249,14 @@ export default {
     background-color: #FF5E5E;
     color:white;
     outline:none;
+    font-family: 'SCDream6'
 }
 .selectrate {
     border:2px #FF5E5E solid;
     appearance: button;
-    font-size:1.12rem;
+    font-size:1rem;
     margin-left:10px;
     width: 50px;
+    font-family: 'SCDream4'
 }
 </style>
