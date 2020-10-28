@@ -80,6 +80,7 @@ class CustomSpot(models.Model):
     title = models.CharField(max_length=50)
     lat = models.FloatField()
     lon = models.FloatField()
+    user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
 
     class Meta:
         managed = False
