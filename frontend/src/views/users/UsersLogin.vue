@@ -1,6 +1,5 @@
 <template>
 	<v-form v-model="valid">
-		
     <v-container>
 			<!-- 뷰페이지 타이틀 -->
 			<v-row justify="center">
@@ -75,6 +74,8 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 export default {
 	name: 'UserLogin',
 	data() {
@@ -86,10 +87,11 @@ export default {
 			}
 		}
 	},
+	computed: {
+    ...mapState(["LoginFlag"])
+  },
 	methods: {
-		SubmitLoginData() {
-			console.log('TRY login')
-		},
+		...mapActions(["SubmitLoginData"]),
 		gotoSignup() {
 			this.$router.push({name: 'Signup'})
 		}
