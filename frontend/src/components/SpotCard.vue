@@ -56,7 +56,8 @@
                 <center>
                     <div>
                         <span class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
-                            4.72</span>
+                            {{spotscore.score__avg}}</span>
+                        <!--------------- 즐겨찾기 ----------------------------------->
                         <span class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
                             <i class="fas fa-star" style="font-size:1.7vw; color:yellow; "></i>872
                         </span>
@@ -79,37 +80,21 @@
                 <select class="selectrate" >
                     <!-- v-model="" -->
                     <option value="" >5</option>
-                    <option value="">4.5</option>
                     <option value="" >4</option>
-                    <option value="">3.5</option>
                     <option value="" >3</option>
-                    <option value="">2.5</option>
-                    <option value="">2.0</option>
-                    <option value="">1.5</option>
+                    <option value="">2</option>
                     <option value="">1</option>
-                    <option value="">0.5</option>
                 </select>
                 <input class="modalinput" style="width:70%;">
                 <button class="commentbtn">작성</button>
             </div>
-            <div style="margin-left:20px; margin-top:10px;">
+            <div style="margin-left:17px; margin-top:10px;">
                 <!-- v-for 댓글 폰트크기 비율에 맞춰서 조정해야함-->
                 <!-- 예시 -->
-                <div class="mb-1">
-                    <span class="commentbdg">4.5</span>
-                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
-                </div>
-                <div class="mb-1">
-                    <span class="commentbdg">4.5</span>
-                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
-                </div>
-                <div class="mb-1">
-                    <span class="commentbdg">4.5</span>
-                    <span style="font-family: 'SCDream4'" >여기 좆노잼이에용,,,</span>
-                </div>
-                <div class="mb-1">
-                    <span class="commentbdg">4.5</span>
-                    <span style="font-family: 'SCDream4'">여기 좆노잼이에용,,,</span>
+                <div class="mb-1" v-for="comment in spotcomments" :key="comment.id">
+                    <span></span>
+                    <span class="commentbdg">{{comment.score}}</span>
+                    <span style="font-family: 'SCDream4'" >{{comment.content}}</span>
                 </div>
             </div>
         </div>
@@ -127,6 +112,7 @@
   
 </template>
 <script>
+import axios from 'axios'
 export default {
     methods: {
         likespot() {
@@ -142,8 +128,24 @@ export default {
       return {
         dialogm1: '',
         dialog: false,
+        detailspot: [],
+        spotcomments: [],
+        spotscore: {},
       }
     },
+    created () {
+            axios.get(`http://127.0.0.1:8000/spots/${this.spot.id}`)
+				.then(response => {
+				this.detailspot = response.data
+                this.spotcomments = this.detailspot.comments
+                this.spotscore = this.detailspot.score
+                console.log(this.spotcomments)
+                console.log(this.spotscore)
+				})
+				.catch(error => {
+				console.log(error)
+				})
+            },
 }
 </script>
 
@@ -236,9 +238,9 @@ export default {
     background-color:#1793FF;
     color:white;
     height:22px;
-    width:35px;
+    width:25px;
     border-radius:12px;
-    margin-right: 12px;
+    margin-right: 18px;
     font-family: 'SCDream5'
 }
 .detailplus {
@@ -255,7 +257,7 @@ export default {
     appearance: button;
     font-size:1rem;
     margin-left:10px;
-    width: 50px;
+    width: 35px;
     font-family: 'SCDream4';
     border-radius: 15px;
 }
