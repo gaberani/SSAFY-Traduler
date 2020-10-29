@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
 from .serializers import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
 from traduler.mixin import *
+from traduler.permissions import *
+
 # Create your views here.
 
 # area code ONLY READ
@@ -31,7 +33,7 @@ class SpotViewSet(viewsets.ModelViewSet):
     comment_queryset = SpotComment.objects.all()
     comment_serializer = SpotCommentSerializer
 
-    permission_classes=[]
+    permission_classes=[SpotPermission]
 
     def list(self, request, *args, **kwargs):
         title = request.GET.get('title', None)
@@ -91,7 +93,7 @@ class SpotCommentViewSet(viewsets.ModelViewSet):
     queryset = SpotComment.objects.all()
     serializer_class = SpotCommentSerializer
 
-    permission_classes=[]
+    permission_classes=[SpotPermission]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
