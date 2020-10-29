@@ -49,7 +49,7 @@ class SpotViewSet(viewsets.ModelViewSet):
         if area_code:
             filtered_spots = filtered_spots.filter(area_code__area_code__startswith=area_code)
 
-        page, result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9)
+        page, result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9, request.user)
 
         return Response({"page": page, "result": result}, status=status.HTTP_200_OK)
 
@@ -69,6 +69,24 @@ class SpotViewSet(viewsets.ModelViewSet):
             "comments": result, 
             "score": average_score}, 
             status=status.HTTP_200_OK)
+
+    # 가장 평점 높은 스팟 리턴하기 
+    @action(detail=False, methods=['GET'])
+    def get_best_spots(self, request):
+        best_spots_pk = self.comment_queryset.values('spot_pk').annotate(score_avg=Avg('score')).order_by('-score_avg')[:5]
+        best_spots = []
+        for score_obj in best_spots_pk:
+            item = self.queryset.get(id=score_obj['spot_pk'])
+            best_spots.append(self.serializer_class(item).data)
+
+        return Response({"best_spots": best_spots}, status=status.HTTP_200_OK)
+    
+    # 추천 스팟 리턴
+    @action(detail=False, methods=["GET"])
+    def get_recommend_spots(self, request):
+        recom_spots = self.queryset.order_by('?')[:5] # 일단은 랜덤으로
+        serialized_recom_spots = self.serializer_class(recom_spots, many=True)
+        return Response(serialized_recom_spots.data, status=status.HTTP_200_OK)
 
 
 
