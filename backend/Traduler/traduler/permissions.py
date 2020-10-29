@@ -28,7 +28,7 @@ class BasicCRUDPersmisson(BasePermission):
             return True
         # 그 외 methods는 로그인한 사용자들에 대해서 1차적으로 허용 / POST 요청 권한 처리
         else:
-            return request.user.is_authenticated()                
+            return request.user.is_authenticated                
 
     # 해당 method는 GET(list 제외), PUT, PATCH, DELETE 요청에 대한 처리
     def has_object_permission(self, request, view, obj):
