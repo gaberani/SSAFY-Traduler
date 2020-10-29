@@ -68,7 +68,7 @@ class SpotComment(models.Model):
 class UserSpotFavorite(models.Model): # 즐겨찾기
     # pk = models.AutoField(primary_key=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
-    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk')
+    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk', related_name='liked')
 
     class Meta:
         managed = False
