@@ -51,7 +51,7 @@ class SpotViewSet(viewsets.ModelViewSet):
 
         page, result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9)
 
-        return Response({"page": page, "result": result})
+        return Response({"page": page, "result": result}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
@@ -63,7 +63,12 @@ class SpotViewSet(viewsets.ModelViewSet):
 
         average_score = filtered_comments.aggregate(Avg('score'))
 
-        return Response({"spot": serialized_spot.data, "page": page, "comments": result, "score": average_score})
+        return Response({
+            "spot": serialized_spot.data, 
+            "page": page, 
+            "comments": result, 
+            "score": average_score}, 
+            status=status.HTTP_200_OK)
 
 
 
