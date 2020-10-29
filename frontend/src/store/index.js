@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 import cookies from 'vue-cookies'
 import router from '../router'
 
@@ -10,6 +9,7 @@ export default new Vuex.Store({
   state: {
     LoginFlag: false,
     authToken: cookies.get('auth-token'),
+    UserInfo: {}
   },
   mutations: {
     SET_TOKEN(state, token) {
@@ -20,15 +20,30 @@ export default new Vuex.Store({
       state.authToken = null
       cookies.remove('auth-token')
     },
+    SET_LOGIN_FLAG(state) {
+      state.LoginFlag = !!state.authToken
+    },
+    LOGIN_STATE(state, result) {
+      if ( result === true) {
+        state.LoginFlag = result
+      } else {
+        state.LoginFlag = false
+        state.authToken = null
+      }
+    },
+    GET_USER_INFO(state, info) {
+      state.UserInfo = info
+    }
   },
   actions: {
-    loginTry({ state, commit }, UserLoginData) {
+    SubmitLoginData({ state, commit }, UserLoginData) {
       if (state.LoginFlag === false) {
         if (UserLoginData.username.trim() && UserLoginData.password.trim()) {
           Vue.prototype.$http
-            .post(process.env.VUE_APP_SERVER_URL + '/users/login/', UserLoginData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
+            .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/login/', UserLoginData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
             .then(res => {
-              const token = res.data.key
+              console.log(res)
+              const token = res.data.token
               cookies.set('auth-token', token)
               window.sessionStorage.setItem('username', UserLoginData.username)
               commit("SET_TOKEN", token)
@@ -41,9 +56,9 @@ export default new Vuex.Store({
                   }
                 })
             })
-            .catch(err => {
+            .catch(() => {
               commit("LOGIN_STATE", false)
-              console.log(err)
+              // console.log(err)
             })
           
         }
@@ -52,15 +67,15 @@ export default new Vuex.Store({
         alert('이미 로그인 상태입니다.')
       }
     },
-    logoutTry({ state, getters, commit }) {
+    SubmitLogout({ state, getters, commit }) {
       if (getters.LoginFlag === true) {
         const config = {
-          headers: {'Authorization': `Token ${state.authToken}`}
+          headers: {'Authorization': `jwt ${state.authToken}`}
         }
         Vue.prototype.$http
-          .post(process.env.VUE_APP_SERVER_URL + '/users/logout/', null, config)
-          .catch(err=> {
-            console.log(err.response)
+          .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/logout/', null, config)
+          .catch(() => {
+            // console.log(err.response)
             alert('로그아웃이 정상적으로 처리되지 않았습니다.')
           })
           .finally(() => {
@@ -71,6 +86,19 @@ export default new Vuex.Store({
           })
       }
     },
+    GetUserInfo({ state, getters, commit }) {
+      if (getters.LoginFlag === true) {
+        const config = {
+          headers: {'Authorization': `jwt ${state.authToken}`}
+        }
+        Vue.prototype.$http
+          .get(process.env.VUE_APP_SERVER_URL + '/accounts/1/', config)
+          .then(res => {
+            console.log(res)
+            commit("GET_USER_INFO", {username: 'asdasd'})
+          })
+      }
+    }
   },
   modules: {
   },

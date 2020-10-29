@@ -3,6 +3,14 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify';
+import axios from 'axios'
+import VueCookies from 'vue-cookies'
+
+Vue.prototype.$http = axios;
+const csrf = VueCookies.get("csrftoken")
+if (csrf){
+  Vue.prototype.$http.defaults.headers.common['X-CSRFToken'] = csrf
+}
 
 Vue.config.productionTip = false
 
