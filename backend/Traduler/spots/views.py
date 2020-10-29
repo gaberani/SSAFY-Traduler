@@ -93,7 +93,7 @@ class SpotCommentViewSet(viewsets.ModelViewSet):
     queryset = SpotComment.objects.all()
     serializer_class = SpotCommentSerializer
 
-    permission_classes=[SpotPermission]
+    permission_classes=[BasicCRUDPersmisson]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
