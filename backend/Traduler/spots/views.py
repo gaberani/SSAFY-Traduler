@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
 
 
@@ -73,12 +73,15 @@ class SpotViewSet(viewsets.ModelViewSet):
         spot = self.queryset.get(id=pk)
         user = request.user
         if request.method == "POST":
-            new_like = UserSpotFavorite.objects.create(user_pk=user, spot_pk=spot)
-            return Response('resource created successfully', status=201)
+            if UserSpotFavorite.objects.filter(user_pk=user, spot_pk=spot).exists():
+                return Response(status=status.HTTP_202_ACCEPTED)
+            UserSpotFavorite.objects.create(user_pk=user, spot_pk=spot)
+            return Response(status=status.HTTP_201_CREATED)
         else:
-            unlike = UserSpotFavorite.objects.get(user_pk=user, spot_pk=spot)
+            unlike = get_object_or_404(UserSpotFavorite, user_pk=user, spot_pk=spot)
             unlike.delete()
-            return Response('resource deleted successfully', status=204)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+            
 
 
 
