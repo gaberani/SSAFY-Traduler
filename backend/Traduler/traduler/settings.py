@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     # rest
     'rest_framework',
 
+    # JWT Token
+    'rest_framework_jwt',
+
     # django-rest-auth
     'rest_framework.authtoken',
     'rest_auth',
@@ -162,7 +165,36 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 로그인 여부 확인용 클래스
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 로그인 관련 클래스를 JWT로 변경
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
 }
+
+import datetime
+
+JWT_AUTH = {
+    # Django와 같은 비밀키 사용 (임시)
+    'JWT_SECRET_KEY': SECRET_KEY,
+    # 암호화 알고리즘 
+    'JWT_ALGORITHM': 'HS256',
+    # 갱신 가능 여부
+    'JWT_ALLOW_REFRESH': True,
+    # JWT 토큰의 유효 기간 (1일)
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=30),
+    # JWT 갱신 유효 기간 (3일)
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+}
+
+
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+REST_USE_JWT = True
+ACCOUNT_LOGOUT_ON_GET = True

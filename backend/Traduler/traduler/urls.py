@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 from rest_framework import routers
 from accounts.views import AccountViewSet
@@ -38,8 +39,18 @@ urlpatterns = [
     # rest-auth
     path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/signup/', include('rest_auth.registration.urls')),
-]
+    
+    # JWT
+    # JWT 토큰 발행
+    path('api/token/', obtain_jwt_token),
+    # JWT 유효한지 검증
+    path('api/token/verify/', verify_jwt_token),
+    # JWT 갱신용
+    path('api/token/refresh/', refresh_jwt_token),
 
+    # Apps
+    path('accounts/', include('accounts.urls')),
+]
 
 
 
