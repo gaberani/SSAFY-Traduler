@@ -17,13 +17,29 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
+from rest_framework import routers
+from accounts.views import AccountViewSet
+from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet, CustomSpotViewSet, SpotCommentViewSet
+
+router = routers.DefaultRouter()
+
+#accounts
+router.register('accounts', AccountViewSet)
+
+#spots
+router.register('spots', SpotViewSet)
+router.register('category', CategoryViewSet)
+router.register('area', AreaViewSet)
+router.register('custom_spots', CustomSpotViewSet)
+router.register('comment', SpotCommentViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # rest-auth
     path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/signup/', include('rest_auth.registration.urls')),
-
+    
     # JWT
     # JWT 토큰 발행
     path('api/token/', obtain_jwt_token),
@@ -35,7 +51,6 @@ urlpatterns = [
     # Apps
     path('accounts/', include('accounts.urls')),
 ]
-
 
 
 
@@ -66,3 +81,8 @@ if settings.DEBUG:
         re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
     ]
+
+
+urlpatterns += [
+    path('', include(router.urls))
+]
