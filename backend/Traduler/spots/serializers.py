@@ -28,6 +28,8 @@ class SpotCommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('reg_time', 'user_pk')
 
 class CustomSpotSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
     class Meta:
         model = CustomSpot
         fields = "__all__"
+        read_only_fields = ('user_pk',)
