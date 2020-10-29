@@ -48,8 +48,7 @@ urlpatterns = [
     # JWT 갱신용
     path('api/token/refresh/', refresh_jwt_token),
 
-    # Apps
-    path('accounts/', include('accounts.urls')),
+
 ]
 
 
