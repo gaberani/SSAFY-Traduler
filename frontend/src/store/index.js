@@ -92,7 +92,7 @@ export default new Vuex.Store({
           headers: {'Authorization': `jwt ${state.authToken}`}
         }
         Vue.prototype.$http
-          .get(process.env.VUE_APP_SERVER_URL + '/accounts/1/', config)
+          .get(process.env.VUE_APP_SERVER_URL + '/accounts/', config)
           .then(res => {
             console.log(res)
             commit("GET_USER_INFO", {username: 'asdasd'})
@@ -103,6 +103,7 @@ export default new Vuex.Store({
   modules: {
   },
   getters: {
-    LoginFlag: state => !! state.authToken
+    LoginFlag: state => !! state.authToken,
+    config: (state) => `jwt ${state.authToken}`,
   }
 })
