@@ -55,8 +55,7 @@ export default {
     },
     methods: {
         searchspots() {
-            if (this.query== '') alert("검색어를 입력해주세요.");
-            else this.$router.push("/spotresult?title=" + this.query 
+            this.$router.push("/spotresult?title=" + this.query 
             +"&category="+this.category_code + "&area="+this.area_code)
         }
     },

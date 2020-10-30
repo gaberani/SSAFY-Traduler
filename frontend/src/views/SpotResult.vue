@@ -12,7 +12,7 @@
 				<div class="text-center">
 					<v-pagination
 						v-model="page"
-						:length="15"
+						:length="spotspage.endPage"
 						:total-visible="7"
 						class="mt-5"
 					></v-pagination>
@@ -27,25 +27,58 @@ import SearchSpot from '@/components/SearchSpot';
 import Footer from '@/components/Footer';
 import SpotCard from '@/components/SpotCard';
 import axios from 'axios'
+import { mapGetters } from "vuex";
 export default {
 	components:{SearchSpot, Footer,SpotCard},
-	data () {
-			return {
-				page: 1,
-				spots: [],
-			}
+	computed: {
+		...mapGetters(["config","LoginFlag"]),
 	},
-	created(){
-			const params = new URL(document.location).searchParams;
-			axios.get(`http://127.0.0.1:8000/spots?title=${params.get('title')}&category=${params.get('category')}&area=${params.get('area')}`)
+	watch: {
+		page() {
+			this.getSpotList();}
+	},
+	data () {
+		return {
+			page: 1,
+			spots: [],
+			spotspage: [],
+		}
+	},
+	methods: {
+		getSpotList() {
+			if (this.LoginFlag){const params = new URL(document.location).searchParams;
+			axios.get(`http://127.0.0.1:8000/spots?title=${params.get('title')}&category=${params.get('category')}&area=${params.get('area')}&curPage=`+this.page,{
+                headers: {
+                    Authorization: this.config,
+                },
+            })
 				.then(response => {
-				this.spots = response.data.slice(0,9)
+				this.spots = response.data.result
+				this.spotspage = response.data.page
+				console.log(this.spotspage)
 				console.log(this.spots)
 				})
 				.catch(error => {
-				console.log(error)
+				console.log(error.response)
 				})
-			},
+			}else {
+				const params = new URL(document.location).searchParams;
+			axios.get(`http://127.0.0.1:8000/spots?title=${params.get('title')}&category=${params.get('category')}&area=${params.get('area')}`)
+				.then(response => {
+				this.spots = response.data.result
+				this.spotspage = response.data.page
+				console.log(this.spotspage)
+				console.log(this.spots)
+				})
+				.catch(error => {
+				console.log(error.response)
+				})
+			}
+		}
+	},
+	created(){
+			this.getSpotList();
+		},
 }
 </script>
 
