@@ -63,6 +63,10 @@ class SpotViewSet(viewsets.ModelViewSet):
         page, result = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
         average_score = filtered_comments.aggregate(Avg('score'))
+        if average_score["score__avg"]:
+            score = round(average_score["score__avg"], 2)
+        else:
+            score = 0
         total_likes = UserSpotFavorite.objects.filter(spot_pk=pk).count()
 
 
@@ -70,7 +74,7 @@ class SpotViewSet(viewsets.ModelViewSet):
             "spot": serialized_spot.data, 
             "page": page, 
             "comments": result, 
-            "score": round(average_score["score__avg"], 2),
+            "score": score,
             "total_likes": total_likes}, 
             status=status.HTTP_200_OK)
 
