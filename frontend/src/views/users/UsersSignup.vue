@@ -169,7 +169,7 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'UserSignup',
+  name: 'UsersSignup',
 	data() {
 		return {
       valid: false,
