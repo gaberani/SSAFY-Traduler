@@ -67,7 +67,7 @@ export default {
     background-image : url("../assets/searchspot.jpg");
     background-size:cover;
     width:100%;
-    min-height: 65vh;
+    min-height: 70vh;
     filter:saturate(150%);
 }
 .spotsearch {

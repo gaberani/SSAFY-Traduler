@@ -3,7 +3,7 @@
 		<SearchSpot/>
 			<div class="spotresult">
 				<div>
-					<h1 class="mb-5" style="color:#FF5E5E">검색 결과</h1>
+					<h1 class="mb-5" style="color:#FF5E5E;font-size:2.4vw;">검색 결과</h1>
 				</div>
 				<div v-for="spot in spots" :key="spot.id" style="display:inline;">
 					<!-- v-for -->

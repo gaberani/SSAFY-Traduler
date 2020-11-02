@@ -108,6 +108,7 @@
                 <div class="text-center">
                     <!-- 버튼 크기 수정해야댐 -->
                     <v-pagination
+                    class="commentpage"
                     v-model="page"
                     :length="detailpage.endPage"
                     :total-visible="3"
@@ -361,4 +362,18 @@ export default {
     border-radius: 15px;
     outline:none;
 }
+/* 스크롤 바 넓이 16px */
+.modaldetail::-webkit-scrollbar{width: 16px;}
+/* 스크롤 바 기본 색상 */
+.modaldetail::-webkit-scrollbar-track {background-color:#FF5E5E;
+    box-shadow: inset 0px 0px 5px white;
+    border-radius: 10px;
+}
+/* 스크롤 구간 배경 색상 */
+.modaldetail::-webkit-scrollbar-thumb {background-color:#ff9a9a;
+    border-radius: 10px;
+} 
+/* 스크롤 바 위에 마우스 올렸을 때(hover) 색상 */
+.modaldetail::-webkit-scrollbar-thumb:hover {background-color: #fd4b4b;} 
+
 </style>
