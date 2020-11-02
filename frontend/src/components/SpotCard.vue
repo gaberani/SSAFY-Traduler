@@ -17,7 +17,8 @@
             >
                 <button style="margin-left:84%; margin-top:3%; outline:none;">
                 <!-- 아이콘 바꾸기 -->
-                    <i class="fas fa-star" @click.stop="likespot" style="font-size:1.8vw; color:yellow;"></i>
+                    <i class="fas fa-star" v-if="spot.is_liked==true" @click.stop="unlikespot" style="font-size:1.8vw; color:yellow;"></i>
+                    <i class="fas fa-star" v-else @click.stop="likespot" style="font-size:1.8vw; color:black;"></i>
                 </button>
             </v-img>
 
@@ -55,11 +56,16 @@
             <div class="modaldetail mt-3" style="position:absolute" >
                 <center>
                     <div>
-                        <span class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
-                            {{spotscore.score__avg}}</span>
+                        <span v-if="detailspot.score==null" class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
+                            0</span>
+                        <span v-else class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
+                            {{detailspot.score}}</span>
                         <!--------------- 즐겨찾기 ----------------------------------->
-                        <span class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
-                            <i class="fas fa-star" style="font-size:1.7vw; color:yellow; "></i>872
+                        <span v-if="spot.is_liked==true" class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
+                            <i class="fas fa-star" @click.prevent="unlikespot" style="font-size:1.7vw; color:yellow; "></i>{{detailspot.total_likes}}   
+                        </span>
+                        <span v-else class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
+                            <i class="fas fa-star" @click.prevent="likespot" style="font-size:1.7vw; color:gray; "></i>{{detailspot.total_likes}}    
                         </span>
                     </div>
                 </center>
@@ -77,24 +83,37 @@
         <v-divider style="margin-top:-1vw;"></v-divider>
         <div class="modalcomment">
             <div>
-                <select class="selectrate" >
+                <select class="selectrate" v-model="score" >
                     <!-- v-model="" -->
-                    <option value="" >5</option>
-                    <option value="" >4</option>
-                    <option value="" >3</option>
-                    <option value="">2</option>
-                    <option value="">1</option>
+                    <option value="5" >5</option>
+                    <option value="4" >4</option>
+                    <option value="3" >3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
                 </select>
-                <input class="modalinput" style="width:70%;">
-                <button class="commentbtn">작성</button>
+                <input class="modalinput" style="width:70%;" v-model="content" placeholder="댓글을 입력해주세요.">
+                <button @click="writecomment" class="commentbtn">작성</button>
             </div>
             <div style="margin-left:17px; margin-top:10px;">
                 <!-- v-for 댓글 폰트크기 비율에 맞춰서 조정해야함-->
                 <!-- 예시 -->
-                <div class="mb-1" v-for="comment in spotcomments" :key="comment.id">
-                    <span></span>
+                <div class="mb-1" v-for="(comment,index) in spotcomments" :key="index">
+                    
                     <span class="commentbdg">{{comment.score}}</span>
                     <span style="font-family: 'SCDream4'" >{{comment.content}}</span>
+                    <span style="font-family: 'SCDream6'; float:right; margin-right:18%;">{{comment.user.nickname}}</span>
+                    <!-- 삭제 본인만 할 수 있게 해야함 -->
+                    <button @click="deleteComment(comment.id,index)" style="margin-left:2%;" ><i class="far fa-times-circle" style="color:red;"></i></button>
+                </div>
+                <div class="text-center">
+                    <!-- 버튼 크기 수정해야댐 -->
+                    <v-pagination
+                    class="commentpage"
+                    v-model="page"
+                    :length="detailpage.endPage"
+                    :total-visible="3"
+                    circle
+                    ></v-pagination>
                 </div>
             </div>
         </div>
@@ -113,10 +132,85 @@
 </template>
 <script>
 import axios from 'axios'
+import { mapGetters } from "vuex";
 export default {
     methods: {
         likespot() {
-            console.log('like!!')
+            let likeStatus = new FormData()
+                likeStatus.append('spot_pk',this.spot.id)
+            axios.post(`http://127.0.0.1:8000/spots/${this.spot.id}/like/`,likeStatus,{
+                headers: {
+                    Authorization: this.config,
+                },
+            })
+            .then(({data}) => {
+                console.log(data)
+                this.spot.is_liked = true
+                this.detailspot.total_likes += 1
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        unlikespot() {
+            axios.delete(`http://127.0.0.1:8000/spots/${this.spot.id}/like/`,{
+                headers: {
+                    Authorization: this.config,
+                },
+            })
+            .then(({data}) => {
+                console.log(data)
+                this.spot.is_liked = false
+                this.detailspot.total_likes -= 1
+                
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        writecomment() {
+            let newComment = new FormData()
+                newComment.append('spot_pk', this.spot.id)
+                newComment.append('score', this.score)
+                newComment.append('content', this.content)
+            axios.post('http://127.0.0.1:8000/comment/', newComment,{
+                headers: {
+                    Authorization: this.config,
+                },
+            })
+            .then(({data}) => {
+                // console.log(data)
+                this.spotcomments.unshift(data)
+                this.content=''
+            }).catch(err => {
+                console.log(err.response)
+            })
+        },
+        deleteComment(commentid,index) {
+            axios.delete(`http://127.0.0.1:8000/comment/${commentid}`,{
+                headers: {
+                    Authorization: this.config,
+                },
+            })
+            .then(({data}) => {
+                console.log(data)
+                // console.log(index)
+                this.spotcomments.splice(index,1)
+            }).catch(err => {
+                console.log(err.response)
+            })
+        }
+    },
+    computed: {
+        ...mapGetters(["config"])
+    },
+    watch: {
+        page() {
+            axios.get(`http://127.0.0.1:8000/spots/${this.spot.id}?curPage=`+this.page)
+				.then(response => {
+                this.spotcomments = response.data.comments
+				})
+				.catch(error => {
+				console.log(error)
+				})
         }
     },
     props: {
@@ -130,7 +224,10 @@ export default {
         dialog: false,
         detailspot: [],
         spotcomments: [],
-        spotscore: {},
+        score:'5',
+        content:"",
+        page:1,
+        detailpage: [],
       }
     },
     created () {
@@ -138,14 +235,15 @@ export default {
 				.then(response => {
 				this.detailspot = response.data
                 this.spotcomments = this.detailspot.comments
-                this.spotscore = this.detailspot.score
-                console.log(this.spotcomments)
-                console.log(this.spotscore)
+                // console.log(response)
+                this.detailpage = this.detailspot.page
+                // console.log(this.detailpage)
 				})
 				.catch(error => {
 				console.log(error)
 				})
-            },
+    },
+    
 }
 </script>
 
@@ -159,7 +257,7 @@ export default {
     white-space: nowrap;
     padding:0;
     display:inline-block;
-    font-family: 'SCDream5'
+    font-family: 'SCDream7'
 }
 .v-application p {
     margin-bottom: 3px;
@@ -221,6 +319,8 @@ export default {
     margin-left:10px;
     font-family: 'SCDream4';
     border-radius: 15px;
+    outline:none;
+    padding-left: 12px;
 }
 .commentbtn {
     background-color:  #FF5E5E;
@@ -260,5 +360,20 @@ export default {
     width: 35px;
     font-family: 'SCDream4';
     border-radius: 15px;
+    outline:none;
 }
+/* 스크롤 바 넓이 16px */
+.modaldetail::-webkit-scrollbar{width: 16px;}
+/* 스크롤 바 기본 색상 */
+.modaldetail::-webkit-scrollbar-track {background-color:#FF5E5E;
+    box-shadow: inset 0px 0px 5px white;
+    border-radius: 10px;
+}
+/* 스크롤 구간 배경 색상 */
+.modaldetail::-webkit-scrollbar-thumb {background-color:#ff9a9a;
+    border-radius: 10px;
+} 
+/* 스크롤 바 위에 마우스 올렸을 때(hover) 색상 */
+.modaldetail::-webkit-scrollbar-thumb:hover {background-color: #fd4b4b;} 
+
 </style>
