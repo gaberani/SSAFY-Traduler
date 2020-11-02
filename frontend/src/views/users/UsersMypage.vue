@@ -15,7 +15,7 @@
 import { mapActions } from 'vuex'
 
 export default {
-	name: 'Mypage',
+	name: 'UsersMypage',
 	data() {
 		return {
 			valid: false,
