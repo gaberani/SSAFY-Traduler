@@ -187,7 +187,7 @@ JWT_AUTH = {
     # 갱신 가능 여부
     'JWT_ALLOW_REFRESH': True,
     # JWT 토큰의 유효 기간 (1일)
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=30),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # JWT 갱신 유효 기간 (3일)
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
