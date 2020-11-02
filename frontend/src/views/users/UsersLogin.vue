@@ -77,7 +77,7 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-	name: 'UserLogin',
+	name: 'UsersLogin',
 	data() {
 		return {
 			valid: false,
