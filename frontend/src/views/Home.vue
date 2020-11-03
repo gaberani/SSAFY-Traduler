@@ -1,21 +1,22 @@
 <template>
-  <div class="home">
-    <h1 style="text-align:center;">This is Home Page</h1>
-    <v-btn
-      @click="gotoMypage"
-    >
-      내 정보
-    </v-btn>
-  </div>
+  <v-app class="home">
+    <Mainimage/>
+    <MainCenter/>
+    <Footer/>
+  </v-app>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 
+import Mainimage from '@/components/Mainimage';
+import MainCenter from '@/components/MainCenter';
+import Footer from '@/components/Footer';
 export default {
   name: 'Home',
   components: {
+    Mainimage,
+    MainCenter, 
+    Footer
   },
   methods: {
     gotoMypage() {
