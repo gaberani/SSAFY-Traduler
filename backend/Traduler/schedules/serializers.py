@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MemberType, StyleType, Schedule, Course, ScheduleAdvice
+from .models import MemberType, StyleType, Schedule, Course, ScheduleAdvice, UserSchedule
 
 from accounts.serializers import UserSerializer
 
@@ -44,3 +44,10 @@ class ScheduleAdviceSerializer(serializers.ModelSerializer):
         model = ScheduleAdvice
         fields = "__all__"
         read_only_fields = ('user_pk',)
+
+
+class UserScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSchedule
+        fields = "__all__"
+        read_only_fields = ('user_pk', 'schedule_pk',)

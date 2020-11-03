@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, I
 from rest_framework.response import Response
 
 from .models import MemberType, StyleType, Schedule, Course, ScheduleAdvice, UserSchedule
-from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAdviceSerializer
+from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAdviceSerializer, UserScheduleSerializer
 from traduler.mixin import *
 from traduler.permissions import *
 
@@ -36,6 +36,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     advice_queryset = ScheduleAdvice.objects.all()
     advice_serializer_class = ScheduleAdviceSerializer
     user_schedule_queryset = UserSchedule.objects.all()
+    user_schedule_serializer_class = UserScheduleSerializer
 
     def list(self, request, *args, **kwargs):
         title = request.GET.get('title', None)
@@ -164,15 +165,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     # 참가 요청 보내기
     @action(detail=False, methods=['POST'])
     def join(self, request):
-        # print('11111111111111111111111')
         schedule_pk = request.data.get('schedule_pk', None)
         schedule = get_object_or_404(Schedule, pk=schedule_pk)
         user = request.user
-        content = request.data.get('content', None)
 
         # 이미 신청했거나, 참여했거나 아무튼 있는 경우
         if self.user_schedule_queryset.filter(user_pk=user, schedule_pk=schedule).exists():
             return Response({'fail': 'fail'}, status=status.HTTP_400_BAD_REQUEST)
-        # 그 외의 경우 (저장해야 됨!)
+        # 그 외의 경우 (저장!)
         else:
+            serializer_user_schedule = self.user_schedule_serializer_class(data=request.data)
+            serializer_user_schedule.is_valid(raise_exception=True)
+            serializer_user_schedule.save(user_pk=user, schedule_pk=schedule)
             return Response({"success": 'success'}, status=status.HTTP_200_OK)
