@@ -20,7 +20,7 @@ from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh
 from rest_framework import routers
 from accounts.views import AccountViewSet
 from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet, CustomSpotViewSet, SpotCommentViewSet
-from schedules.views import MemberTypeViewSet, StyleTypeViewSet, ScheduleViewSet, UserScheduleViewSet, CourseMemoViewSet
+from schedules.views import MemberTypeViewSet, StyleTypeViewSet, ScheduleViewSet, UserScheduleViewSet, CourseMemoViewSet, ScheduleAdviceViewSet
 
 router = routers.DefaultRouter()
 
@@ -40,6 +40,7 @@ router.register('style_type', StyleTypeViewSet)
 router.register('schedule', ScheduleViewSet)
 router.register('join', UserScheduleViewSet)
 router.register('memo', CourseMemoViewSet)
+router.register('advice', ScheduleAdviceViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

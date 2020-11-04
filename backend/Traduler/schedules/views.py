@@ -6,8 +6,8 @@ from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule, CourseMemo
-from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAreaSerializer, ScheduleAdviceSerializer, UserScheduleSerializer, CourseMemoSerializer
+from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule, CourseMemo, ScheduleAdvice
+from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAreaSerializer, ScheduleAdviceSerializer, UserScheduleSerializer, CourseMemoSerializer, ScheduleAdviceSerializer
 from traduler.mixin import *
 from traduler.permissions import *
 
@@ -277,5 +277,27 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response({'reason': '스케줄에 참여하지 않은 유저입니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+
+class ScheduleAdviceViewSet(viewsets.ModelViewSet):
+    """
+        각 스케줄 별 도움 게시글을 작성하는 Viewset입니다.
+    """
+    # ScheduleAdvice / Serializer
+    queryset = ScheduleAdvice.objects.all()
+    serializer_class = ScheduleAdviceSerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
+        if schedule.advice == 1:
+            # 해당 코스가 포함된 스케줄에 참여한 유저인 경우에만 메모를 작성할 수 있습니다.
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user_pk=request.user)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'reason': '도움 댓글이 허용되지 않은 스케줄입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
 
