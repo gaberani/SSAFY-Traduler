@@ -29,7 +29,7 @@ export default {
         this.$router.push("/spot")
       },
       gotoLogin() {
-        this.$router.push({name:"Login"})
+        this.$router.push({name:"UsersLogin"})
       },
       gotoHome() {
         this.$router.push({name:"Home"})
