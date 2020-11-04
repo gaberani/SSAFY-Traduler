@@ -16,7 +16,6 @@ export default {
     this.item = this.$attrs.data
   },
   mounted() {
-    console.log(this.$attrs)
     if (window.kakao && window.kakao.maps) {
       // kakao와 kakao.maps가 전부 로딩된 뒤에 실행
       this.initMap();
@@ -30,57 +29,41 @@ export default {
   },
   methods: {
     initMap() {
-      var staticMapContainer = document.getElementById('map'+this.item);
-      var staticMapOption = {
+      var MapContainer = document.getElementById('map' + this.item);
+      var MapOption = {
         // 지도의 좌표
         // center: new kakao.maps.LatLng(33.450701, 126.570667),
         center: new kakao.maps.LatLng(37.501239, 127.039652),
         // 지도의 레벨(확대, 축소 정도)
-        level: 3
+        level: 4
       };
       // 지도 생성 및 객체 리턴
-      // var map = new kakao.maps.Map(container, options);
+      var map = new kakao.maps.Map(MapContainer, MapOption);
       // 정적인 지도
-      var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
-      // ??
-      // map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
-      staticMap.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-    },
-    // HTML Content를 만들어 리턴하는 함수입니다
-    // getTimeHTML(distance) {
-    //   // 도보의 시속은 평균 4km/h 이고 도보의 분속은 67m/min입니다
-    //   var walkkTime = distance / 67 | 0;
-    //   var walkHour = '', walkMin = '';
-    //
-    //   // 계산한 도보 시간이 60분 보다 크면 시간으로 표시합니다
-    //   if (walkkTime > 60) {
-    //     walkHour = '<span class="number">' + Math.floor(walkkTime / 60) + '</span>시간 '
-    //   }
-    //   walkMin = '<span class="number">' + walkkTime % 60 + '</span>분'
-    //
-    //   // 자전거의 평균 시속은 16km/h 이고 이것을 기준으로 자전거의 분속은 267m/min입니다
-    //   var bycicleTime = distance / 227 | 0;
-    //   var bycicleHour = '', bycicleMin = '';
-    //
-    //   // 계산한 자전거 시간이 60분 보다 크면 시간으로 표출합니다
-    //   if (bycicleTime > 60) {
-    //     bycicleHour = '<span class="number">' + Math.floor(bycicleTime / 60) + '</span>시간 '
-    //   }
-    //   bycicleMin = '<span class="number">' + bycicleTime % 60 + '</span>분'
-    //
-    //   // 거리와 도보 시간, 자전거 시간을 가지고 HTML Content를 만들어 리턴합니다
-    //   var content = '<ul class="dotOverlay distanceInfo">';
-    //   content += '    <li>';
-    //   content += '        <span class="label">총거리</span><span class="number">' + distance + '</span>m';
-    //   content += '    </li>';
-    //   content += '    <li>';
-    //   content += '        <span class="label">도보</span>' + walkHour + walkMin;
-    //   content += '    </li>';
-    //   content += '    <li>';
-    //   content += '        <span class="label">자전거</span>' + bycicleHour + bycicleMin;
-    //   content += '    </li>';
-    //   content += '</ul>'
-    // }
+      // var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+      // staticMap.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+
+      // 여행지 간 좌표로 그려질 선 객체
+      var linePath = [
+        new kakao.maps.LatLng(37.50044353828887, 127.03718408677545),
+        new kakao.maps.LatLng(37.50128969715334, 127.03960466576542),
+        new kakao.maps.LatLng(37.50127800000000, 127.04000000000000)
+      ];
+      // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
+      // var dots = {}; // 여행지 마커 커스텀 오버레이 배열입니다.
+
+      var polyline = new kakao.maps.Polyline({
+        path: linePath, // 선을 구성하는 좌표배열 입니다
+        strokeWeight: 5, // 선의 두께 입니다
+        strokeColor: '#000000', // 선의 색깔입니다
+        strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: 'solid' // 선의 스타일입니다
+      });
+      polyline.setMap(map)
+
+      // 지도의 타입 설정
+      map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+    }
   }
 }
 </script>
