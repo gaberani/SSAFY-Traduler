@@ -174,6 +174,44 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['POST'])
+    def scrap(self, request):
+        schedule_pk = request.data['schedule_pk']
+        schedule = get_object_or_404(Schedule, pk=schedule_pk)
+
+        if schedule.private == 1:
+            # 기존 스케줄의 스크랩 수를 +1 해줍니다.
+            schedule.scrap_count += 1
+            schedule.save()
+
+            # 새로운 스케줄 생성 전 기존 스케줄의 목적지 / 상세 과정을 변수에 할당합니다.
+            contained_courses = schedule.contained_courses.all()
+            contained_provinces = ScheduleArea.objects.filter(schedule_pk = schedule)
+
+            # 스케줄을 복사 후, 작성자를 요청자로 바꾸고 여러 설정을 비공개로 전환합니다.
+            schedule.pk = None
+            schedule.private = schedule.advice = schedule.together = schedule.scrap_count = 0
+            schedule.user_pk = request.user
+            schedule.save()
+
+            for course in contained_courses:
+                # 모든 포함된 코스 (상세 과정) 들을 작성자 및 연결된 스케줄 변경 후 저장해줍시다!
+                course.pk = None
+                course.user_pk = request.user
+                course.schedule_pk = schedule
+                course.save()
+
+            for province in contained_provinces:
+                # 모든 포함된 목적지들을 연결된 스케줄 변경 후 저장해줍시다!
+                province.pk = None
+                province.schedule_pk = schedule
+                province.save()
+
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '비공개 스케줄입니다!!!!'}, status=status.HTTP_403_FORBIDDEN)
+
+
 
 # UserSchedule View Set
 class UserScheduleViewSet(viewsets.ModelViewSet):

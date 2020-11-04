@@ -90,7 +90,7 @@ class Course(models.Model):
     budget_entrance = models.IntegerField(default=0)
     budget_room = models.IntegerField(default=0)
     budget_etc = models.IntegerField(default=0)
-    schedule_pk = models.ForeignKey(Schedule, on_delete=models.CASCADE, db_column='schedule_pk')
+    schedule_pk = models.ForeignKey(Schedule, related_name='contained_courses', on_delete=models.CASCADE, db_column='schedule_pk')
     spot_pk = models.ForeignKey(Spot, on_delete=models.SET_NULL, db_column='spot_pk', blank=True, null=True)
     custom_spot_pk = models.ForeignKey(CustomSpot, on_delete=models.SET_NULL, db_column='custom_spot_pk', blank=True, null=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
