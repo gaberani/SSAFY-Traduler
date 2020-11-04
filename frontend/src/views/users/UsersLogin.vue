@@ -74,10 +74,10 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-	name: 'UserLogin',
+	name: 'UsersLogin',
 	data() {
 		return {
 			valid: false,
@@ -88,7 +88,7 @@ export default {
 		}
 	},
 	computed: {
-    ...mapState(["LoginFlag"])
+    ...mapGetters(["LoginFlag"])
   },
 	methods: {
 		...mapActions(["SubmitLoginData"]),

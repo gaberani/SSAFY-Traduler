@@ -48,7 +48,7 @@
           class="py-0"
         >
           <v-text-field
-            v-model="UserSignupData.password"
+            v-model="UserSignupData.password1"
             type="password"
             filled
             color="#FF9617"
@@ -66,7 +66,7 @@
           class="py-0"
         >
           <v-text-field
-            v-model="UserSignupData.passwordcheck"
+            v-model="UserSignupData.password2"
             type="password"
             filled
             color="#FF9617"
@@ -116,7 +116,7 @@
           <v-col cols="3"></v-col>
           <v-col cols="1">
             <v-icon
-              v-if="UserSignupData.gender==='여자'"
+              v-if="UserSignupData.gender==='여성'"
               @click="onClickWoman"
               x-large
               color="#FF890E"
@@ -130,7 +130,7 @@
 
           <v-col cols="1">
             <v-icon
-              v-if="UserSignupData.gender==='남자'"
+              v-if="UserSignupData.gender==='남성'"
               @click="onClickMan"
               x-large
               color="#FF890E"
@@ -166,38 +166,37 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  name: 'UserSignup',
+  name: 'UsersSignup',
 	data() {
 		return {
       valid: false,
 			UserSignupData: {
         username: '',
         nickname: '',
-				password: '',
-				passwordcheck: '',
+				password1: '',
+				password2: '',
         gender: null,
         age: null
 			}
 		}
 	},
 	methods: {
-		SubmitSignupData() {
-      console.log('TRY signup')
-    },
-
+    ...mapActions(["SubmitSignupData"]),
     // 성별 입력 메서드
     onClickWoman() {
-      if (this.UserSignupData.gender !== '여자') {
-        this.UserSignupData.gender='여자'
+      if (this.UserSignupData.gender !== '여성') {
+        this.UserSignupData.gender='여성'
       }
       else {
         this.UserSignupData.gender = null
       } 
     },
     onClickMan() {
-      if (this.UserSignupData.gender !== '남자') {
-        this.UserSignupData.gender='남자'
+      if (this.UserSignupData.gender !== '남성') {
+        this.UserSignupData.gender='남성'
       }
       else {
         this.UserSignupData.gender = null

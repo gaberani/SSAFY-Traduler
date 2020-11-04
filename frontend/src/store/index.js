@@ -56,9 +56,9 @@ export default new Vuex.Store({
                   }
                 })
             })
-            .catch(() => {
+            .catch(err => {
               commit("LOGIN_STATE", false)
-              // console.log(err)
+              console.log(err.response)
             })
           
         }
@@ -67,6 +67,7 @@ export default new Vuex.Store({
         alert('이미 로그인 상태입니다.')
       }
     },
+
     SubmitLogout({ state, getters, commit }) {
       if (getters.LoginFlag === true) {
         const config = {
@@ -86,6 +87,36 @@ export default new Vuex.Store({
           })
       }
     },
+
+    SubmitSignupData({ state, commit }, UserSignupData) {
+      if (state.LoginFlag === false) {
+        if (UserSignupData.username.trim() && UserSignupData.password1.trim()) {
+          console.log(cookies.get('csrftoken'))
+          UserSignupData.age *= 1 
+          Vue.prototype.$http
+            .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/signup/', UserSignupData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
+            .then(res => {
+              const token = res.data.token
+              cookies.set('auth-token', token)
+              commit("SET_TOKEN", token)
+              commit("LOGIN_STATE", true)
+              router
+                .push({ name: 'Home'})
+                .catch(err => {
+                  if(err.name != "NavigationDuplicated" ){
+                    throw err
+                  }
+                })
+            })
+            .catch(err => {
+              console.log(err.response.data)
+              commit("LOGIN_STATE", false)
+              // console.log(err)
+            })
+        }
+      }
+    },
+
     GetUserInfo({ state, getters, commit }) {
       if (getters.LoginFlag === true) {
         const config = {

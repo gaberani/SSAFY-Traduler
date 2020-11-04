@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     gotoMypage() {
-      this.$router.push({name: 'Mypage'})
+      this.$router.push({name: 'UsersMypage'})
     }
   }
 }

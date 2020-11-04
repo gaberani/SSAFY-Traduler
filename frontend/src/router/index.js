@@ -23,18 +23,23 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'UsersLogin',
     component: () => import('@/views/users/UsersLogin')
   },
   {
     path: '/signup',
-    name: 'Signup',
+    name: 'UsersSignup',
     component: () => import('@/views/users/UsersSignup')
   },
   {
     path: '/mypage',
-    name: 'Mypage',
+    name: 'UsersMypage',
     component: () => import('@/views/users/UsersMypage')
+  },
+  {
+    path: '/schedule',
+    name: 'Schedule',
+    component: () => import('@/views/schedules/Schedule')
   }
 ]
 
