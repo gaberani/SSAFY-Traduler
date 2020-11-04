@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MemberType, StyleType, Schedule, Course, ScheduleAdvice, UserSchedule
+from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule
 
 from accounts.serializers import UserSerializer
 
@@ -19,14 +19,6 @@ class StyleTypeSerializer(serializers.ModelSerializer):
         model = StyleType
         fields = "__all__"
 
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source='user_pk', required=False)
-    class Meta:
-        model = Schedule
-        fields = "__all__"
-        read_only_fields = ('user_pk',)
-
         
 class CourseSerializer(serializers.ModelSerializer):
     spot_info = SpotSerializer(source='spot_pk', required=False)
@@ -36,6 +28,22 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = "__all__"
         read_only_fields = ('user_pk', 'schedule_pk',)
+
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    user = UserSerializer(source='user_pk', required=False)
+    courses = CourseSerializer(source='course_pk', required=False, many=True)
+    class Meta:
+        model = Schedule
+        fields = "__all__"
+        read_only_fields = ('user_pk',)
+
+
+class ScheduleAreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduleArea
+        fields = "__all__"
+        read_only_fields = ('schedule_pk',)
 
 
 class ScheduleAdviceSerializer(serializers.ModelSerializer):

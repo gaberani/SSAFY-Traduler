@@ -6,8 +6,8 @@ from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from .models import MemberType, StyleType, Schedule, Course, ScheduleAdvice, UserSchedule
-from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAdviceSerializer, UserScheduleSerializer
+from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule
+from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAreaSerializer, ScheduleAdviceSerializer, UserScheduleSerializer
 from traduler.mixin import *
 from traduler.permissions import *
 
@@ -29,20 +29,30 @@ class StyleTypeViewSet(viewsets.ReadOnlyModelViewSet):
 
 # Schedule View Set
 class ScheduleViewSet(viewsets.ModelViewSet):
+    # 스케줄 관련 모델 / Serializer
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+    # 코스(스케줄 상세 과정) 관련 모델 / Serializer
     course_queryset = Course.objects.all()
     course_serializer_class = CourseSerializer
+    # 스케줄의 목적지 관련 모델 / Serializer
+    province_queryset = ScheduleArea.objects.all()
+    province_serializer_class = ScheduleAreaSerializer
+    # 스케줄 조언 관련 모델 / Serializer
     advice_queryset = ScheduleAdvice.objects.all()
     advice_serializer_class = ScheduleAdviceSerializer
+    # 유저-스케줄 참여 이력 관련 모델 / Serializer
     user_schedule_queryset = UserSchedule.objects.all()
     user_schedule_serializer_class = UserScheduleSerializer
 
     def list(self, request, *args, **kwargs):
+        # 각각의 조건이 들어온게 있는지 확인하고, 변수에 할당합니다.
         title = request.GET.get('title', None)
         member_type = request.GET.get('member_type', None)
         style_type = request.GET.get('style_type', None)
-        area_code = request.GET.get('area',None)
+        # 지역과 관련된 거는... 어떻게 해야할지 몰라서 놔뒀습니다. (별도 Table로 연결되어있어서 쿼리를 어떻게 구성할지 고민중입니다.)
+        # area_code = request.GET.get('area',None)
+
         together = request.GET.get('together',None)
         advice = request.GET.get('advice',None)
         start_date = request.GET.get('start_date', None)
@@ -60,13 +70,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(member_type_pk = member_type)
         if style_type: # 여행 스타일 검색 -> 일치하는거 가져옴
             filtered_schedules = filtered_schedules.filter(style_type_pk = style_type)
-        if area_code: # 지역 코드 검색...? -> 일단 일치하는거
-            filtered_schedules = filtered_schedules.filter(area_code = area_code)
+        # if area_code: # 지역 코드 검색...? -> 일단 일치하는거
+        #     filtered_schedules = filtered_schedules.filter(area_code = area_code)
         if together:
             filtered_schedules = filtered_schedules.filter(together = together)
         if advice:
             filtered_schedules = filtered_schedules.filter(advice = advice)
         if start_date: # 지정한 시작 일자 이후에 시작하는 스케줄 
+            # String 형태로 들어올 때, isoformat()으로 datetime 객체를 만들어야 되는데... 파이썬 3.7부터 제공되는 기능이라서 .... 죄송합니다.
             start_date_split = list(map(int, start_date.split('-')))
             start_time_filter = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
             filtered_schedules = filtered_schedules.filter(start_date__gte = start_time_filter)
@@ -75,46 +86,24 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             end_time_filter = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
             filtered_schedules = filtered_schedules.filter(end_date__lte = end_time_filter)
         
-        serialized_course = self.serializer_class(filtered_schedules, many=True).data
+        # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
+        serialized_schedules = self.serializer_class(filtered_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
-        return Response({"schedule": serialized_course}, status=status.HTTP_200_OK)
+        # 각각의 스케줄에서 여행지들이 표시된 지도를 보여줄 계획이라고 해서 각 스케줄에 포함된 여행지들의 좌표 데이터를 넣어서 줬습니다.
+        for serialized_schedule in serialized_schedules:
+            serialized_schedule['coords'] = []
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id'])
+            for contained_course in contained_courses:
+                # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
+                if contained_course.spot_pk:
+                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                else:
+                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+
+        return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        """
-            Data 예시
-            {
-                "schedule_info": {
-                    "title": "테스트",
-                    "overview": "테스트222",
-                    "private": 0,
-                    "advice": 0,
-                    "together": 0,
-                    "start_date": "2020-11-02 09:00",
-                    "end_date": "2020-11-10 18:00",
-                    "max_member": 5,
-                    "member_type_pk": 1,
-                    "style_type_pk": 1
-                },
-                "course_info": [
-                    {
-                        "start_time": "2020-11-02 09:00",
-                        "end_time": "2020-11-02 12:00",
-                        "content": "test",
-                        "budget_food": 200,
-                        "spot_pk": 52
-                    },
-                    {
-                        "start_time": "2020-11-02 12:00",
-                        "end_time": "2020-11-02 15:00",
-                        "content": "test222",
-                        "budget_food": 200,
-                        "budget_entrance": 1000,
-                        "spot_pk": 54
-                    }
-                ]
-            }
-        """
         # 받은 데이터 중 Schedule 관련 데이터를 먼저 가져와서 schedule 객체부터 만들어줍니다!
         # 이후 만들 Course들에 schedule_pk가 필요해서 이렇게 했습니다.
         serializer_schedule = self.get_serializer(data=request.data['schedule_info'])
@@ -131,8 +120,27 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             serializer_course = self.course_serializer_class(data=course_info)
             serializer_course.is_valid(raise_exception=True)
             serializer_course.save(user_pk=request.user, schedule_pk=schedule)
+
+        province_infos = request.data['province_info']
+        for province_info in province_infos:
+            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법
+            province_info['start_date'] = province_info['start_date'] + ' 00:00'
+            province_info['end_date'] = province_info['end_date'] + ' 23:59'
+
+            # 2. 직접 datetime 객체를 만들어서 넣어주는 방법
+            # start_date_split = list(map(int, province_info['start_date'].split('-')))
+            # start_date_time = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+            # province_info['start_date'] = start_date_time
+
+            # end_date_split = list(map(int, province_info['end_date'].split('-')))
+            # end_date_time = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+            # province_info['end_date'] = end_date_time
+
+            serializer_province = self.province_serializer_class(data=province_info)
+            serializer_province.is_valid(raise_exception=True)
+            serializer_province.save(schedule_pk=schedule)
         
-        return Response({'test': 'test'}, status=status.HTTP_201_CREATED)
+        return Response({'schedule': serializer_schedule.data}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk):
         schedule = self.queryset.get(id=pk)
@@ -142,6 +150,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 코스 가져오기
         filtered_course = self.course_queryset.filter(schedule_pk=pk)
         serialized_course = self.course_serializer_class(filtered_course, many=True).data
+
+        # 목적지 정보 가져오기
+        filtered_province = self.province_queryset.filter(schedule_pk=pk)
+        serialized_province = self.province_serializer_class(filtered_province, many=True).data
 
         # 조언 가져오기
         filtered_advice = self.advice_queryset.filter(schedule_pk=pk)
@@ -157,6 +169,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         return Response({
             "schedule": serialized_schedule.data, 
             "course": serialized_course,
+            "province": serialized_province,
             "advice": serialized_advice,
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
