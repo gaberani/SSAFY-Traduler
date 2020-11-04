@@ -80,7 +80,6 @@ export default new Vuex.Store({
             alert('로그아웃이 정상적으로 처리되지 않았습니다.')
           })
           .finally(() => {
-            window.sessionStorage.removeItem('username')
             cookies.remove('auth-token')
             commit("LOGIN_STATE", false)
             router.push({ name:'Home'})
