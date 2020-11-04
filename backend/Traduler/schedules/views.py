@@ -17,18 +17,35 @@ import datetime
 
 # MemberType ONLY READ
 class MemberTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+        멤버 구성 방식에 대한 ViewSet입니다.
+        근데 이거 왜 GET 요청 보낼 때 자격 인증 데이터가 필요할까요...???
+        ReadOnlyModelViewSet을 상속하면서 이상한 걸 상속했나봐요...
+    """
     queryset = MemberType.objects.all()
     serializer_class = MemberTypeSerializer
 
 
 # StyleType ONLY READ
 class StyleTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+        여행 스타일에 대한 ViewSet입니다.
+    """
     queryset = StyleType.objects.all()
     serializer_class = StyleTypeSerializer
 
 
 # Schedule View Set
 class ScheduleViewSet(viewsets.ModelViewSet):
+    """
+        스케줄 관련 ViewSet입니다.
+        포함된, 그리고 현재 굴러는 가는 기능들은 다음과 같습니다.
+        list : 스케줄을 조건에 따라 필터링해서 가져올 수 있습니다. / 현재 페이지네이션이 적용되지 않은 상태입니다.
+        create : 스케줄을 생성하는 함수입니다.
+        retrieve : 스케줄의 상세 정보를 주는 함수입니다.
+        scrap : 스크랩 기능을 하는 함수입니다.
+        자세한 설명은 각 함수의 아래부분에 주석을 달아두었습니다.
+    """
     # 스케줄 관련 모델 / Serializer
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
@@ -46,6 +63,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     user_schedule_serializer_class = UserScheduleSerializer
 
     def list(self, request, *args, **kwargs):
+        """
+            title, member_type, style_type, together, advice, start_date, end_date를 기준으로 필터링합니다.
+            area_code는 왜 빠졌나면.... 음...
+                1. 스케줄에 포함된 목적지(province)를 검색해서 가져오거나 (별도 Table에 존재)
+                2. 대표 목적지를 설정해서 그걸 기준으로 가져오거나 인데......
+                뭘 선택해야할지 모르겠어서 기능 구현은 미뤄두었습니다.
+            추가적으로 각 스케줄에 포함된 여행지들의 위도, 경도를 2차원 리스트 형태로 가져옵니다.
+        """
         # 각각의 조건이 들어온게 있는지 확인하고, 변수에 할당합니다.
         title = request.GET.get('title', None)
         member_type = request.GET.get('member_type', None)
@@ -63,7 +88,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 공개인 스케줄만 가져옵니다.
         filtered_schedules = self.queryset.filter(private=1)
 
-        # 이하 필터링 내용을... 한번에 할 수 있는 방법을 써볼까 고민하고있습니다.
+        # 이하 필터링 내용을... 한번에 할 수 있는 방법을 써볼까 고민하고있습니다. / 쿼리문을 String 형태로 짜고 한번에 필터링 한다거나..?
         if title: # 제목 검색 -> 제목에 포함되는거 가져옴
             filtered_schedules = filtered_schedules.filter(title__icontains=title)
         if member_type: # 맴버 구성 방식 검색 -> 일치하는거 가져옴
@@ -104,7 +129,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        # 받은 데이터 중 Schedule 관련 데이터를 먼저 가져와서 schedule 객체부터 만들어줍니다!
+        """
+            데이터는 schedule_info / course_info / province_info 로 구분되어 들어옵니다.
+            (schedule_info 는 객체, 나머지는 객체의 배열로 들어옵니다.)
+            먼저 Schedule을 만들고, 다른 것들을 만들어서 연결해줍니다.
+        """
+        # 받은 데이터 중 Schedule 관련 데이터를 먼저 가져와서 schedule 인스턴스부터 만들어줍니다!
         # 이후 만들 Course들에 schedule_pk가 필요해서 이렇게 했습니다.
         serializer_schedule = self.get_serializer(data=request.data['schedule_info'])
         serializer_schedule.is_valid(raise_exception=True)
@@ -121,6 +151,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             serializer_course.is_valid(raise_exception=True)
             serializer_course.save(user_pk=request.user, schedule_pk=schedule)
 
+        # 목적지 관련 데이터를 가져오고, 반복문을 통해 각각의 목적지를 만들어줍니다.
         province_infos = request.data['province_info']
         for province_info in province_infos:
             # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법
@@ -143,6 +174,11 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         return Response({'schedule': serializer_schedule.data}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk):
+        """
+            스케줄 상세 정보를 가져오는 함수입니다.
+            스케줄 정보 / 코스 정보 / 목적지 정보 / 조언 / 참여 여부를 한번에 가져옵니다.
+            참여여부의 경우 -1(미참여) / 0(승인 대기중) / 1(초대 승인 대기중) / 2(참여중) 입니다.
+        """
         schedule = self.queryset.get(id=pk)
         serialized_schedule = self.serializer_class(schedule)
         # cur_page = request.GET.get("curPage", 1)
@@ -176,6 +212,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def scrap(self, request):
+        """
+            스케줄을 스크랩해주는 함수입니다.
+            schedule_pk만 가져오면 됩니당....
+            스케줄 / 포함된 여행지 / 포함된 목적지를 가져오고
+            스크랩부터 순서대로 복사 후 연결해줍니다.
+        """
         schedule_pk = request.data['schedule_pk']
         schedule = get_object_or_404(Schedule, pk=schedule_pk)
 
@@ -226,7 +268,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-            특정 유저에게 초대된 스케줄 목록을 보여줍니다.
+            특정 유저에게 해당 유저가 초대받은 스케줄 목록을 보여줍니다.
             Token이 반드시 필요합니다!!
         """
         # cur_page = request.GET.get('curPage', 1)
@@ -258,6 +300,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         """ 
             특정 스케줄의 참가요청된 요청 메세지들을 보여줍니다.
             pk: 스케줄의 pk
+            retrieve를 이렇게 사용하는게 옳은가? 라는 생각이 들었는데... 이왕있는거 좋게좋게 쓰기로 다짐했습니다.
         """
         schedule = get_object_or_404(Schedule, pk=pk)
         # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
@@ -268,6 +311,12 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
     # 참가 요청 승인입니다.
     @action(detail=False, methods=['POST'])
     def confirm(self, request):
+        """
+            참가 요청을 승인해주는 함수입니다.
+            1. 신청한 경우
+            2. 초대받은 경우
+            로 분기해서 각각의 조건을 따진 후 승인 처리를 해줍니다.
+        """
         request_message_pk = request.data.get('user_schedule_pk', None)
         request_message = get_object_or_404(UserSchedule, pk=request_message_pk)
 
