@@ -6,8 +6,8 @@ from rest_framework.decorators import permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule
-from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAreaSerializer, ScheduleAdviceSerializer, UserScheduleSerializer
+from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, ScheduleAdvice, UserSchedule, CourseMemo
+from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSerializer, CourseSerializer, ScheduleAreaSerializer, ScheduleAdviceSerializer, UserScheduleSerializer, CourseMemoSerializer
 from traduler.mixin import *
 from traduler.permissions import *
 
@@ -254,5 +254,28 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         else:
             # 이미 승인된 경우 (status == 2)
             return Response({"reason": "이미 승인된 초대 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class CourseMemoViewSet(viewsets.ModelViewSet):
+    """
+        각 상세 과정에 대한 메모를 작성하고, 수정하고, 삭제하는 ViewSet입니다.
+    """
+    # Memo / Serializer
+    queryset = CourseMemo.objects.all()
+    serializer_class = CourseMemoSerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        course = get_object_or_404(Course, pk=request.data['course_pk'])
+        if UserSchedule.objects.filter(user_pk=user, schedule_pk=course.schedule_pk, status=2).exists():
+            # 해당 코스가 포함된 스케줄에 참여한 유저인 경우에만 메모를 작성할 수 있습니다.
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user_pk=request.user)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'reason': '스케줄에 참여하지 않은 유저입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
 
