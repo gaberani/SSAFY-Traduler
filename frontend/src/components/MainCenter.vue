@@ -33,14 +33,10 @@
             <h3 style="display:inline; font-size:1.7vw;  ">여행지</h3>
             <!-- <button class="plusbtn">더보기</button> -->
         </div>
-        <div >
+        <div v-for="bestma in bestmain" :key="bestma.id" style="display:inline;" >
             <!-- v-for -->
             <button class="besttag" >BEST</button>
-            <SpotCard :spot="dummy" />
-            <button class="besttag" >BEST</button>
-            <SpotCard :spot="dummy" />
-            <button class="besttag" >BEST</button>
-            <SpotCard :spot="dummy" />
+            <SpotCard :spot="bestma" />
         </div>
       </div>
   </div>
@@ -65,9 +61,21 @@ export default {
           'tel': "064-713-9950",
           'tel_name': null,
           'title': "한라산 백록담",
-        }
+        },
+        bestmain:[],
       }
     },
+    created() {
+      this.$http
+      .get(process.env.VUE_APP_SERVER_URL +`/spots/get_best_spots/`)
+      .then(res => {
+        this.bestmain = res.data.best_spots.slice(0,3)
+        // console.log(this.bestmain)
+      })
+      .catch(error => {
+				console.log(error.response)
+				})
+    }
 
 }
 </script>
@@ -116,5 +124,6 @@ export default {
     border-left: 3vw solid transparent;
     border-right: 3vw solid transparent;
     border-bottom: 3vw solid #FF9617;
+    outline: none;
 }
 </style>

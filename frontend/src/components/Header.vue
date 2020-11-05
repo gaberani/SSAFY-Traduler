@@ -6,10 +6,10 @@
   >
     <v-toolbar id="navb">
         <img  style="height:70%;" src="@/assets/tradulerlogo.png" />
-      <v-toolbar-title style="font-family: 'jalnanregular'; font-size:1.5rem">Traduler</v-toolbar-title>
+      <v-toolbar-title @click="gotoHome" style="font-family: 'jalnanregular'; font-size:1.5rem" class="headertitle">Traduler</v-toolbar-title>
       <v-spacer ></v-spacer>
         <v-btn text @click="gotoHome" class="navbar-btn">홈</v-btn>     
-        <v-btn text class="navbar-btn">스케쥴러</v-btn>    
+        <v-btn text @click="gotoSchedulemain" class="navbar-btn">스케쥴러</v-btn>    
         <v-btn text @click="gotoSpot" class="navbar-btn">여행지 검색</v-btn>     
         <v-btn v-if="!this.LoginFlag" text @click="gotoLogin" class="navbar-btn">로그인</v-btn>
         <v-btn v-else text @click="SubmitLogout" class="navbar-btn">로그아웃</v-btn>
@@ -27,6 +27,9 @@ export default {
       ...mapActions(["SubmitLogout"]),
       gotoSpot() {
         this.$router.push("/spot")
+      },
+      gotoSchedulemain() {
+        this.$router.push("/schedulemain")
       },
       gotoLogin() {
         this.$router.push({name:"UsersLogin"})
@@ -53,4 +56,5 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-btn {
   font-family: 'SCDream5'
 }
+.headertitle:hover{cursor: pointer; }
 </style>
