@@ -62,12 +62,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .spotimg {
     background-image : url("../assets/searchspot.jpg");
     background-size:cover;
     width:100%;
-    min-height: 70vh;
+    min-height: 35vw;
     filter:saturate(150%);
 }
 .spotsearch {

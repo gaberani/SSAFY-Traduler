@@ -7,28 +7,23 @@
       <div>
         <div class="mb-3 mt-3">
             <!-- 경상도부분 나중에 랜덤으로 -->
-            <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">경상도</h1>
-            <h3 style="display:inline; font-size:1.7vw;">는 어때요?</h3>
-            <button class="plusbtn">더보기</button>
+            <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">추천</h1>
+            <h3 style="display:inline; font-size:1.7vw;">여행지</h3>
+            <!-- <button class="plusbtn">더보기</button> -->
         </div>
-        <div >
-            <!-- v-for -->
-            <SpotCard :spot="dummy" />
-            <SpotCard :spot="dummy" />
-            <SpotCard :spot="dummy" />
+        <div v-for="re in recom" :key="re.id" style="display:inline;" >
+            <SpotCard :spot="re" />
         </div>
       </div>
       <div>
         <div class="mb-3 mt-2">
             <h1 style="display:inline; color:#FF9617; font-size:2.7vw;">BEST</h1>
             <h3 style="display:inline; font-size:1.7vw;">여행지</h3>
-            <button class="plusbtn">더보기</button>
+            <!-- <button class="plusbtn">더보기</button> -->
         </div>
-        <div >
-            <!-- v-for -->
-            <SpotCard :spot="dummy" />
-            <SpotCard :spot="dummy" />
-            <SpotCard :spot="dummy" />
+        <div v-for="be in best" :key="be.id" style="display:inline;" >
+            <button class="besttag" >BEST</button>
+            <SpotCard :spot="be" />
         </div>
       </div>
   </div>
@@ -53,8 +48,30 @@ export default {
           'tel': "064-713-9950",
           'tel_name': null,
           'title': "한라산 백록담",
-        }
+        },
+        recom: [],
+        best:[],
       }
+    },
+    created() {
+      this.$http
+      .get(process.env.VUE_APP_SERVER_URL +`/spots/get_recommend_spots/`)
+      .then(res => {
+        this.recom = res.data.slice(0,3)
+        console.log(this.recom)
+      })
+      .catch(error => {
+				console.log(error.response)
+        })
+      this.$http
+      .get(process.env.VUE_APP_SERVER_URL +`/spots/get_best_spots/`)
+      .then(res => {
+        this.best = res.data.best_spots.slice(0,3)
+        console.log(this.best)
+      })
+      .catch(error => {
+				console.log(error.response)
+				})
     },
 
 }
@@ -77,5 +94,22 @@ export default {
     color:white;
     outline:none;
     font-family: 'SCDream6'
+}
+.besttag {
+    z-index:1; 
+    /* background-color:#FF9617;  */
+    position:absolute; float:left; 
+    transform: rotate(-45deg); 
+    margin-left:-2.4%; 
+    margin-top:2%; 
+    height:3vw; 
+    width:13%;
+    font-size:2.1vw;
+    font-family: 'SCDream6';
+    color:white;
+    border-left: 3vw solid transparent;
+    border-right: 3vw solid transparent;
+    border-bottom: 3vw solid #FF9617;
+    outline: none;
 }
 </style>
