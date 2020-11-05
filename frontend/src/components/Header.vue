@@ -1,18 +1,18 @@
 
 <template>
-  <v-card
-    flat
-    tile
-  >
+  <v-card flat tile>
     <v-toolbar id="navb">
-        <img  style="height:70%;" src="@/assets/tradulerlogo.png" />
+      <img  style="height:70%;" src="@/assets/tradulerlogo.png" />
       <v-toolbar-title style="font-family: 'jalnanregular'; font-size:1.5rem">Traduler</v-toolbar-title>
       <v-spacer ></v-spacer>
         <v-btn text @click="gotoHome" class="navbar-btn">홈</v-btn>     
         <v-btn text class="navbar-btn">스케쥴러</v-btn>    
         <v-btn text @click="gotoSpot" class="navbar-btn">여행지 검색</v-btn>     
         <v-btn v-if="!this.LoginFlag" text @click="gotoLogin" class="navbar-btn">로그인</v-btn>
-        <v-btn v-else text @click="SubmitLogout" class="navbar-btn">로그아웃</v-btn>
+        <div v-else>
+          <v-btn text @click="gotoMypage" class="navbar-btn">마이페이지</v-btn>
+          <v-btn text @click="SubmitLogout" class="navbar-btn">로그아웃</v-btn>
+        </div>
     </v-toolbar>
   </v-card>
 </template>
@@ -33,6 +33,9 @@ export default {
       },
       gotoHome() {
         this.$router.push({name:"Home"})
+      },
+      gotoMypage() {
+        this.$router.push({name:"UsersMypage"})
       }
     },
     computed: {
