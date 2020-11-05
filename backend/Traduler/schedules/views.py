@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
 
@@ -192,6 +193,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             스케줄 정보 / 코스 정보 / 목적지 정보 / 조언 / 참여 여부를 한번에 가져옵니다.
             참여여부의 경우 -1(미참여) / 0(승인 대기중) / 1(초대 승인 대기중) / 2(참여중) 입니다.
         """
+        user = request.user
         schedule = self.queryset.get(id=pk)
         serialized_schedule = self.serializer_class(schedule)
         # cur_page = request.GET.get("curPage", 1)
@@ -211,7 +213,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # serialized_advice = self.advice_serializer_class(filtered_advice, many=True).data
 
         # 참여 여부 확인하기
-        exist_join_data = self.user_schedule_queryset.filter(user_pk=request.user, schedule_pk=schedule).exists()
+        exist_join_data = schedule.submitted_schedule_requests.filter(user_pk=user).exists()
         if exist_join_data:
             is_joined = self.user_schedule_queryset.get(user_pk=request.user, schedule_pk=schedule).status
         else:
@@ -224,6 +226,18 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "advice": serialized_advice,
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
+
+    def update(self, request, pk=None):
+        pass
+
+    def destroy(self, request, pk=None):
+        # 현재 문제점 : custom spot이 안 지워지는군요!!!...
+        schedule = get_object_or_404(Schedule, pk=pk)
+        if schedule.user_pk == request.user:
+            schedule.delete()
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '작성자가 .. 아니네요?'}, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=False, methods=['POST'])
     def scrap(self, request):
@@ -300,7 +314,6 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
         return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
 
-
     def create(self, request, *args, **kwargs):
         schedule_pk = request.data.get('schedule_pk', None)
         schedule = get_object_or_404(Schedule, pk=schedule_pk)
@@ -329,6 +342,32 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         filtered_request_messages = schedule.submitted_schedule_requests.filter(status=0)
         serialized_request_messages = self.serializer_class(filtered_request_messages, many=True).data
         return Response({"request_messages": serialized_request_messages}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'])
+    def invite(self, request):
+        """
+            스케줄 작성자가 사람을 초대하는 경우입니다.
+            초대 메세지는 비워져서 옵니다.
+        """
+        schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
+        User = get_user_model()
+        user = get_object_or_404(User, pk=request.data['user_pk'])
+        if schedule.user_pk == request.user:
+            if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
+                return Response({'reason': '이미 초대된 사람인데요?'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                # Model로 직접 저장하거나... 원래 하던 방법대로 하거나 선택해야될거같네용
+                # test = UserSchedule()
+                # test.schedule_pk = schedule
+                # test.user_pk = user
+                # test.status = 1
+                # test.save()
+                serializer_user_schedule = self.serializer_class(data=request.data)
+                serializer_user_schedule.is_valid(raise_exception=True)
+                serializer_user_schedule.save(status=1, user_pk=user, schedule_pk=schedule)
+                return Response({"success": "success"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"reason": "왜... 이상한 사람이 초대해요?"}, status=status.HTTP_403_FORBIDDEN)
 
     # 참가 요청 승인입니다.
     @action(detail=False, methods=['POST'])
