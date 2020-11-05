@@ -51,7 +51,7 @@ export default new Vuex.Store({
               router
                 .push({ name: 'Home'})
                 .catch(err => {
-                  if(err.name != "NavigationDuplicated" ){
+                  if(err.name !== "NavigationDuplicated" ){
                     throw err
                   }
                 })
@@ -75,14 +75,16 @@ export default new Vuex.Store({
         }
         Vue.prototype.$http
           .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/logout/', null, config)
-          .catch(() => {
-            // console.log(err.response)
+          .catch(err => {
+            console.log(err.response)
             alert('로그아웃이 정상적으로 처리되지 않았습니다.')
           })
           .finally(() => {
             cookies.remove('auth-token')
             commit("LOGIN_STATE", false)
-            router.push({ name:'Home'})
+            if (router.history.current.name !== 'Home') {
+              router.push({ name:'Home'})
+            }
           })
       }
     },
@@ -90,7 +92,7 @@ export default new Vuex.Store({
     SubmitSignupData({ state, commit }, UserSignupData) {
       if (state.LoginFlag === false) {
         if (UserSignupData.username.trim() && UserSignupData.password1.trim()) {
-          console.log(cookies.get('csrftoken'))
+          // console.log(cookies.get('csrftoken'))
           UserSignupData.age *= 1 
           Vue.prototype.$http
             .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/signup/', UserSignupData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
@@ -102,7 +104,7 @@ export default new Vuex.Store({
               router
                 .push({ name: 'Home'})
                 .catch(err => {
-                  if(err.name != "NavigationDuplicated" ){
+                  if(err.name !== "NavigationDuplicated" ){
                     throw err
                   }
                 })
