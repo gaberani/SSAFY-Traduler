@@ -166,8 +166,8 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        # 로그인 여부 확인용 클래스
-        'rest_framework.permissions.IsAuthenticated',
+        # 기본 설정 - 모두에게 허용
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 로그인 관련 클래스를 JWT로 변경

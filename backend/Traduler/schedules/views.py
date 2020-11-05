@@ -87,7 +87,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # cur_page = request.GET.get('curPage', 1)
         
         # 공개인 스케줄만 가져옵니다.
-        filtered_schedules = self.queryset.filter(private=1)
+        filtered_schedules = self.queryset.filter(private=0)
 
         # 이하 필터링 내용을... 한번에 할 수 있는 방법을 써볼까 고민하고있습니다. / 쿼리문을 String 형태로 짜고 한번에 필터링 한다거나..?
         if title: # 제목 검색 -> 제목에 포함되는거 가져옴
@@ -102,24 +102,13 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(together = together)
         if advice:
             filtered_schedules = filtered_schedules.filter(advice = advice)
-        if start_date: # 지정한 시작 일자 이후에 시작하는 스케줄  2020-11-04
-            # String 형태로 들어올 때, isoformat()으로 datetime 객체를 만들어야 되는데... 파이썬 3.7부터 제공되는 기능이라서 .... 죄송합니다.
-
-            # start_date_split = list(map(int, start_date.split('-')))
-            # start_time_filter = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            # filtered_schedules = filtered_schedules.filter(start_date__gte = start_time_filter)
-
-            start_test = start_date + ' 00:00+09:00'
+        if start_date: # 지정한 시작 일자 이후에 시작하는 스케줄
+            start_test = datetime.datetime.strptime(start_date+'-+0900', '%Y-%m-%d-%z')
             filtered_schedules = filtered_schedules.filter(start_date__gte = start_test)
-
         if end_date:   # 지정한 종료 일자 이전에 끝나는 스케줄
             end_test = end_date + ' 23:59+09:00'
             filtered_schedules = filtered_schedules.filter(end_date__lte = end_test)
 
-            # end_date_split = list(map(int, end_date.split('-')))
-            # end_time_filter = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            # filtered_schedules = filtered_schedules.filter(end_date__lte = end_time_filter)
-        
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
         serialized_schedules = self.serializer_class(filtered_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
@@ -231,9 +220,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         pass
 
     def destroy(self, request, pk=None):
-        # 현재 문제점 : custom spot이 안 지워지는군요!!!...
         schedule = get_object_or_404(Schedule, pk=pk)
         if schedule.user_pk == request.user:
+            if schedule.contained_courses.filter(spot_pk=None).exists():
+                # custom spot들도 같이 지워줍니다!!!
+                for course in schedule.contained_courses.filter(spot_pk=None):
+                    course.custom_spot_pk.delete()
             schedule.delete()
             return Response({'success': 'success'}, status=status.HTTP_200_OK)
         else:
@@ -250,7 +242,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         schedule_pk = request.data['schedule_pk']
         schedule = get_object_or_404(Schedule, pk=schedule_pk)
 
-        if schedule.private == 1:
+        if schedule.private == 0:
             # 기존 스케줄의 스크랩 수를 +1 해줍니다.
             schedule.scrap_count += 1
             schedule.save()
@@ -261,7 +253,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
             # 스케줄을 복사 후, 작성자를 요청자로 바꾸고 여러 설정을 비공개로 전환합니다.
             schedule.pk = None
-            schedule.private = schedule.advice = schedule.together = schedule.scrap_count = 0
+            schedule.private = schedule.advice = schedule.together = schedule.scrap_count = 1
             schedule.user_pk = request.user
             schedule.save()
 
@@ -427,6 +419,24 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
         else:
             return Response({'reason': '스케줄에 참여하지 않은 유저입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
+    def partial_update(self, request, pk=None):
+        memo = get_object_or_404(CourseMemo, pk=pk)
+        if memo.user_pk == request.user:
+            new_content = request.data['content']
+            memo.content = new_content
+            memo.save()
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
+        
+    def destroy(self, request, pk=None):
+        memo = get_object_or_404(CourseMemo, pk=pk)
+        if memo.user_pk == request.user:
+            memo.delete()
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
+        
 
 class ScheduleAdviceViewSet(viewsets.ModelViewSet):
     """
@@ -448,5 +458,24 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response({'reason': '도움 댓글이 허용되지 않은 스케줄입니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+    def partial_update(self, request, pk=None):
+        schedule = get_object_or_404(ScheduleAdvice, pk=pk)
+        if schedule.user_pk == request.user:
+            new_content = request.data['content']
+            schedule.content = new_content
+            schedule.save()
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
+        
+    def destroy(self, request, pk=None):
+        schedule = get_object_or_404(ScheduleAdvice, pk=pk)
+        if schedule.user_pk == request.user:
+            schedule.delete()
+            return Response({'success': 'success'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
+        
 
 
