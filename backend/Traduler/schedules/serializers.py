@@ -5,7 +5,7 @@ from .models import MemberType, StyleType, Schedule, Course, ScheduleArea, Sched
 from accounts.serializers import UserSerializer
 
 from spots.models import Spot, CustomSpot
-from spots.serializers import SpotSerializer, CustomSpotSerializer
+from spots.serializers import SpotSerializer, CustomSpotSerializer, AreaSerializer
 
 
 class MemberTypeSerializer(serializers.ModelSerializer):
@@ -40,6 +40,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 
 class ScheduleAreaSerializer(serializers.ModelSerializer):
+    area = AreaSerializer(source='area_code', required=False)
     class Meta:
         model = ScheduleArea
         fields = "__all__"
@@ -56,6 +57,7 @@ class ScheduleAdviceSerializer(serializers.ModelSerializer):
 
 class UserScheduleSerializer(serializers.ModelSerializer):
     schedule = ScheduleSerializer(source='schedule_pk', required=False)
+    user = UserSerializer(source='user_pk', required=False)
     class Meta:
         model = UserSchedule
         fields = "__all__"

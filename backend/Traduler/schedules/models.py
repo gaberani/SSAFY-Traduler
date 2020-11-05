@@ -44,7 +44,7 @@ class Schedule(models.Model):
 
 # Schdule의 대략적인 목적지를 입력하기. (ex. 1일 ~ 2일: 경상북도 / 3일 ~ 5일: 서울 등)
 class ScheduleArea(models.Model):
-    schedule_pk = models.ForeignKey(Schedule, on_delete=models.CASCADE, db_column='schedule_pk')
+    schedule_pk = models.ForeignKey(Schedule, related_name='contained_provinces', on_delete=models.CASCADE, db_column='schedule_pk')
     area_code = models.ForeignKey(Area, on_delete=models.SET_NULL, db_column='area_code', blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
@@ -59,7 +59,7 @@ class ScheduleAdvice(models.Model):
     content = models.CharField(max_length=100)
     reg_time = models.DateTimeField(auto_now=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
-    schedule_pk = models.ForeignKey(Schedule, on_delete=models.CASCADE, db_column='schedule_pk')
+    schedule_pk = models.ForeignKey(Schedule, related_name='contained_advice', on_delete=models.CASCADE, db_column='schedule_pk')
 
     class Meta:
         managed = False
@@ -71,8 +71,8 @@ class UserSchedule(models.Model):
     status = models.IntegerField(default=0) # 0: 직접 신청한 거 / 1: 초대받은거 / 2: 참여한거...????
     content = models.CharField(max_length=100, blank=True, null=True) # 직접 신청할 경우만 작성..?
     reg_time = models.DateTimeField(auto_now_add=True)
-    user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
-    schedule_pk = models.ForeignKey(Schedule, on_delete=models.CASCADE, db_column='schedule_pk')
+    user_pk = models.ForeignKey(User, related_name='submitted_user_requests', on_delete=models.CASCADE, db_column='user_pk')
+    schedule_pk = models.ForeignKey(Schedule, related_name='submitted_schedule_requests', on_delete=models.CASCADE, db_column='schedule_pk')
 
     class Meta:
         managed = False

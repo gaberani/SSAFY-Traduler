@@ -112,25 +112,33 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(start_date__gte = start_test)
 
         if end_date:   # 지정한 종료 일자 이전에 끝나는 스케줄
-            end_date_split = list(map(int, end_date.split('-')))
-            end_time_filter = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            filtered_schedules = filtered_schedules.filter(end_date__lte = end_time_filter)
+            end_test = end_date + ' 23:59+09:00'
+            filtered_schedules = filtered_schedules.filter(end_date__lte = end_test)
+
+            # end_date_split = list(map(int, end_date.split('-')))
+            # end_time_filter = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+            # filtered_schedules = filtered_schedules.filter(end_date__lte = end_time_filter)
         
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
         serialized_schedules = self.serializer_class(filtered_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
         # 각각의 스케줄에서 여행지들이 표시된 지도를 보여줄 계획이라고 해서 각 스케줄에 포함된 여행지들의 좌표 데이터를 넣어서 줬습니다.
+        # 이미 직렬화된 데이터라서 ... 코스를 역참조로 가져오질 못하네요...... 어쩔수 없이 filter로 찾으면서 좌표를 넣어주었습니다.
         for serialized_schedule in serialized_schedules:
             serialized_schedule['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id'])
+            sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
                     serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    sum_lat += contained_course.spot_pk.lat
+                    sum_lon += contained_course.spot_pk.lon
                 else:
                     serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
-
+            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+        
         return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
@@ -159,7 +167,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 목적지 관련 데이터를 가져오고, 반복문을 통해 각각의 목적지를 만들어줍니다.
         province_infos = request.data['province_info']
         for province_info in province_infos:
-            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법 2020-11-04
+            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법
             province_info['start_date'] = province_info['start_date'] + ' 00:00+09:00'
             province_info['end_date'] = province_info['end_date'] + ' 23:59+09:00'
 
@@ -188,18 +196,19 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         serialized_schedule = self.serializer_class(schedule)
         # cur_page = request.GET.get("curPage", 1)
 
-        # 다 필터링 으로 되어있는데, 역참조로 수정합니다.
         # 코스 가져오기
-        filtered_course = self.course_queryset.filter(schedule_pk=pk)
-        serialized_course = self.course_serializer_class(filtered_course, many=True).data
+        contained_courses = schedule.contained_courses.all()
+        serialized_course = self.course_serializer_class(contained_courses, many=True).data
 
         # 목적지 정보 가져오기
-        filtered_province = self.province_queryset.filter(schedule_pk=pk)
-        serialized_province = self.province_serializer_class(filtered_province, many=True).data
+        contained_provinces = schedule.contained_provinces.all()
+        serialized_province = self.province_serializer_class(contained_provinces, many=True).data
 
         # 조언 가져오기
-        filtered_advice = self.advice_queryset.filter(schedule_pk=pk)
-        serialized_advice = self.advice_serializer_class(filtered_advice, many=True).data
+        contained_advice = schedule.contained_advice.all()
+        serialized_advice = self.advice_serializer_class(contained_advice, many=True).data
+        # filtered_advice = self.advice_queryset.filter(schedule_pk=pk)
+        # serialized_advice = self.advice_serializer_class(filtered_advice, many=True).data
 
         # 참여 여부 확인하기
         exist_join_data = self.user_schedule_queryset.filter(user_pk=request.user, schedule_pk=schedule).exists()
@@ -234,7 +243,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
             # 새로운 스케줄 생성 전 기존 스케줄의 목적지들 / 상세 과정을 변수에 할당합니다.
             contained_courses = schedule.contained_courses.all()
-            contained_provinces = ScheduleArea.objects.filter(schedule_pk = schedule)
+            contained_provinces = schedule.contained_provinces.all() #ScheduleArea.objects.filter(schedule_pk = schedule)
 
             # 스케줄을 복사 후, 작성자를 요청자로 바꾸고 여러 설정을 비공개로 전환합니다.
             schedule.pk = None
@@ -277,14 +286,19 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
             Token이 반드시 필요합니다!!
         """
+        user = request.user
         # cur_page = request.GET.get('curPage', 1)
         # 해당 유저의 요청 메시지들 중 status가 1인 것들만 가져옵니다.(status==1 : 초대받은 거)
-        filtered_user_schedules = self.queryset.filter(user_pk=request.user, status=1)
+        invited_schedules = user.submitted_user_requests.filter(status=1)
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
-        serialized_user_schedules = self.serializer_class(filtered_user_schedules, many=True).data
+        serialized_invited_schedules = self.serializer_class(invited_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
-        return Response({"request_message": serialized_user_schedules}, status=status.HTTP_200_OK)
+        # 해당 유처가 신청한 이력도 한번에 들고 옵니다!!
+        submit_requests = user.submitted_user_requests.filter(status=0).all()
+        serialized_submit_requests = self.serializer_class(submit_requests, many=True).data
+
+        return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
 
 
     def create(self, request, *args, **kwargs):
@@ -293,7 +307,8 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         user = request.user
 
         # 이미 신청했거나, 참여했거나 아무튼 있는 경우
-        if self.queryset.filter(user_pk=user, schedule_pk=schedule).exists():
+        if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
+        # if self.queryset.filter(user_pk=user, schedule_pk=schedule).exists():
             return Response({'reason': '이미 참가신청헀거나, 초대받은 스케줄입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         # 그 외의 경우 (저장!)
         else:
@@ -311,7 +326,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         """
         schedule = get_object_or_404(Schedule, pk=pk)
         # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
-        filtered_request_messages = self.queryset.filter(schedule_pk=schedule, status=0)
+        filtered_request_messages = schedule.submitted_schedule_requests.filter(status=0)
         serialized_request_messages = self.serializer_class(filtered_request_messages, many=True).data
         return Response({"request_messages": serialized_request_messages}, status=status.HTTP_200_OK)
 
@@ -362,7 +377,8 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         user = request.user
         course = get_object_or_404(Course, pk=request.data['course_pk'])
-        if UserSchedule.objects.filter(user_pk=user, schedule_pk=course.schedule_pk, status=2).exists():
+        if user.submitted_schedule_requests.filter(schedule_pk=course.schedule_pk, status=2).exists():
+        # if UserSchedule.objects.filter(user_pk=user, schedule_pk=course.schedule_pk, status=2).exists():
             # 해당 코스가 포함된 스케줄에 참여한 유저인 경우에만 메모를 작성할 수 있습니다.
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -385,7 +401,7 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
         user = request.user
         schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
         if schedule.advice == 1:
-            # 해당 코스가 포함된 스케줄에 참여한 유저인 경우에만 메모를 작성할 수 있습니다.
+            # 해당 코스가 도움을 요천하는 경우에만 도움 게시글을 작성할 수 있습니다.
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(user_pk=request.user)
