@@ -101,11 +101,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(together = together)
         if advice:
             filtered_schedules = filtered_schedules.filter(advice = advice)
-        if start_date: # 지정한 시작 일자 이후에 시작하는 스케줄 
+        if start_date: # 지정한 시작 일자 이후에 시작하는 스케줄  2020-11-04
             # String 형태로 들어올 때, isoformat()으로 datetime 객체를 만들어야 되는데... 파이썬 3.7부터 제공되는 기능이라서 .... 죄송합니다.
-            start_date_split = list(map(int, start_date.split('-')))
-            start_time_filter = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            filtered_schedules = filtered_schedules.filter(start_date__gte = start_time_filter)
+
+            # start_date_split = list(map(int, start_date.split('-')))
+            # start_time_filter = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+            # filtered_schedules = filtered_schedules.filter(start_date__gte = start_time_filter)
+
+            start_test = start_date + ' 00:00+09:00'
+            filtered_schedules = filtered_schedules.filter(start_date__gte = start_test)
+
         if end_date:   # 지정한 종료 일자 이전에 끝나는 스케줄
             end_date_split = list(map(int, end_date.split('-')))
             end_time_filter = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
@@ -135,7 +140,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             먼저 Schedule을 만들고, 다른 것들을 만들어서 연결해줍니다.
         """
         # 받은 데이터 중 Schedule 관련 데이터를 먼저 가져와서 schedule 인스턴스부터 만들어줍니다!
-        # 이후 만들 Course들에 schedule_pk가 필요해서 이렇게 했습니다.
+        # 이후 만들 Course, Province들에 schedule_pk가 필요해서 이렇게 했습니다.
         serializer_schedule = self.get_serializer(data=request.data['schedule_info'])
         serializer_schedule.is_valid(raise_exception=True)
         serializer_schedule.save(user_pk=request.user)
@@ -154,9 +159,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 목적지 관련 데이터를 가져오고, 반복문을 통해 각각의 목적지를 만들어줍니다.
         province_infos = request.data['province_info']
         for province_info in province_infos:
-            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법
-            province_info['start_date'] = province_info['start_date'] + ' 00:00'
-            province_info['end_date'] = province_info['end_date'] + ' 23:59'
+            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법 2020-11-04
+            province_info['start_date'] = province_info['start_date'] + ' 00:00+09:00'
+            province_info['end_date'] = province_info['end_date'] + ' 23:59+09:00'
 
             # 2. 직접 datetime 객체를 만들어서 넣어주는 방법
             # start_date_split = list(map(int, province_info['start_date'].split('-')))
@@ -183,6 +188,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         serialized_schedule = self.serializer_class(schedule)
         # cur_page = request.GET.get("curPage", 1)
 
+        # 다 필터링 으로 되어있는데, 역참조로 수정합니다.
         # 코스 가져오기
         filtered_course = self.course_queryset.filter(schedule_pk=pk)
         serialized_course = self.course_serializer_class(filtered_course, many=True).data
@@ -226,7 +232,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             schedule.scrap_count += 1
             schedule.save()
 
-            # 새로운 스케줄 생성 전 기존 스케줄의 목적지 / 상세 과정을 변수에 할당합니다.
+            # 새로운 스케줄 생성 전 기존 스케줄의 목적지들 / 상세 과정을 변수에 할당합니다.
             contained_courses = schedule.contained_courses.all()
             contained_provinces = ScheduleArea.objects.filter(schedule_pk = schedule)
 
@@ -268,12 +274,12 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-            특정 유저에게 해당 유저가 초대받은 스케줄 목록을 보여줍니다.
+            특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
             Token이 반드시 필요합니다!!
         """
         # cur_page = request.GET.get('curPage', 1)
         # 해당 유저의 요청 메시지들 중 status가 1인 것들만 가져옵니다.(status==1 : 초대받은 거)
-        filtered_user_schedules = self.queryset.filter(user_pk=request.user).filter(status=1)
+        filtered_user_schedules = self.queryset.filter(user_pk=request.user, status=1)
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
         serialized_user_schedules = self.serializer_class(filtered_user_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
@@ -297,14 +303,15 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             return Response({"success": 'success'}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk):
-        """ 
+        """    
+            38 -> 38번 스케줄에 참가요청 메시지를 보여줌
             특정 스케줄의 참가요청된 요청 메세지들을 보여줍니다.
             pk: 스케줄의 pk
             retrieve를 이렇게 사용하는게 옳은가? 라는 생각이 들었는데... 이왕있는거 좋게좋게 쓰기로 다짐했습니다.
         """
         schedule = get_object_or_404(Schedule, pk=pk)
         # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
-        filtered_request_messages = self.queryset.filter(schedule_pk=schedule).filter(status=0)
+        filtered_request_messages = self.queryset.filter(schedule_pk=schedule, status=0)
         serialized_request_messages = self.serializer_class(filtered_request_messages, many=True).data
         return Response({"request_messages": serialized_request_messages}, status=status.HTTP_200_OK)
 

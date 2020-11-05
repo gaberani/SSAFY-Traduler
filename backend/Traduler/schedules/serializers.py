@@ -55,6 +55,7 @@ class ScheduleAdviceSerializer(serializers.ModelSerializer):
 
 
 class UserScheduleSerializer(serializers.ModelSerializer):
+    schedule = ScheduleSerializer(source='schedule_pk', required=False)
     class Meta:
         model = UserSchedule
         fields = "__all__"
@@ -64,13 +65,6 @@ class UserScheduleSerializer(serializers.ModelSerializer):
 class CourseMemoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseMemo
-        fields = "__all__"
-        read_only_fields = ('user_pk',)
-
-
-class ScheduleAdviceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScheduleAdvice
         fields = "__all__"
         read_only_fields = ('user_pk',)
 
