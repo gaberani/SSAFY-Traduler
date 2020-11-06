@@ -221,8 +221,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # serialized_advice = self.advice_serializer_class(filtered_advice, many=True).data
 
         # 참여 여부 확인하기
-        exist_join_data = schedule.submitted_schedule_requests.filter(user_pk=user).exists()
-        if exist_join_data:
+        if request.user.is_authenticated and schedule.submitted_schedule_requests.filter(user_pk=user).exists():
             is_joined = self.user_schedule_queryset.get(user_pk=request.user, schedule_pk=schedule).status
         else:
             is_joined = -1
