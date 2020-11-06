@@ -305,6 +305,8 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    permission_classes=[BasicCRUDPermisson]
+
     def list(self, request, *args, **kwargs):
         return Response({"하는일 없는 놈"}, status=status.HTTP_200_OK)
 
@@ -320,29 +322,6 @@ class CourseViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        
-
-    def partial_update(self, request, pk=None):
-        course_instance = self.queryset.get(id=pk)
-        if course_instance.user_pk == request.user:
-            updated_serializer = self.serializer_class(course_instance, data=request.data)
-            if updated_serializer.is_valid(raise_exception=True):
-                updated_serializer.save()
-                return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-
-    def destroy(self, request, pk):
-        course_instance = self.queryset.get(id=pk)
-        if course_instance.user_pk == request.user:
-            course_instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        
-
-
 
 
 
