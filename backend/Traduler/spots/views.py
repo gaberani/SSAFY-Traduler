@@ -120,7 +120,7 @@ class CustomSpotViewSet(viewsets.ModelViewSet):
     queryset = CustomSpot.objects.all()
     serializer_class = CustomSpotSerializer
 
-    permission_classes=[BasicCRUDPersmisson]
+    permission_classes=[BasicCRUDPermisson]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -135,7 +135,7 @@ class SpotCommentViewSet(viewsets.ModelViewSet):
     queryset = SpotComment.objects.all()
     serializer_class = SpotCommentSerializer
 
-    permission_classes=[BasicCRUDPersmisson]
+    permission_classes=[BasicCRUDPermisson]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
