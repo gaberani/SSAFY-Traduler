@@ -45,6 +45,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         scrap : 스크랩 기능을 하는 함수입니다.
         자세한 설명은 각 함수의 아래부분에 주석을 달아두었습니다.
     """
+    permission_classes=[BasicCRUDPermisson]
     # 스케줄 관련 모델 / Serializer
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
@@ -60,6 +61,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     # 유저-스케줄 참여 이력 관련 모델 / Serializer
     user_schedule_queryset = UserSchedule.objects.all()
     user_schedule_serializer_class = UserScheduleSerializer
+
 
     def list(self, request, *args, **kwargs):
         """
@@ -231,29 +233,6 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
 
-    # 스케쥴 기본 정보 수정
-    def partial_update(self, request, pk=None):
-        # 다 괜찮은데 user_pk랑 scrap_count 는 변경 못하게 해야되는데 흠
-        schedule_instance = self.queryset.get(id=pk)
-        if schedule_instance.user_pk == request.user:
-            updated_serializer=self.serializer_class(schedule_instance, data=request.data)
-            if updated_serializer.is_valid(raise_exception=True):
-                updated_serializer.save()
-                return Response(updated_serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-    def destroy(self, request, pk=None):
-        schedule = get_object_or_404(Schedule, pk=pk)
-        if schedule.user_pk == request.user:
-            if schedule.contained_courses.filter(spot_pk=None).exists():
-                # custom spot들도 같이 지워줍니다!!!
-                for course in schedule.contained_courses.filter(spot_pk=None):
-                    course.custom_spot_pk.delete()
-            schedule.delete()
-            return Response({'success': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'reason': '작성자가 .. 아니네요?'}, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=False, methods=['POST'])
     def scrap(self, request):
