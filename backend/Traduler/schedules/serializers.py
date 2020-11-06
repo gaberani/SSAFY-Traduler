@@ -52,7 +52,7 @@ class ScheduleAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScheduleArea
         fields = "__all__"
-        read_only_fields = ('schedule_pk',)
+        read_only_fields = ('schedule_pk','area_code',)
 
 
 class ScheduleAdviceSerializer(serializers.ModelSerializer):

@@ -319,8 +319,6 @@ class ScheduleAreaViewSet(viewsets.ModelViewSet):
         if schedule_instance.user_pk == request.user: #스케쥴 작성자와 내가 같다면
             new_area = self.serializer_class(data=request.data)
             if new_area.is_valid(raise_exception=True):
-                # new_area.save()
-                # schedule은 이 처리가 없으면 에러가 뜨는데 왜 area_code는 이게 없어도 정상작동할까요? 
                 new_area.save(schedule_pk=schedule_instance, area_code=area_instance)
                 return Response(status=status.HTTP_201_CREATED)
         else:
