@@ -323,7 +323,15 @@ class CourseViewSet(viewsets.ModelViewSet):
         
 
     def partial_update(self, request, pk=None):
-        pass
+        course_instance = self.queryset.get(id=pk)
+        if course_instance.user_pk == request.user:
+            updated_serializer = self.serializer_class(course_instance, data=request.data)
+            if updated_serializer.is_valid(raise_exception=True):
+                updated_serializer.save()
+                return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
     def destroy(self, request, pk):
         course_instance = self.queryset.get(id=pk)
