@@ -456,6 +456,7 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
     # ScheduleAdvice / Serializer
     queryset = ScheduleAdvice.objects.all()
     serializer_class = ScheduleAdviceSerializer
+    permission_classes = [BasicCRUDPermisson]
 
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -470,23 +471,6 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
         else:
             return Response({'reason': '도움 댓글이 허용되지 않은 스케줄입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
-    def partial_update(self, request, pk=None):
-        schedule = get_object_or_404(ScheduleAdvice, pk=pk)
-        if schedule.user_pk == request.user:
-            new_content = request.data['content']
-            schedule.content = new_content
-            schedule.save()
-            return Response({'success': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
-        
-    def destroy(self, request, pk=None):
-        schedule = get_object_or_404(ScheduleAdvice, pk=pk)
-        if schedule.user_pk == request.user:
-            schedule.delete()
-            return Response({'success': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
-        
+    
 
 
