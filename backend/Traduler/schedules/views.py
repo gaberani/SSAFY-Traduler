@@ -12,6 +12,8 @@ from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSeri
 from traduler.mixin import *
 from traduler.permissions import *
 
+from spots.models import Area
+
 import datetime
 
 # Create your views here.
@@ -311,12 +313,36 @@ class ScheduleAreaViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         schedule_pk = request.data['schedule_pk']
+        area_code = request.data['area_code']
         schedule_instance = get_object_or_404(Schedule, id=schedule_pk)
+        area_instance = get_object_or_404(Area, area_code=area_code)
         if schedule_instance.user_pk == request.user: #스케쥴 작성자와 내가 같다면
             new_area = self.serializer_class(data=request.data)
             if new_area.is_valid(raise_exception=True):
-                new_area.save(schedule_pk=schedule_instance)
+                # new_area.save()
+                # schedule은 이 처리가 없으면 에러가 뜨는데 왜 area_code는 이게 없어도 정상작동할까요? 
+                new_area.save(schedule_pk=schedule_instance, area_code=area_instance)
                 return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    # update와 delete는 db에서 작성자를 확인할 수 있는 컬럼이 없습니다.
+    # 그래서 우리가 일일이 schdule 작성자와 동일한지 찾아서 진행해줘야 하는 과정이 추가됩니다.
+    def partial_update(self, request, pk):
+        area_instance = self.queryset.get(id=pk)
+        if area_instance.schedule_pk.user_pk == request.user:
+            new_area = self.serializer_class(area_instance, data=request.data, partial=True)
+            if new_area.is_valid(raise_exception=True):
+                new_area.save()
+                return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, pk):
+        area_instance = self.queryset.get(id=pk)
+        if area_instance.schedule_pk.user_pk == request.user:
+            area_instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
