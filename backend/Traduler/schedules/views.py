@@ -326,7 +326,13 @@ class CourseViewSet(viewsets.ModelViewSet):
         pass
 
     def destroy(self, request, pk):
-        pass
+        course_instance = self.queryset.get(id=pk)
+        if course_instance.user_pk == request.user:
+            course_instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
 
 
 
