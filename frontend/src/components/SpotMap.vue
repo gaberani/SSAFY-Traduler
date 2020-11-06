@@ -34,7 +34,7 @@ export default {
       var MapContainer = document.getElementById('map' + this.item);
       var MapOption = {
         // 지도의 좌표
-        center: new kakao.maps.LatLng(37.5914, 127.0724),
+        center: new kakao.maps.LatLng(this.schedule.avg_coord[0], this.schedule.avg_coord[1]),
         // 지도의 레벨(확대, 축소 정도)
         level: 10
       };
@@ -52,7 +52,7 @@ export default {
       for (var i=0; i<this.schedule.coords.length; i++) {
          linePath.push(new kakao.maps.LatLng(this.schedule.coords[i][0], this.schedule.coords[i][1]));   
         }
-        console.log(linePath)
+        // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
       // var dots = {}; // 여행지 마커 커스텀 오버레이 배열입니다.
 

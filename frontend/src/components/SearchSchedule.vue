@@ -9,19 +9,20 @@
             <center>
             <div class="SDsearchbox">
                 <!-- 셀렉트박스 -->
-                <select class="SDsearchselect" v-model="SDselect">
+                <!-- <select class="SDsearchselect" v-model="SDselect">
                     <option value="title" >제목</option>
                     <option value="writer" >작성자</option>
-                </select>
+                </select> -->
                 <!-- v-model="query" -->
                 <!-- 검색바 -->
-                <input v-if="SDselect=='title'" class="schedulesearch" placeholder="원하는 제목을 입력하세요.">
-                <input v-else class="schedulesearch" placeholder="원하는 작성자를 입력하세요.">
+                <!-- v-if="SDselect=='title'" -->
+                <input class="schedulesearch" placeholder="원하는 제목을 입력하세요." v-model="query">
+                <!-- <input v-else class="schedulesearch" placeholder="원하는 작성자를 입력하세요."> -->
                 <button @click.prevent="searchschedule" class="searchbtn" ><i style="font-size:1.4vw" class="fas fa-search"></i></button>
             </div>
             <div class="SDfilterbox">
                 <!-- 필터 -->
-                <!-- 1. 지역 피터 -->
+                <!-- 1. 지역 필터 -->
                 <v-row style="width:80%;">
                     <v-col
                     cols="1.5">
@@ -87,7 +88,7 @@
                         <input v-model="together" type="checkbox" class="checkinput" name="together" id="together" style="margin-top:10px;"/>
                         <label class="check" for="together"> 동행 모집중 😊</label>
                         <br>
-                        <input type="checkbox" class="checkinput" name="help" id="help"/>
+                        <input v-model="help" type="checkbox" class="checkinput" name="help" id="help"/>
                         <label class="check" for="help"> 도움 요청중 😊</label>
                     </v-col>
                     <v-col
@@ -103,7 +104,7 @@
                         >
                         <template v-slot:activator="{ on, attrs }" >
                             <v-text-field
-                            v-model="date"
+                            v-model="startdate"
                             placeholder="가는날 (이후)"
                             prepend-icon="mdi-car"
                             readonly
@@ -113,7 +114,7 @@
                             ></v-text-field>
                         </template>
                         <v-date-picker
-                            v-model="date"
+                            v-model="startdate"
                             @input="menu2 = false"
                         ></v-date-picker>
                     </v-menu>
@@ -162,23 +163,31 @@ export default {
           area_code: '',
           memberIdx: 0,
           typeIdx: 0,
-          date: null,
-          enddate: null,
+          startdate: '',
+          enddate: '',
           menu3: false,
           menu2: false,
           together: false,
+          help: false,
         //   보낼 때 together * 1
-          checkList : [[true,true,true,true], [false, true, true, true], [true, false, true, true], [true, true, false, true], [true, true, true, false]]
+          checkList : [[true,true,true,true], [false, true, true, true], [true, false, true, true], [true, true, false, true], [true, true, true, false]],
         // category_code: '',
         // area_code: '',
-        // query: '',
+          query: '',
       }
     },
     methods: {
         searchschedule() {
-            // this.$router.push("/spotresult?title=" + this.query 
-            // +"&category="+this.category_code + "&area="+this.area_code)
-            console.log(this.date)
+            if (this.memberIdx === 0) {
+                this.memberIdx = ''
+            }
+            if (this.typeIdx === 0) {
+                this.typeIdx = ''
+            }
+            this.$router.push("/sdresult?title=" + this.query 
+            +"&member_type="+this.memberIdx + "&style_type="+this.typeIdx
+            +"&together="+ this.together*1 +"&advice="+ this.help*1
+            +"&start_date="+this.startdate + "&end_date="+this.enddate)
             console.log(this.enddate)
         },
         changememIdx(number) {

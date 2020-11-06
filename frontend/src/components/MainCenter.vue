@@ -5,10 +5,10 @@
             <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">함께 </h1>
             <h3 style="display:inline; font-size:1.7vw; ">떠나요</h3>
             <!-- 나중에 이모티콘으로 교체 버튼 임시 -->
-            <button style="margin-left: 8px;width:2%; height:1vw; background-color:#FF5E5E;"></button>
-            <span class="imo">동행 모집</span>
-            <button style="margin-left: 8px; width:2%; height:1vw; background-color:#FF5E5E;"></button>
-            <span class="imo">도움 요청</span>
+            <img src="../assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
+            <span class="imo"> 동행 모집</span>
+            <img src="../assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
+            <span class="imo"> 도움 요청</span>
             <button class="plusbtn">더보기</button>
             <div>
                 <button class="mainspotbtn">전체</button>
@@ -22,6 +22,18 @@
                 <button class="mainspotbtn">경상북도</button>
                 <button class="mainspotbtn">경상남도</button>
                 <button class="mainspotbtn">제주도</button>
+            </div>
+            <div>
+              <!-- 6개로 해서 두 줄로 나오게 할 것 -->
+              <!-- 지역이어야 함 -->
+              <v-col
+                cols="12"
+                sm="4"
+                style="display:inline-block; padding:6px;"
+                v-for="togetherSD in togetherSDs" :key="togetherSD.id"
+              >
+              <ScheduleCard :data="togetherSD.id" :schedule="togetherSD"/>
+              </v-col>
             </div>
         </div>
         <div >
@@ -44,8 +56,9 @@
 
 <script>
 import SpotCard from '@/components/SpotCard';
+import ScheduleCard from '@/components/ScheduleCard';
 export default {
-    components:{SpotCard},
+    components:{SpotCard,ScheduleCard},
     data () {
       return {
         dummy : {
@@ -63,7 +76,24 @@ export default {
           'title': "한라산 백록담",
         },
         bestmain:[],
+        togetherSDs:[],
       }
+    },
+    methods: {
+      getTogetherSD() {
+      this.$http
+      .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
+      +`&member_type=&style_type=`
+      +`&together=1&advice=`
+      +`&start_date=&end_date=`)
+      .then(response => {
+      this.togetherSDs = response.data.schedule.slice(0,6)
+      // console.log(this.helpschedules)
+      })
+      .catch(error => {
+      console.log(error.response)
+      })
+    }
     },
     created() {
       this.$http
@@ -74,7 +104,8 @@ export default {
       })
       .catch(error => {
 				console.log(error.response)
-				})
+        })
+      this.getTogetherSD()
     }
 
 }

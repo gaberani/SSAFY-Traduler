@@ -1,10 +1,10 @@
 <template>
   <v-container style="padding:0;">
       <!-- v-if -->
-      <img class="togetherimo" src="../assets/friend.png" alt="">
+      <img v-if="schedule.together==1" class="togetherimo" src="../assets/friend.png" alt="">
       <!-- v-if -->
       <!-- <img class="helpimo" src="../assets/help.png" alt=""> -->
-      <img class="helpimo" src="../assets/help2.png" alt="">
+      <img v-if="schedule.advice==1" class="helpimo" src="../assets/help2.png" alt="">
     <SpotMap :data="this.$attrs.data" :schedule="this.$attrs.schedule" class="cardmap"></SpotMap>
     <button class="SDtitle"><span>{{schedule.title}}</span></button>
   </v-container>
@@ -23,7 +23,7 @@ export default {
     },
     created() {
         this.schedule =this.$attrs.schedule
-        console.log(this.schedule)
+        // console.log(this.schedule)
     }
 }
 </script>
@@ -40,9 +40,11 @@ export default {
     color:white;
     font-size:1.5vw;
     /* margin-top:-100px; */
+    border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 .togetherimo {
-    z-index:10; 
+    z-index:2; 
     /* background-color:#FF9617;  */
     position:absolute; float:left; 
     margin-top:14.5%;
@@ -52,7 +54,7 @@ export default {
     margin-left:1.7%;
 }
 .helpimo {
-    z-index:30; 
+    z-index:2; 
     position:absolute; float:left; 
     margin-top:14.5%;
     height:3vw; 

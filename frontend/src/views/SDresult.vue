@@ -1,26 +1,18 @@
 <template>
   <v-app>
       <SearchSchedule/>
-      <SDMainCenter/>
+      <SearchSDresult/>
       <Footer/>
   </v-app>
 </template>
 
 <script>
 import SearchSchedule from '@/components/SearchSchedule';
-import SDMainCenter from '@/components/SDMainCenter';
+import SearchSDresult from '@/components/SearchSDresult';
 import Footer from '@/components/Footer';
 export default {
-    components:{SearchSchedule, SDMainCenter, Footer},
-    name: 'ScheduleMain',
-	data() {
-		return {
-			
-		}
-	},
-	methods: {
-
-	}
+    components:{SearchSchedule, SearchSDresult,Footer},
+    name: 'SDresult',
 }
 </script>
 
