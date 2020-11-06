@@ -303,6 +303,23 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
 
+# ScheduleArea
+class ScheduleAreaViewSet(viewsets.ModelViewSet):
+    queryset = ScheduleArea.objects.all()
+    serializer_class = ScheduleAreaSerializer
+    permission_classes=[BasicCRUDPermisson]
+
+    def create(self, request, *args, **kwargs):
+        schedule_pk = request.data['schedule_pk']
+        schedule_instance = get_object_or_404(Schedule, id=schedule_pk)
+        if schedule_instance.user_pk == request.user: #스케쥴 작성자와 내가 같다면
+            new_area = self.serializer_class(data=request.data)
+            if new_area.is_valid(raise_exception=True):
+                new_area.save(schedule_pk=schedule_instance)
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 
 # UserSchedule View Set
