@@ -430,6 +430,8 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
     queryset = CourseMemo.objects.all()
     serializer_class = CourseMemoSerializer
 
+    permission_classes = [BasicCRUDPermisson]
+
     def create(self, request, *args, **kwargs):
         user = request.user
         course = get_object_or_404(Course, pk=request.data['course_pk'])
@@ -444,23 +446,7 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
         else:
             return Response({'reason': '스케줄에 참여하지 않은 유저입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
-    def partial_update(self, request, pk=None):
-        memo = get_object_or_404(CourseMemo, pk=pk)
-        if memo.user_pk == request.user:
-            new_content = request.data['content']
-            memo.content = new_content
-            memo.save()
-            return Response({'success': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
-        
-    def destroy(self, request, pk=None):
-        memo = get_object_or_404(CourseMemo, pk=pk)
-        if memo.user_pk == request.user:
-            memo.delete()
-            return Response({'success': 'success'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'reason': '누구세요?'}, status=status.HTTP_403_FORBIDDEN)
+
         
 
 class ScheduleAdviceViewSet(viewsets.ModelViewSet):
