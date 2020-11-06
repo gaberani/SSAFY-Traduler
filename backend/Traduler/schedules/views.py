@@ -232,7 +232,15 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
-        pass
+        # 다 괜찮은데 user_pk랑 scrap_count 는 변경 못하게 해야되는데 흠
+        schedule_instance = self.queryset.get(id=pk)
+        if schedule_instance.user_pk == request.user:
+            updated_serializer=self.serializer_class(schedule_instance, data=request.data)
+            if updated_serializer.is_valid(raise_exception=True):
+                updated_serializer.save()
+                return Response(updated_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
     def destroy(self, request, pk=None):
         schedule = get_object_or_404(Schedule, pk=pk)

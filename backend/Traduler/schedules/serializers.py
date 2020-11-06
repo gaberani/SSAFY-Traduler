@@ -44,7 +44,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = "__all__"
-        read_only_fields = ('user_pk',)
+        read_only_fields = ('user_pk','scrap_count',)
 
 
 class ScheduleAreaSerializer(serializers.ModelSerializer):
