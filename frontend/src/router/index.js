@@ -40,6 +40,11 @@ const routes = [
     path: '/schedule',
     name: 'Schedule',
     component: () => import('@/views/schedules/Schedule')
+  },
+  {
+    path: '/schedulemain',
+    name: 'ScheduleMain',
+    component: () => import('@/views/ScheduleMain')
   }
 ]
 
