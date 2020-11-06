@@ -231,6 +231,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
 
+    # 스케쥴 기본 정보 수정
     def partial_update(self, request, pk=None):
         # 다 괜찮은데 user_pk랑 scrap_count 는 변경 못하게 해야되는데 흠
         schedule_instance = self.queryset.get(id=pk)
@@ -297,6 +298,38 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             return Response({'success': 'success'}, status=status.HTTP_200_OK)
         else:
             return Response({'reason': '비공개 스케줄입니다!!!!'}, status=status.HTTP_403_FORBIDDEN)
+
+
+# Course
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    def list(self, request, *args, **kwargs):
+        return Response({"하는일 없는 놈"}, status=status.HTTP_200_OK)
+
+    # 스케쥴 생성 후 코스 추가할 때
+    def create(self, request, *args, **kwargs):
+        schedule_pk = request.data['schedule_pk']
+        schedule_instance = get_object_or_404(Schedule, id=schedule_pk)
+        #코스 생성하는 사람이 스케쥴 작성일 경우만  
+        if schedule_instance.user_pk == request.user: 
+            new_course = self.serializer_class(data=request.data)
+            if new_course.is_valid(raise_exception=True):
+                new_course.save(user_pk=request.user, schedule_pk=schedule_instance)
+                return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
+
+    def partial_update(self, request, pk=None):
+        pass
+
+    def destroy(self, request, pk):
+        pass
+
+
+
 
 
 
