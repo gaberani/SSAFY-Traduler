@@ -104,7 +104,7 @@ class Course(models.Model):
 class CourseMemo(models.Model):
     content = models.CharField(max_length=255)
     reg_time = models.DateTimeField(auto_now=True)
-    course_pk = models.ForeignKey(Course, on_delete=models.CASCADE, db_column='course_pk')
+    course_pk = models.ForeignKey(Course, on_delete=models.CASCADE, db_column='course_pk', related_name='contained_memo')
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
 
     class Meta:

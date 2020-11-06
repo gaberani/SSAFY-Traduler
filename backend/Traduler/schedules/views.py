@@ -20,8 +20,6 @@ import datetime
 class MemberTypeViewSet(viewsets.ReadOnlyModelViewSet):
     """
         멤버 구성 방식에 대한 ViewSet입니다.
-        근데 이거 왜 GET 요청 보낼 때 자격 인증 데이터가 필요할까요...???
-        ReadOnlyModelViewSet을 상속하면서 이상한 걸 상속했나봐요...
     """
     queryset = MemberType.objects.all()
     serializer_class = MemberTypeSerializer
@@ -76,9 +74,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         title = request.GET.get('title', None)
         member_type = request.GET.get('member_type', None)
         style_type = request.GET.get('style_type', None)
-        # 지역과 관련된 거는... 어떻게 해야할지 몰라서 놔뒀습니다. (별도 Table로 연결되어있어서 쿼리를 어떻게 구성할지 고민중입니다.)
-        # area_code = request.GET.get('area',None)
-
+        area_code = request.GET.get('area',None)
         together = request.GET.get('together',None)
         advice = request.GET.get('advice',None)
         start_date = request.GET.get('start_date', None)
@@ -96,8 +92,6 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(member_type_pk = member_type)
         if style_type: # 여행 스타일 검색 -> 일치하는거 가져옴
             filtered_schedules = filtered_schedules.filter(style_type_pk = style_type)
-        # if area_code: # 지역 코드 검색...? -> 일단 일치하는거
-        #     filtered_schedules = filtered_schedules.filter(area_code = area_code)
         if together:
             filtered_schedules = filtered_schedules.filter(together = together)
         if advice:
@@ -109,12 +103,33 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             end_test = end_date + ' 23:59+09:00'
             filtered_schedules = filtered_schedules.filter(end_date__lte = end_test)
 
+        empty_queryset = Schedule.objects.none()
+        for filtered_schedule in filtered_schedules:
+            if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
+                empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
+        
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
-        serialized_schedules = self.serializer_class(filtered_schedules, many=True).data
+        serialized_schedules = self.serializer_class(empty_queryset, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
         # 각각의 스케줄에서 여행지들이 표시된 지도를 보여줄 계획이라고 해서 각 스케줄에 포함된 여행지들의 좌표 데이터를 넣어서 줬습니다.
         # 이미 직렬화된 데이터라서 ... 코스를 역참조로 가져오질 못하네요...... 어쩔수 없이 filter로 찾으면서 좌표를 넣어주었습니다.
+        # for filtered_schedule in empty_queryset:
+        #     serialized_schedule['coords'] = []
+        #     contained_courses = filtered_schedule.contained_courses.all()
+        #     sum_lat, sum_lon = 0, 0
+        #     for contained_course in contained_courses:
+        #         # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
+        #         if contained_course.spot_pk:
+        #             serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+        #             sum_lat += contained_course.spot_pk.lat
+        #             sum_lon += contained_course.spot_pk.lon
+        #         else:
+        #             serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+        #     serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+        
+        # return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
+
         for serialized_schedule in serialized_schedules:
             serialized_schedule['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id'])
@@ -216,7 +231,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
 
-    def update(self, request, pk=None):
+    def partial_update(self, request, pk=None):
         pass
 
     def destroy(self, request, pk=None):
@@ -253,7 +268,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
             # 스케줄을 복사 후, 작성자를 요청자로 바꾸고 여러 설정을 비공개로 전환합니다.
             schedule.pk = None
-            schedule.private = schedule.advice = schedule.together = schedule.scrap_count = 1
+            schedule.private = 1
+            schedule.advice = schedule.together = schedule.scrap_count = 0
             schedule.user_pk = request.user
             schedule.save()
 
@@ -300,12 +316,13 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         serialized_invited_schedules = self.serializer_class(invited_schedules, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
-        # 해당 유처가 신청한 이력도 한번에 들고 옵니다!!
-        submit_requests = user.submitted_user_requests.filter(status=0).all()
+        # 해당 유처가 "신청한" 이력도 한번에 들고 옵니다!!
+        submit_requests = user.submitted_user_requests.filter(status=0)
         serialized_submit_requests = self.serializer_class(submit_requests, many=True).data
 
         return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
 
+    #신청만!!!!!!
     def create(self, request, *args, **kwargs):
         schedule_pk = request.data.get('schedule_pk', None)
         schedule = get_object_or_404(Schedule, pk=schedule_pk)
@@ -329,6 +346,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             pk: 스케줄의 pk
             retrieve를 이렇게 사용하는게 옳은가? 라는 생각이 들었는데... 이왕있는거 좋게좋게 쓰기로 다짐했습니다.
         """
+        # 스케쥴 주인인지 확인하기 
         schedule = get_object_or_404(Schedule, pk=pk)
         # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
         filtered_request_messages = schedule.submitted_schedule_requests.filter(status=0)
@@ -348,12 +366,6 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
                 return Response({'reason': '이미 초대된 사람인데요?'}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                # Model로 직접 저장하거나... 원래 하던 방법대로 하거나 선택해야될거같네용
-                # test = UserSchedule()
-                # test.schedule_pk = schedule
-                # test.user_pk = user
-                # test.status = 1
-                # test.save()
                 serializer_user_schedule = self.serializer_class(data=request.data)
                 serializer_user_schedule.is_valid(raise_exception=True)
                 serializer_user_schedule.save(status=1, user_pk=user, schedule_pk=schedule)

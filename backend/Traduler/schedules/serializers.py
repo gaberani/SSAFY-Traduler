@@ -19,11 +19,19 @@ class StyleTypeSerializer(serializers.ModelSerializer):
         model = StyleType
         fields = "__all__"
 
+class CourseMemoSerializer(serializers.ModelSerializer):
+    user = UserSerializer(source='user_pk', required=False)
+    class Meta:
+        model = CourseMemo
+        fields = "__all__"
+        read_only_fields = ('user_pk',)
+
         
 class CourseSerializer(serializers.ModelSerializer):
     spot_info = SpotSerializer(source='spot_pk', required=False)
     custom_spot_info = CustomSpotSerializer(source='custom_spot_pk', required=False)
-    
+    memos = CourseMemoSerializer(source='contained_memo', many=True, required=False)
+
     class Meta:
         model = Course
         fields = "__all__"
@@ -64,10 +72,6 @@ class UserScheduleSerializer(serializers.ModelSerializer):
         read_only_fields = ('user_pk', 'schedule_pk',)
 
 
-class CourseMemoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CourseMemo
-        fields = "__all__"
-        read_only_fields = ('user_pk',)
+
 
 
