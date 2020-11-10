@@ -44,7 +44,7 @@
     <v-container>
       <v-row style="margin-top: 3vw;">
         <v-col cols="4" offset="1">
-          <SpotDetailMap :lat=spot.lat :lon=spot.lon /> 
+          <SpotDetailMap :lat="spot.lat" :lon="spot.lon" :item="spot.id" /> 
         </v-col>
         <v-col cols="6" offset="1">
           <h3 class="spot-infos">{{ spot.title }}</h3>

@@ -48,87 +48,63 @@
 
       <v-divider style="background-color:#FF5E5E;"></v-divider>
 
-      <div class="modalbody" style="height: 22vw;">
-        <div class="modalimg" >
-          <v-img
-            :src="spot.image"
-            height="21vw"
-          >
-          </v-img>
-        </div>
-        <div class="modaldetail mt-3" style="position:absolute" >
-          <center>
-            <div>
-              <span v-if="detailspot.score==null" class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
-                0
-              </span>
-              <span v-else class="mr-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #1793FF solid; border-radius:18px; font-family: 'SCDream5';">
-                {{detailspot.score}}
-              </span>
-              <!--------------- 즐겨찾기 ----------------------------------->
-              <span v-if="spot.is_liked==true" class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
-                <i class="fas fa-star" @click.prevent="unlikespot" style="font-size:1.7vw; color:yellow; "></i>{{detailspot.total_likes}}   
-              </span>
-              <span v-else class="ml-2" style="font-size:1.5vw; display:inline-block; width:26%; border:2px #FF1313 solid; border-radius:18px; font-family: 'SCDream5';">
-                <i class="fas fa-star" @click.prevent="likespot" style="font-size:1.7vw; color:gray; "></i>{{detailspot.total_likes}}    
-              </span>
-            </div>
-          </center>
-          <div class="mt-2">
-            <center>
-              <h2 style="font-size:1.5vw">{{spot.title}}</h2>
-              <p style="font-size:1.1vw; margin-bottom:2px;font-family: 'SCDream6'">{{spot.address}}</p>
-              <p style="font-size:1.1vw; margin-bottom:2px;font-family: 'SCDream6'">{{spot.tel}}</p>
-            </center>
-            <p v-html="spot.overview" style="font-size:1vw; font-family: 'SCDream4'; margin-top:5px; margin-left:10px;" />
-          </div>
-        </div>
-      </div>
+      <div class="modalbody" style="height: 30vw;">
+        <v-container>
+          <v-row>
+            <v-col cols="6">
+              <v-img :src="spot.image" height="21vw" />
+            </v-col>
+            <v-col cols="6">
+              <SpotDetailMap :lat="spot.lat" :lon="spot.lon" :item="spot.id"/>
+              <p>{{ spot.address }}</p>
+            </v-col>
+          </v-row>
+          <v-row>
 
-      <v-divider style="margin-top:-1vw;"></v-divider>
+            <v-col cols="4">
+              <v-rating
+                v-model="testScore"
+                color="yellow darken-3"
+                background-color="grey darken-1"
+                empty-icon="$ratingFull"
+                readonly
+                half-increments
+                hover
+                large
+              ></v-rating>
+            </v-col>
 
-      <div class="modalcomment">
-        <div>
-          <select class="selectrate" v-model="score" >
-            <!-- v-model="" -->
-            <option value="5" >5</option>
-            <option value="4" >4</option>
-            <option value="3" >3</option>
-            <option value="2">2</option>
-            <option value="1">1</option>
-          </select>
-          <input class="modalinput" style="width:70%;" v-model="content" placeholder="댓글을 입력해주세요.">
-          <button @click="writecomment" class="commentbtn">작성</button>
-        </div>
-        <div style="margin-left:17px; margin-top:10px;">
-          <!-- v-for 댓글 폰트크기 비율에 맞춰서 조정해야함-->
-          <!-- 예시 -->
-          <div class="mb-1" v-for="(comment,index) in spotcomments" :key="index">
-            <span class="commentbdg">{{comment.score}}</span>
-            <span style="font-family: 'SCDream4'" >{{comment.content}}</span>
-            <span style="font-family: 'SCDream6'; float:right; margin-right:18%;">{{comment.user.nickname}}</span>
-            <button v-if="username == comment.user.username" @click="deleteComment(comment.id,index)" style="margin-left:2%;" ><i class="far fa-times-circle" style="color:red;"></i></button>
-          </div>
-          <div class="text-center">
-            <!-- 버튼 크기 수정해야댐 -->
-            <v-pagination
-              class="commentpage"
-              v-model="page"
-              :length="detailpage.endPage"
-              :total-visible="3"
-              circle
-            ></v-pagination>
-          </div>
-        </div>
-      </div>
+            <v-col cols="4">
+              <v-btn
+                depressed
+                color="blue-grey lighten-4"
+                style="margin-left: 5vw;"
+                v-if="spot.is_liked==true"
+                @click.stop="unlikespot" 
+              >
+                <div>
+                  <v-icon color="yellow">mdi-star</v-icon>0
+                </div>
+              </v-btn>
+              <v-btn
+                depressed
+                color="blue-grey lighten-4"
+                style="margin-left: 5vw;"
+                v-else
+                @click.stop="likespot" 
+              >
+                <div>
+                  <v-icon>mdi-star</v-icon>0
+                </div>
+              </v-btn>
+            </v-col>
 
-      <v-divider class="mt-3 mb-3"></v-divider>
+            <v-col cols="4">
+              <router-link :to="{name: 'SpotDetail', params: {spot_id: spot.id} }">더보기!!!!!!!!!!!!</router-link>
+            </v-col>
 
-      <div class="spotschedule">
-        <h3 style="margin-left:8px;">이 여행지가 포함된 스케줄</h3>
-        <center>
-          <button class="detailplus mt-3 mb-3">더보기</button>
-        </center>
+          </v-row>
+        </v-container>
       </div>
     </v-card>
   </v-dialog>
@@ -140,6 +116,8 @@
   import { mapGetters } from "vuex";
 
   import SERVER from '@/api/api'
+
+  import SpotDetailMap from '@/components/spots/SpotDetailMap'
 
   export default {
     props: {
@@ -157,7 +135,11 @@
         content: "",
         page: 1,
         detailpage: [],
+        testScore: 0,
       }
+    },
+    components: {
+      SpotDetailMap,
     },
     computed: {
       ...mapGetters(["LoginFlag", "config", "userInfo"]),
@@ -185,48 +167,6 @@
         })
         .catch(err => console.log(err.response))
       },
-      writecomment() {
-        let newComment = new FormData();
-        newComment.append('spot_pk', this.spot.id);
-        newComment.append('score', this.score);
-        newComment.append('content', this.content);
-        
-        axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.COMMNET, newComment, this.headers)
-        .then(({data}) => {
-          this.spotcomments.unshift(data);
-          this.content = '';
-        })
-        .catch(err => console.log(err.response))
-      },
-      deleteComment(commentid, index) {
-        axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.COMMNET + commentid, this.headers)
-        .then(() => {
-          this.spotcomments.splice(index,1);
-        })
-        .catch(err => console.log(err.response))
-      }
-    },
-    watch: {
-      page() {
-        axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id, {
-          params: {
-            curPage: this.page
-          }
-        })
-        .then(response => {
-          this.spotcomments = response.data.comments;
-        })
-        .catch(error => console.log(error))
-      }
-    },
-    created () {
-      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id, this.headers)
-      .then(response => {
-        this.detailspot = response.data;
-        this.spotcomments = this.detailspot.comments;
-        this.detailpage = this.detailspot.page;
-      })
-      .catch(error => console.log(error))
     },
   }
 </script>

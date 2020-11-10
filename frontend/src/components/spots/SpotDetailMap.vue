@@ -7,16 +7,14 @@
 <script>
 export default {
   name: 'SpotDetailMap',
-  props: {
-    lat: {
-      type: Number
-    },
-    lon: {
-      type: Number
-    }
-  },
+  props: ['lat', 'lon', 'item'],
   mounted() {
     this.makeMap();
+  },
+  watch: {
+    lat() {
+      this.makeMap();
+    }
   },
   methods: {
     makeMap() {
@@ -32,35 +30,38 @@ export default {
       }
     },
     initMap() {
-      var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+      let mapContainer = document.getElementById("map"), // 지도를 표시할 div 
         mapOption = { 
           center: new kakao.maps.LatLng(this.lat, this.lon), // 지도의 중심좌표
           level: 3 // 지도의 확대 레벨
         };
 
-      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      let map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
       // 드래그, 확대축소 막기
       // map.setDraggable(false);
       // map.setZoomable(false);
       // 지도의 타입 설정
       map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+      
+      const self = this;
+      setTimeout(function() {
+        // 마커가 표시될 위치입니다 
+        let markerPosition  = new kakao.maps.LatLng(self.lat, self.lon); 
 
-      // 마커가 표시될 위치입니다 
-      var markerPosition  = new kakao.maps.LatLng(this.lat, this.lon); 
+        // 마커를 생성합니다
+        let marker = new kakao.maps.Marker({
+          position: markerPosition
+        });
+        
 
-      // 마커를 생성합니다
-      var marker = new kakao.maps.Marker({
-        position: markerPosition
-      });
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
 
-      // 마커가 지도 위에 표시되도록 설정합니다
-      marker.setMap(map);
-    }
-  },
-  watch: {
-    lat() {
-      this.makeMap();
+        map.relayout();
+        map.setCenter(markerPosition);
+      }, 10);
+      
     }
   },
 }
