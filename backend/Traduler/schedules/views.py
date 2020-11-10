@@ -524,7 +524,7 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         user = request.user
         course = get_object_or_404(Course, pk=request.data['course_pk'])
-        if user.submitted_schedule_requests.filter(schedule_pk=course.schedule_pk, status=2).exists():
+        if user.submitted_user_requests.filter(schedule_pk=course.schedule_pk, status=2).exists():
         # if UserSchedule.objects.filter(user_pk=user, schedule_pk=course.schedule_pk, status=2).exists():
             # 해당 코스가 포함된 스케줄에 참여한 유저인 경우에만 메모를 작성할 수 있습니다.
             serializer = self.get_serializer(data=request.data)
