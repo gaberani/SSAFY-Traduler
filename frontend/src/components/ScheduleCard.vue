@@ -6,7 +6,7 @@
       <!-- <img class="helpimo" src="../assets/help.png" alt=""> -->
       <img v-if="schedule.advice==1" class="helpimo" src="../assets/help2.png" alt="">
     <SpotMap :data="this.$attrs.data" :schedule="this.$attrs.schedule" class="cardmap"></SpotMap>
-    <button class="SDtitle"><span>{{schedule.title}}</span></button>
+    <button @click="GotoDetail(schedule.id)" class="SDtitle"><span>{{schedule.title}}</span></button>
   </v-container>
 </template>
 
@@ -24,12 +24,19 @@ export default {
     created() {
         this.schedule =this.$attrs.schedule
         // console.log(this.schedule)
+    },
+    methods: {
+        GotoDetail(SDid) {
+            this.$router.push('/detailschedule?id='+ SDid)
+        }
     }
 }
 </script>
 
 <style>
-.cardmap {
+/* 마우스 포인트 안먹네 */
+.cardmap:hover {
+    cursor: pointer; 
 }
 .SDtitle {
     /* background-color:rgba( 255, 19, 19, 0.6 ); */
