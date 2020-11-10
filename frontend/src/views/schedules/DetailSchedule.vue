@@ -83,7 +83,7 @@
 					sm="7"
 					style="margin-top:25px;"
         >
-        <SpotMap2 :data="exschedule.id" :schedule="exschedule" class="cardmap"></SpotMap2>
+        <SpotMap2 :item="schedule.id" :SDdetail="SDdetail" class="cardmap"></SpotMap2>
         </v-col>
         <v-col
 					cols="12"
@@ -94,7 +94,7 @@
 							<h3 style="margin-top:10px; font-size:1.3vw;">도움 게시판</h3>
 							<p v-if="advices.length===0" style="margin-top:10px;font-size:1vw;"> 등록된 게시글이 없습니다.</p>
 						</center>
-						<p style="margin-left:8px;margin-bottom:5px; font-size:1.3vw;" v-for="ad in advices" :key="ad.id"><i class="fas fa-circle"></i>  {{ad}}</p>
+						<p style="margin-top:10px;margin-left:8px;margin-bottom:5px; font-size:1.3vw;" v-for="ad in advices" :key="ad.id"><i class="fas fa-circle"></i>  {{ad.content}} - {{ad.user.nickname}}</p>
 					</div>    
         </v-col>
       </v-row>
@@ -128,7 +128,7 @@ export default {
     data() {
 			return {
 				schedule:[],
-				SDdetail:[],
+				SDdetail:{},
 				SDcourse:[],
 				advices:[],
 				exschedule: 
@@ -186,27 +186,46 @@ export default {
 						fmtime
 				} 
 			},
+			async getDetail() {
+				const params = new URL(document.location).searchParams;
+				await this.$http
+				.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
+						headers: {
+								Authorization: this.config,
+						},
+				})
+				.then(response => {
+				this.schedule = response.data.schedule
+				this.SDdetail = response.data
+				this.SDcourse = response.data.course
+				console.log(this.schedule)
+				console.log(this.SDdetail)
+				// 맵을 위해서 임시데이터   
+				})
+				.catch(error => {
+				console.log(error.response)
+				})
+			}
     },
-    created() {
+    async created() {
+			// /advice?schedule_pk={schedule_pk}&curPage={페이지}
 			const params = new URL(document.location).searchParams;
 			this.$http
-			.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
+			.get(process.env.VUE_APP_SERVER_URL +`/advice?schedule_pk=${params.get('id')}`,{
 					headers: {
 							Authorization: this.config,
 					},
 			})
 			.then(response => {
-			this.schedule = response.data.schedule
+				// console.log(response)
+			console.log(response.data)
 			this.advices = response.data.advice
-			this.SDdetail = response.data
-			this.SDcourse = response.data.course
-			console.log(this.schedule)
-			console.log(this.SDdetail)
 			// 맵을 위해서 임시데이터   
 			})
 			.catch(error => {
 			console.log(error.response)
 			})
+			await this.getDetail()
 		}
     }
 </script>

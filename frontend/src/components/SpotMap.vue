@@ -1,5 +1,6 @@
 <template>
   <v-container style="padding:0;">
+    
     <div :id="'map'+item" class="map" @click="GotoDetail(schedule.id)"></div>
   </v-container>
 </template>

@@ -1,6 +1,5 @@
 <template>
   <v-container style="padding:0;">
-      <!-- {{schedule}} -->
     <center>
       <div :id="'map'+item" class="map"></div>
     </center>
@@ -9,16 +8,27 @@
 
 <script>
 export default {
-  name: 'SpotMap',
+  name: 'SpotMap2',
   data() {
     return {
-      item: '',
-      schedule:[],
+      // item: '',
+      // SDdetail:[],
     }
-  },
+	},
+	props: {
+		SDdetail: {
+			type:Object
+		},
+		item: {
+			type:Number
+		}
+	},
   created() {
-    this.item = this.$attrs.data
-    this.schedule = this.$attrs.schedule
+    // this.item = this.$attrs.data
+		// this.SDdetail = this.$attrs.SDdetail
+		// console.log(this.$attrs)
+		// console.log(this.SDdetail)
+		// console.log(this.SDdetail.avg_coord[0])
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -34,10 +44,11 @@ export default {
   },
   methods: {
     initMap() {
+			console.log(this.SDdetail.avg_coord)
       var MapContainer = document.getElementById('map' + this.item);
       var MapOption = {
         // 지도의 좌표
-        center: new kakao.maps.LatLng(this.schedule.avg_coord[0], this.schedule.avg_coord[1]),
+        center: new kakao.maps.LatLng(this.SDdetail.avg_coord[0], this.SDdetail.avg_coord[1]),
         // 지도의 레벨(확대, 축소 정도)
         level: 9
       };
@@ -49,9 +60,9 @@ export default {
       // 여행지 간 좌표로 그려질 선 객체
       var linePath = [];
 			var Positions = [];
-      for (var i=0; i<this.schedule.coords.length; i++) {
-				linePath.push(new kakao.maps.LatLng(this.schedule.coords[i][0], this.schedule.coords[i][1])); 
-				Positions.push({title:"추가할거야~",latlng:new kakao.maps.LatLng(this.schedule.coords[i][0], this.schedule.coords[i][1])});   
+      for (var i=0; i<this.SDdetail.course_coords.length; i++) {
+				linePath.push(new kakao.maps.LatLng(this.SDdetail.courser_coords[i][0], this.SDdetail.courser_coords[i][1])); 
+				Positions.push({title:"추가할거야~",latlng:new kakao.maps.LatLng(this.SDdetail.courser_coords[i][0], this.SDdetail.courser_coords[i][1])});   
         }
         // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
