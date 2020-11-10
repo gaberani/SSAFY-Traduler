@@ -26,6 +26,7 @@ router = routers.DefaultRouter()
 
 # Accounts
 router.register('accounts', AccountViewSet)
+router.register('join', UserScheduleViewSet)
 
 # Spots
 router.register('spots', SpotViewSet)
@@ -38,7 +39,7 @@ router.register('comment', SpotCommentViewSet)
 router.register('member_type', MemberTypeViewSet)
 router.register('style_type', StyleTypeViewSet)
 router.register('schedule', ScheduleViewSet)
-router.register('join', UserScheduleViewSet)
+# router.register('join', UserScheduleViewSet)
 router.register('memo', CourseMemoViewSet)
 router.register('advice', ScheduleAdviceViewSet)
 router.register('course', CourseViewSet)
