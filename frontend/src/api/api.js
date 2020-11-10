@@ -4,16 +4,12 @@ export default {
 		SPOT: {
 			CATEGORY: '/category/',
 			AREA: '/area/',
-			SEARCH: `/spots?title=${검색어}&category=${카테고리코드}&area=${지역코드}/`,
-			WRITING: '/spots/writing/',
-			RECOMMEND: '/spots/recommend/',
-			READ: `/spots/${spot_pk}/`,
-			LIKE: `/spots/${spot_pk}/like/`,		// POST
-			UNLIKE: `/spots/${spot_pk}/like/`, 	// DELETE
-			COMMNET: '/comment/',								// POST
-			COMMNET_EDIT: `/comment/${comment_pk}/`,		// PATCH
-			COMMNET_DELETE: `/comment/${comment_pk}/`,	// DELETE
-			CUSTOM_CREATE: '/custom_spots/'			// POST
+			SPOTS: `/spots/`, // GET, 뒤에 PK값 붙이면 상세보기
+      RECOMMEND: '/spots/get_recommend_spots/',
+      BEST: '/spots/get_best_spots/',
+			LIKE: `/like/`,		// POST : 좋아요, DELETE : 취소
+			COMMNET: '/comment/',								// POST : 생성, PATCH : 수정, DELETE : 삭제
+			CUSTOM_SPOT_CREATE: '/custom_spots/'			// POST : 생성
 		},
 		SCHEDULE: {
 

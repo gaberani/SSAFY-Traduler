@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import SpotMap from '@/components/SpotMap.vue'
+import SpotMap from '@/components/spots/SpotMap.vue'
 export default {
 	name: 'ScheduleCard',
     components: {SpotMap},

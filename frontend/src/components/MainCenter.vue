@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import SpotCard from '@/components/SpotCard';
+import SpotCard from '@/components/spots/SpotCard';
 import ScheduleCard from '@/components/ScheduleCard';
 export default {
     components:{SpotCard,ScheduleCard},
