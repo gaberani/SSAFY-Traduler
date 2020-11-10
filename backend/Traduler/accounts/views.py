@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
 from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 
 from .serializers import UserSerializer
 # from .models import UserSpotFavorite, Spot
@@ -81,11 +81,29 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = UserScheduleSerializer
     permission_classes=[BasicCRUDPermisson]
 
+    @action(detail=False, permission_classes=[IsAuthenticated])
+    def invitation(self, request):
+        cur_page = request.GET.get('curPage', 1)
+        user = request.user
+        invited_schedules = user.submitted_user_requests.filter(status=1)
+        page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 3, request.user)
+        return Response({'invited_schedules': serialized_invited_schedules}, status=status.HTTP_200_OK)
+
+    @action(detail=False, permission_classes=[IsAuthenticated])
+    def requests(self, request):
+        cur_page = request.GET.get('curPage', 1)
+        user = request.user
+        submit_requests = user.submitted_user_requests.filter(status=0)
+        page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 3, request.user)
+        return Response({'submit_requests': serialized_submit_requests}, status=status.HTTP_200_OK)
+
+
+    """
     def list(self, request, *args, **kwargs):
-        """
-            특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
-            Token이 반드시 필요합니다!!
-        """
+        
+            #특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
+            #Token이 반드시 필요합니다!!
+        
         if request.user.is_authenticated:
             user = request.user
             cur_page = request.GET.get('curPage', 1)
@@ -104,6 +122,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+    """
 
     # 특정 스케쥴에 대해 신청하기
     def create(self, request, *args, **kwargs):
