@@ -50,7 +50,12 @@ const routes = [
     path: '/sdresult',
     name: 'SDresult',
     component: () => import('@/views/SDresult')
-  }
+  },
+  {
+    path: '/detailschedule',
+    name: 'DetailSchedule',
+    component: () => import('@/views/schedules/DetailSchedule')
+  },
 ]
 
 const router = new VueRouter({
