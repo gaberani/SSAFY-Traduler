@@ -108,10 +108,13 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             filtered_schedules = filtered_schedules.filter(end_date__lte = end_test)
 
         empty_queryset = Schedule.objects.none()
-        for filtered_schedule in filtered_schedules:
-            if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
-                empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
-        
+        if area_code:
+            for filtered_schedule in filtered_schedules:
+                if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
+                    empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
+        else:
+            empty_queryset = filtered_schedules
+
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
         # serialized_schedules = self.serializer_class(empty_queryset, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
