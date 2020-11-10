@@ -547,13 +547,13 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleAdviceSerializer
     permission_classes = [BasicCRUDPermisson]
 
-    def list(self, request, *args, **kwars):
+    def list(self, request, *args, **kwargs):
         schedule_pk = request.GET.get('schedule_pk')
         cur_page = request.GET.get('curPage', 1)
         schedule = get_object_or_404(Schedule, id=schedule_pk)
         contained_advice = schedule.contained_advice.all()
         page, serialized_advice = pageProcess(contained_advice, self.serializer_class, cur_page, 10)
-        return Response({'page': page, 'advice': serialized_advice.data}, status=status.HTTP_200_OK)
+        return Response({'page': page, 'advice': serialized_advice}, status=status.HTTP_200_OK)
 
 
 
