@@ -84,7 +84,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         start_date = request.GET.get('start_date', None)
         end_date = request.GET.get('end_date', None)
 
-        # cur_page = request.GET.get('curPage', 1)
+        cur_page = request.GET.get('curPage', 1)
         
         # 공개인 스케줄만 가져옵니다.
         filtered_schedules = self.queryset.filter(private=0)
@@ -113,7 +113,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
         
         # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
-        serialized_schedules = self.serializer_class(empty_queryset, many=True).data
+        # serialized_schedules = self.serializer_class(empty_queryset, many=True).data
         # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
         # 각각의 스케줄에서 여행지들이 표시된 지도를 보여줄 계획이라고 해서 각 스케줄에 포함된 여행지들의 좌표 데이터를 넣어서 줬습니다.
@@ -134,7 +134,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         
         # return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
 
-        for serialized_schedule in serialized_schedules:
+        page , result = pageProcess(empty_queryset, self.serializer_class, cur_page, 9)
+
+        for serialized_schedule in result:
             serialized_schedule['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id'])
             sum_lat, sum_lon = 0, 0
@@ -148,7 +150,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                     serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
             serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
         
-        return Response({"schedule": serialized_schedules}, status=status.HTTP_200_OK)
+        return Response({"schedule": result}, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         """
@@ -204,7 +206,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         user = request.user
         schedule = self.queryset.get(id=pk)
         serialized_schedule = self.serializer_class(schedule)
-        # cur_page = request.GET.get("curPage", 1)
+        cur_page = request.GET.get("curPage", 1)
 
         # 코스 가져오기
         contained_courses = schedule.contained_courses.all()
@@ -215,8 +217,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         serialized_province = self.province_serializer_class(contained_provinces, many=True).data
 
         # 조언 가져오기
-        contained_advice = schedule.contained_advice.all()
-        serialized_advice = self.advice_serializer_class(contained_advice, many=True).data
+        # contained_advice = schedule.contained_advice.all()
+        # page, serialized_advice = pageProcess(contained_advice, self.advice_serializer_class, cur_page, 10)
+        # serialized_advice = self.advice_serializer_class(contained_advice, many=True).data
         # filtered_advice = self.advice_queryset.filter(schedule_pk=pk)
         # serialized_advice = self.advice_serializer_class(filtered_advice, many=True).data
 
@@ -230,7 +233,6 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             "schedule": serialized_schedule.data, 
             "course": serialized_course,
             "province": serialized_province,
-            "advice": serialized_advice,
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
 
@@ -484,6 +486,17 @@ class CourseMemoViewSet(viewsets.ModelViewSet):
     serializer_class = CourseMemoSerializer
 
     permission_classes = [BasicCRUDPermisson]
+    
+    def list(self, request, *args, **kwargs):
+        course_pk = request.GET.get('course_pk')
+        cur_page = request.GET.get('curPage', 1)
+
+        contained_memo = self.queryset.filter(course_pk=course_pk)
+        page, serialized_memo = pageProcess(contained_memo, self.serializer_class, cur_page, 3)
+
+        return Response({'page': page, 'memo':serialized_memo})
+
+
 
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -510,6 +523,16 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
     queryset = ScheduleAdvice.objects.all()
     serializer_class = ScheduleAdviceSerializer
     permission_classes = [BasicCRUDPermisson]
+
+    def list(self, request, *args, **kwars):
+        schedule_pk = request.GET.get('schedule_pk')
+        cur_page = request.GET.get('curPage', 1)
+        schedule = get_object_or_404(Schedule, id=schedule_pk)
+        contained_advice = schedule.contained_advice.all()
+        page, serialized_advice = pageProcess(contained_advice, self.serializer_class, cur_page, 10)
+        return Response({'page': page, 'advice': serialized_advice.data}, status=status.HTTP_200_OK)
+
+
 
     def create(self, request, *args, **kwargs):
         user = request.user
