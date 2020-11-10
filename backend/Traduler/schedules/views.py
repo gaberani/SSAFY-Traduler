@@ -212,7 +212,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get("curPage", 1)
 
         # 코스 가져오기
-        contained_courses = schedule.contained_courses.all()
+        contained_courses = schedule.contained_courses.all().order_by('start_time')
         serialized_courses = self.course_serializer_class(contained_courses, many=True).data
 
         # 코스들의 좌표 전체
@@ -234,7 +234,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         
 
         # 목적지 정보 가져오기
-        contained_provinces = schedule.contained_provinces.all()
+        contained_provinces = schedule.contained_provinces.all().order_by('start_date')
         serialized_province = self.province_serializer_class(contained_provinces, many=True).data
 
         # 조언 가져오기
