@@ -85,15 +85,17 @@ class SpotViewSet(viewsets.ModelViewSet):
         best_spots = []
         for score_obj in best_spots_pk:
             item = self.queryset.get(id=score_obj['spot_pk'])
-            best_spots.append(self.serializer_class(item).data)
+            best_spots.append(item)
+        serialized_best_spots = self.serializer_class(data=best_spots, context={'user': request.user}, many=True)
+        serialized_best_spots.is_valid()
+        return Response(serialized_best_spots.data, status=status.HTTP_200_OK)
 
-        return Response({"best_spots": best_spots}, status=status.HTTP_200_OK)
-    
     # 추천 스팟 리턴
     @action(detail=False, methods=["GET"])
     def get_recommend_spots(self, request):
         recom_spots = self.queryset.order_by('?')[:5] # 일단은 랜덤으로
-        serialized_recom_spots = self.serializer_class(recom_spots, many=True)
+        serialized_recom_spots = self.serializer_class(data=recom_spots, context={'user': request.user}, many=True)
+        serialized_recom_spots.is_valid()
         return Response(serialized_recom_spots.data, status=status.HTTP_200_OK)
 
 

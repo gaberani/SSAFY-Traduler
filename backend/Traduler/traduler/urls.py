@@ -18,9 +18,9 @@ from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 from rest_framework import routers
-from accounts.views import AccountViewSet
+from accounts.views import AccountViewSet, UserScheduleViewSet
 from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet, CustomSpotViewSet, SpotCommentViewSet
-from schedules.views import MemberTypeViewSet, StyleTypeViewSet, ScheduleViewSet, UserScheduleViewSet, CourseMemoViewSet, ScheduleAdviceViewSet, CourseViewSet, ScheduleAreaViewSet
+from schedules.views import MemberTypeViewSet, StyleTypeViewSet, ScheduleViewSet, CourseMemoViewSet, ScheduleAdviceViewSet, CourseViewSet, ScheduleAreaViewSet
 
 router = routers.DefaultRouter()
 
