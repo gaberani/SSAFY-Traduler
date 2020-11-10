@@ -128,7 +128,16 @@ export default {
     data() {
 			return {
 				schedule:[],
-				SDdetail:{},
+				SDdetail:{"course_coords": [
+                [37.5394, 127.065],
+                [37.5348, 127.092],
+                [37.6855, 127.073],
+                [37.6855, 127.073],
+                [37.5118, 127.059]
+            ],"avg_coord": [
+                37.567874999999994,
+                127.07225
+            ]},
 				SDcourse:[],
 				advices:[],
 				exschedule: 
@@ -186,9 +195,9 @@ export default {
 						fmtime
 				} 
 			},
-			async getDetail() {
+			getDetail() {
 				const params = new URL(document.location).searchParams;
-				await this.$http
+				this.$http
 				.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
 						headers: {
 								Authorization: this.config,
@@ -207,7 +216,7 @@ export default {
 				})
 			}
     },
-    async created() {
+    created() {
 			// /advice?schedule_pk={schedule_pk}&curPage={페이지}
 			const params = new URL(document.location).searchParams;
 			this.$http
@@ -225,7 +234,7 @@ export default {
 			.catch(error => {
 			console.log(error.response)
 			})
-			await this.getDetail()
+			this.getDetail()
 		}
     }
 </script>

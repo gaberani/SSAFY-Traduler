@@ -1,7 +1,7 @@
 <template>
   <v-container style="padding:0;">
     <center>
-      <div :id="'map'+item" class="map"></div>
+      <div id="map" class="map"></div>
     </center>
   </v-container>
 </template>
@@ -15,23 +15,18 @@ export default {
       // SDdetail:[],
     }
 	},
-	props: {
-		SDdetail: {
-			type:Object
-		},
-		item: {
-			type:Number
+	props: ['SDdetail','item'],
+  mounted() {
+		this.makeMap();
+	},
+	watch: {
+		item() {
+			this.makeMap();
 		}
 	},
-  created() {
-    // this.item = this.$attrs.data
-		// this.SDdetail = this.$attrs.SDdetail
-		// console.log(this.$attrs)
-		// console.log(this.SDdetail)
-		// console.log(this.SDdetail.avg_coord[0])
-  },
-  mounted() {
-    if (window.kakao && window.kakao.maps) {
+  methods: {
+		makeMap() {
+			if (window.kakao && window.kakao.maps) {
       // kakao와 kakao.maps가 전부 로딩된 뒤에 실행
       this.initMap();
     } else {
@@ -41,16 +36,14 @@ export default {
       script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}`;
       document.head.appendChild(script);
     }
-  },
-  methods: {
+		},
     initMap() {
-			console.log(this.SDdetail.avg_coord)
-      var MapContainer = document.getElementById('map' + this.item);
+      var MapContainer = document.getElementById('map');
       var MapOption = {
         // 지도의 좌표
         center: new kakao.maps.LatLng(this.SDdetail.avg_coord[0], this.SDdetail.avg_coord[1]),
         // 지도의 레벨(확대, 축소 정도)
-        level: 9
+        level: 10
       };
       // 지도 생성 및 객체 리턴
       var map = new kakao.maps.Map(MapContainer, MapOption);
@@ -61,8 +54,8 @@ export default {
       var linePath = [];
 			var Positions = [];
       for (var i=0; i<this.SDdetail.course_coords.length; i++) {
-				linePath.push(new kakao.maps.LatLng(this.SDdetail.courser_coords[i][0], this.SDdetail.courser_coords[i][1])); 
-				Positions.push({title:"추가할거야~",latlng:new kakao.maps.LatLng(this.SDdetail.courser_coords[i][0], this.SDdetail.courser_coords[i][1])});   
+				linePath.push(new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1])); 
+				Positions.push({title:"추가할거야~",latlng:new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1])});   
         }
         // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
