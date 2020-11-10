@@ -210,7 +210,25 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
         # 코스 가져오기
         contained_courses = schedule.contained_courses.all()
-        serialized_course = self.course_serializer_class(contained_courses, many=True).data
+        serialized_courses = self.course_serializer_class(contained_courses, many=True).data
+
+        # 코스들의 좌표 전체
+        course_coords = []
+        sum_lat, sum_lon = 0, 0
+        for contained_course in contained_courses:
+            if contained_course.spot_pk:
+                lat = contained_course.spot_pk.lat
+                lon = contained_course.spot_pk.lon
+            else:
+                lat = contained_course.custom_spot_pk.lat
+                lon = contained_course.custom_spot_pk.lon
+            sum_lat += lat
+            sum_lon += lon
+            course_coords.append((lat, lon))
+        
+        #소수점 3자리수까지 평균 lat, lon
+        avg_coord = [round(sum_lat/len(course_coords), 4), round(sum_lon/len(course_coords), 4)]
+        
 
         # 목적지 정보 가져오기
         contained_provinces = schedule.contained_provinces.all()
@@ -231,7 +249,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
         return Response({
             "schedule": serialized_schedule.data, 
-            "course": serialized_course,
+            "course": serialized_courses,
+            "course_coords": course_coords,
+            "avg_coord": avg_coord,
             "province": serialized_province,
             "is_joined": is_joined}, 
             status=status.HTTP_200_OK)
@@ -347,133 +367,133 @@ class ScheduleAreaViewSet(viewsets.ModelViewSet):
 
 
 
-# UserSchedule View Set
-class UserScheduleViewSet(viewsets.ModelViewSet):
-    """
-        ScheduleViewSet에 너무 많은 기능이 들어가 있다고 생각했습니다.
-        게다가 여기에 참가요청한 요청 메시지까지 보여주려면 ... .....
-        뭔가 2개의 ViewSet이 하나에 합쳐진 느낌이라서 별도의 ViewSet으로 분리했습니다.
-    """
-    # 유저-스케줄 참여 이력 관련 모델 / Serializer
-    queryset = UserSchedule.objects.all()
-    serializer_class = UserScheduleSerializer
-    permission_classes=[BasicCRUDPermisson]
+# # UserSchedule View Set
+# class UserScheduleViewSet(viewsets.ModelViewSet):
+#     """
+#         ScheduleViewSet에 너무 많은 기능이 들어가 있다고 생각했습니다.
+#         게다가 여기에 참가요청한 요청 메시지까지 보여주려면 ... .....
+#         뭔가 2개의 ViewSet이 하나에 합쳐진 느낌이라서 별도의 ViewSet으로 분리했습니다.
+#     """
+#     # 유저-스케줄 참여 이력 관련 모델 / Serializer
+#     queryset = UserSchedule.objects.all()
+#     serializer_class = UserScheduleSerializer
+#     permission_classes=[BasicCRUDPermisson]
 
-    def list(self, request, *args, **kwargs):
-        """
-            특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
-            Token이 반드시 필요합니다!!
-        """
-        if request.user.is_authenticated:
-            user = request.user
-            # cur_page = request.GET.get('curPage', 1)
-            # 해당 유저의 요청 메시지들 중 status가 1인 것들만 가져옵니다.(status==1 : 초대받은 거)
-            invited_schedules = user.submitted_user_requests.filter(status=1)
-            # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
-            serialized_invited_schedules = self.serializer_class(invited_schedules, many=True).data
-            # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
+#     def list(self, request, *args, **kwargs):
+#         """
+#             특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
+#             Token이 반드시 필요합니다!!
+#         """
+#         if request.user.is_authenticated:
+#             user = request.user
+#             # cur_page = request.GET.get('curPage', 1)
+#             # 해당 유저의 요청 메시지들 중 status가 1인 것들만 가져옵니다.(status==1 : 초대받은 거)
+#             invited_schedules = user.submitted_user_requests.filter(status=1)
+#             # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
+#             serialized_invited_schedules = self.serializer_class(invited_schedules, many=True).data
+#             # page, result = pageProcess(serialized_course, self.serializer_class, cur_page, 9, request.user)
 
-            # 해당 유처가 "신청한" 이력도 한번에 들고 옵니다!!
-            submit_requests = user.submitted_user_requests.filter(status=0)
-            serialized_submit_requests = self.serializer_class(submit_requests, many=True).data
+#             # 해당 유처가 "신청한" 이력도 한번에 들고 옵니다!!
+#             submit_requests = user.submitted_user_requests.filter(status=0)
+#             serialized_submit_requests = self.serializer_class(submit_requests, many=True).data
 
-            return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+#             return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
+#         else:
+#             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    #신청만!!!!!!
-    def create(self, request, *args, **kwargs):
-        schedule_pk = request.data.get('schedule_pk', None)
-        schedule = get_object_or_404(Schedule, pk=schedule_pk)
-        user = request.user
+#     #신청만!!!!!!
+#     def create(self, request, *args, **kwargs):
+#         schedule_pk = request.data.get('schedule_pk', None)
+#         schedule = get_object_or_404(Schedule, pk=schedule_pk)
+#         user = request.user
 
-        # 이미 신청했거나, 참여했거나 아무튼 있는 경우
-        if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
-        # if self.queryset.filter(user_pk=user, schedule_pk=schedule).exists():
-            return Response({'reason': '이미 참가신청헀거나, 초대받은 스케줄입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        # 그 외의 경우 (저장!)
-        else:
-            serializer_user_schedule = self.serializer_class(data=request.data)
-            serializer_user_schedule.is_valid(raise_exception=True)
-            serializer_user_schedule.save(user_pk=user, schedule_pk=schedule)
-            return Response({"success": 'success'}, status=status.HTTP_200_OK)
+#         # 이미 신청했거나, 참여했거나 아무튼 있는 경우
+#         if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
+#         # if self.queryset.filter(user_pk=user, schedule_pk=schedule).exists():
+#             return Response({'reason': '이미 참가신청헀거나, 초대받은 스케줄입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+#         # 그 외의 경우 (저장!)
+#         else:
+#             serializer_user_schedule = self.serializer_class(data=request.data)
+#             serializer_user_schedule.is_valid(raise_exception=True)
+#             serializer_user_schedule.save(user_pk=user, schedule_pk=schedule)
+#             return Response({"success": 'success'}, status=status.HTTP_200_OK)
 
-    def retrieve(self, request, pk):
-        """    
-            38 -> 38번 스케줄에 참가요청 메시지를 보여줌
-            특정 스케줄의 참가요청된 요청 메세지들을 보여줍니다.
-            pk: 스케줄의 pk
-            retrieve를 이렇게 사용하는게 옳은가? 라는 생각이 들었는데... 이왕있는거 좋게좋게 쓰기로 다짐했습니다.
-        """
-        # 스케쥴 주인인지 확인하기 
-        schedule = get_object_or_404(Schedule, pk=pk)
-        if request.user.is_authenticated:
-            if request.user == schedule.user_pk:
-                # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
-                filtered_request_messages = schedule.submitted_schedule_requests.filter(status=0)
-                serialized_request_messages = self.serializer_class(filtered_request_messages, many=True).data
-                return Response({"request_messages": serialized_request_messages}, status=status.HTTP_200_OK)
-            else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+#     def retrieve(self, request, pk):
+#         """    
+#             38 -> 38번 스케줄에 참가요청 메시지를 보여줌
+#             특정 스케줄의 참가요청된 요청 메세지들을 보여줍니다.
+#             pk: 스케줄의 pk
+#             retrieve를 이렇게 사용하는게 옳은가? 라는 생각이 들었는데... 이왕있는거 좋게좋게 쓰기로 다짐했습니다.
+#         """
+#         # 스케쥴 주인인지 확인하기 
+#         schedule = get_object_or_404(Schedule, pk=pk)
+#         if request.user.is_authenticated:
+#             if request.user == schedule.user_pk:
+#                 # 참가 신청헀지만, 아직 승인되지 않은 신청 메세지들을 보여줍니다.
+#                 filtered_request_messages = schedule.submitted_schedule_requests.filter(status=0)
+#                 serialized_request_messages = self.serializer_class(filtered_request_messages, many=True).data
+#                 return Response({"request_messages": serialized_request_messages}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response(status=status.HTTP_403_FORBIDDEN)
+#         else:
+#             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    @action(detail=False, methods=['POST'])
-    def invite(self, request):
-        """
-            스케줄 작성자가 사람을 초대하는 경우입니다.
-            초대 메세지는 비워져서 옵니다.
-        """
-        schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
-        User = get_user_model()
-        user = get_object_or_404(User, pk=request.data['user_pk'])
-        if request.user.is_authenticated:
-            if schedule.user_pk == request.user:
-                if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
-                    return Response({'reason': '이미 초대된 사람인데요?'}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    serializer_user_schedule = self.serializer_class(data=request.data)
-                    if serializer_user_schedule.is_valid(raise_exception=True):
-                        serializer_user_schedule.save(status=1, user_pk=user, schedule_pk=schedule)
-                        return Response({"success": "success"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"reason": "왜... 이상한 사람이 초대해요?"}, status=status.HTTP_403_FORBIDDEN)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+#     @action(detail=False, methods=['POST'])
+#     def invite(self, request):
+#         """
+#             스케줄 작성자가 사람을 초대하는 경우입니다.
+#             초대 메세지는 비워져서 옵니다.
+#         """
+#         schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
+#         User = get_user_model()
+#         user = get_object_or_404(User, pk=request.data['user_pk'])
+#         if request.user.is_authenticated:
+#             if schedule.user_pk == request.user:
+#                 if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
+#                     return Response({'reason': '이미 초대된 사람인데요?'}, status=status.HTTP_400_BAD_REQUEST)
+#                 else:
+#                     serializer_user_schedule = self.serializer_class(data=request.data)
+#                     if serializer_user_schedule.is_valid(raise_exception=True):
+#                         serializer_user_schedule.save(status=1, user_pk=user, schedule_pk=schedule)
+#                         return Response({"success": "success"}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({"reason": "왜... 이상한 사람이 초대해요?"}, status=status.HTTP_403_FORBIDDEN)
+#         else:
+#             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    # 참가 요청 승인입니다.
-    @action(detail=False, methods=['POST'])
-    def confirm(self, request):
-        """
-            참가 요청을 승인해주는 함수입니다.
-            1. 신청한 경우
-            2. 초대받은 경우
-            로 분기해서 각각의 조건을 따진 후 승인 처리를 해줍니다.
-        """
-        request_message_pk = request.data.get('user_schedule_pk', None)
-        request_message = get_object_or_404(UserSchedule, pk=request_message_pk)
+#     # 참가 요청 승인입니다.
+#     @action(detail=False, methods=['POST'])
+#     def confirm(self, request):
+#         """
+#             참가 요청을 승인해주는 함수입니다.
+#             1. 신청한 경우
+#             2. 초대받은 경우
+#             로 분기해서 각각의 조건을 따진 후 승인 처리를 해줍니다.
+#         """
+#         request_message_pk = request.data.get('user_schedule_pk', None)
+#         request_message = get_object_or_404(UserSchedule, pk=request_message_pk)
 
-        if request_message.status == 0:
-            # 신청한 유저의 경우입니다.
-            if request_message.schedule_pk.user_pk == request.user:
-                # 요청 메세지에 해당하는 스케줄 작성자가 승인 요청을 보낸 사람과 일치할 경우
-                request_message.status = 2
-                request_message.save()
-                return Response({"success": "success"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"reason": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
-        elif request_message.status == 1:
-            # 초대받은 유저의 경우입니다.
-            if request_message.user_pk == request.user:
-                # 초대받은 사람이, 초대를 승인하는 경우입니다.
-                request_message.status = 2
-                request_message.save()
-                return Response({"success": "success"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"reason": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
-        else:
-            # 이미 승인된 경우 (status == 2)
-            return Response({"reason": "이미 승인된 초대 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
+#         if request_message.status == 0:
+#             # 신청한 유저의 경우입니다.
+#             if request_message.schedule_pk.user_pk == request.user:
+#                 # 요청 메세지에 해당하는 스케줄 작성자가 승인 요청을 보낸 사람과 일치할 경우
+#                 request_message.status = 2
+#                 request_message.save()
+#                 return Response({"success": "success"}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({"reason": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+#         elif request_message.status == 1:
+#             # 초대받은 유저의 경우입니다.
+#             if request_message.user_pk == request.user:
+#                 # 초대받은 사람이, 초대를 승인하는 경우입니다.
+#                 request_message.status = 2
+#                 request_message.save()
+#                 return Response({"success": "success"}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({"reason": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+#         else:
+#             # 이미 승인된 경우 (status == 2)
+#             return Response({"reason": "이미 승인된 초대 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
