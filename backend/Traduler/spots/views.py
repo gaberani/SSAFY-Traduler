@@ -55,7 +55,7 @@ class SpotViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
-        serialized_spot = self.serializer_class(spot)
+        serialized_spot = self.serializer_class(spot, context={'user': request.user})
         cur_page = request.GET.get("curPage", 1)
 
         # 댓글 가져오기
