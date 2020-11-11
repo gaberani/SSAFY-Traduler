@@ -61,7 +61,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     #advice_queryset = ScheduleAdvice.objects.all()
     advice_serializer_class = ScheduleAdviceSerializer
     # 유저-스케줄 참여 이력 관련 모델 / Serializer
-    #user_schedule_queryset = UserSchedule.objects.all()
+    user_schedule_queryset = UserSchedule.objects.all()
     user_schedule_serializer_class = UserScheduleSerializer
 
 
