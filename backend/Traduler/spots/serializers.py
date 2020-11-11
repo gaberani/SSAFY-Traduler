@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Avg
 
 from .models import Spot, Category, Area, SpotComment, CustomSpot
 from accounts.serializers import UserSerializer
