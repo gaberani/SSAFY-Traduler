@@ -18,20 +18,32 @@ from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 from rest_framework import routers
-from accounts.views import AccountViewSet
+from accounts.views import AccountViewSet, UserScheduleViewSet
 from spots.views import SpotViewSet, CategoryViewSet, AreaViewSet, CustomSpotViewSet, SpotCommentViewSet
+from schedules.views import MemberTypeViewSet, StyleTypeViewSet, ScheduleViewSet, CourseMemoViewSet, ScheduleAdviceViewSet, CourseViewSet, ScheduleAreaViewSet
 
 router = routers.DefaultRouter()
 
-#accounts
+# Accounts
 router.register('accounts', AccountViewSet)
+router.register('join', UserScheduleViewSet)
 
-#spots
+# Spots
 router.register('spots', SpotViewSet)
 router.register('category', CategoryViewSet)
 router.register('area', AreaViewSet)
 router.register('custom_spots', CustomSpotViewSet)
 router.register('comment', SpotCommentViewSet)
+
+# Schedules
+router.register('member_type', MemberTypeViewSet)
+router.register('style_type', StyleTypeViewSet)
+router.register('schedule', ScheduleViewSet)
+# router.register('join', UserScheduleViewSet)
+router.register('memo', CourseMemoViewSet)
+router.register('advice', ScheduleAdviceViewSet)
+router.register('course', CourseViewSet)
+router.register('schedule_area', ScheduleAreaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

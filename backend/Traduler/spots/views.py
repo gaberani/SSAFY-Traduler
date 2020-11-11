@@ -55,27 +55,18 @@ class SpotViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
-        serialized_spot = self.serializer_class(spot)
+        serialized_spot = self.serializer_class(spot, context={'user': request.user})
         cur_page = request.GET.get("curPage", 1)
 
         # 댓글 가져오기
         filtered_comments = self.comment_queryset.filter(spot_pk=pk)
         page, result = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
-        average_score = filtered_comments.aggregate(Avg('score'))
-        if average_score["score__avg"]:
-            score = round(average_score["score__avg"], 2)
-        else:
-            score = 0
-        total_likes = UserSpotFavorite.objects.filter(spot_pk=pk).count()
-
 
         return Response({
             "spot": serialized_spot.data, 
             "page": page, 
-            "comments": result, 
-            "score": score,
-            "total_likes": total_likes}, 
+            "comments": result}, 
             status=status.HTTP_200_OK)
 
     # 가장 평점 높은 스팟 리턴하기 
@@ -85,16 +76,19 @@ class SpotViewSet(viewsets.ModelViewSet):
         best_spots = []
         for score_obj in best_spots_pk:
             item = self.queryset.get(id=score_obj['spot_pk'])
-            best_spots.append(self.serializer_class(item).data)
+            best_spots.append(item)
+        serialized_best_spots = self.serializer_class(data=best_spots, context={'user': request.user}, many=True)
+        serialized_best_spots.is_valid()
+        return Response(serialized_best_spots.data, status=status.HTTP_200_OK)
 
-        return Response({"best_spots": best_spots}, status=status.HTTP_200_OK)
-    
     # 추천 스팟 리턴
     @action(detail=False, methods=["GET"])
     def get_recommend_spots(self, request):
-        recom_spots = self.queryset.order_by('?')[:5] # 일단은 랜덤으로
-        serialized_recom_spots = self.serializer_class(recom_spots, many=True)
-        return Response(serialized_recom_spots.data, status=status.HTTP_200_OK)
+        random_area = Area.objects.filter(content_type=0).order_by('?')[0]
+        recom_spots = self.queryset.filter(area_code__area_code__startswith=random_area.area_code).order_by('?')[:5]
+        serialized_recom_spots = self.serializer_class(data=recom_spots, context={'user': request.user}, many=True)
+        serialized_recom_spots.is_valid()
+        return Response({'recom_area': random_area.area_code_name, 'recom_spots': serialized_recom_spots.data}, status=status.HTTP_200_OK)
 
 
 
@@ -120,7 +114,7 @@ class CustomSpotViewSet(viewsets.ModelViewSet):
     queryset = CustomSpot.objects.all()
     serializer_class = CustomSpotSerializer
 
-    permission_classes=[BasicCRUDPersmisson]
+    permission_classes=[BasicCRUDPermisson]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -135,7 +129,7 @@ class SpotCommentViewSet(viewsets.ModelViewSet):
     queryset = SpotComment.objects.all()
     serializer_class = SpotCommentSerializer
 
-    permission_classes=[BasicCRUDPersmisson]
+    permission_classes=[BasicCRUDPermisson]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

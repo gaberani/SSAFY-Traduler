@@ -25,7 +25,6 @@ class Category(models.Model):
 
 
 class ContentType(models.Model): # 일단 가져는 왔습니다.
-    # pk = models.AutoField(primary_key=True) # tour API에서 제공하는 content id랑 일치 (pk값)
     content_type_name = models.CharField(max_length=50) # 콘텐츠 타입 이름
 
     class Meta:
@@ -34,7 +33,6 @@ class ContentType(models.Model): # 일단 가져는 왔습니다.
 
 
 class Spot(models.Model):
-    # pk = models.AutoField(primary_key=True) # pk값 (Int)
     title = models.CharField(max_length=50) # title ... 이름
     overview = models.TextField(blank=True, null=True) # 개요
     lon = models.FloatField() # 위도랑 경도
@@ -53,12 +51,11 @@ class Spot(models.Model):
 
 
 class SpotComment(models.Model):
-    # pk = models.AutoField(primary_key=True) # pk값 자동으로 넣어주는데 DB inspect한거라서 이러네요
     content = models.CharField(max_length=100) # 댓글은.. 글자수 제한?
     score = models.IntegerField() # 점수
     reg_time = models.DateTimeField(auto_now_add=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
-    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk')
+    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk', related_name='spot_comments')
 
     class Meta:
         managed = False
@@ -66,7 +63,6 @@ class SpotComment(models.Model):
 
 
 class UserSpotFavorite(models.Model): # 즐겨찾기
-    # pk = models.AutoField(primary_key=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
     spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk', related_name='liked')
 
@@ -76,7 +72,6 @@ class UserSpotFavorite(models.Model): # 즐겨찾기
 
 
 class CustomSpot(models.Model):
-    # pk = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)
     lat = models.FloatField()
     lon = models.FloatField()

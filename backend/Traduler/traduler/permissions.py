@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 # AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 
-class BasicCRUDPersmisson(BasePermission):
+class BasicCRUDPermisson(BasePermission):
     """
         조회 : 모든 사용자에게 허용 (목록이든, 특정 요소든)
         생성 : 로그인한 사용자만 허용

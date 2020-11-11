@@ -166,8 +166,8 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        # 로그인 여부 확인용 클래스
-        'rest_framework.permissions.IsAuthenticated',
+        # 기본 설정 - 모두에게 허용
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 로그인 관련 클래스를 JWT로 변경
@@ -187,7 +187,7 @@ JWT_AUTH = {
     # 갱신 가능 여부
     'JWT_ALLOW_REFRESH': True,
     # JWT 토큰의 유효 기간 (1일)
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=30),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # JWT 갱신 유효 기간 (3일)
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
