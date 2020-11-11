@@ -12,7 +12,7 @@ from .serializers import MemberTypeSerializer, StyleTypeSerializer, ScheduleSeri
 from traduler.mixin import *
 from traduler.permissions import *
 
-from spots.models import Area
+from spots.models import Area, Spot, CustomSpot
 
 import datetime
 
@@ -169,41 +169,13 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 지금 schedule은 완성 되었습니다.
 
         schedule_pk = serializer_schedule.data['id']
-        schedule = get_object_or_404(Schedule, pk=schedule_pk)
-
-        # 세부 일정 관련 데이터를 가져오고, 반복문을 돌며 각각의 일정을 만들어줍니다.
-        course_infos = request.data['course_info']
-        for course_info in course_infos:
-            serializer_course = self.course_serializer_class(data=course_info)
-            serializer_course.is_valid(raise_exception=True)
-            serializer_course.save(user_pk=request.user, schedule_pk=schedule)
-
-        # 목적지 관련 데이터를 가져오고, 반복문을 통해 각각의 목적지를 만들어줍니다.
-        province_infos = request.data['province_info']
-        for province_info in province_infos:
-            # 1. 날짜 + 시간으로 형식을 맞춰서 자동으로 datetime 객체를 만드는 방법
-            province_info['start_date'] = province_info['start_date'] + ' 00:00+09:00'
-            province_info['end_date'] = province_info['end_date'] + ' 23:59+09:00'
-
-            # 2. 직접 datetime 객체를 만들어서 넣어주는 방법
-            # start_date_split = list(map(int, province_info['start_date'].split('-')))
-            # start_date_time = datetime.datetime(start_date_split[0], start_date_split[1], start_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            # province_info['start_date'] = start_date_time
-
-            # end_date_split = list(map(int, province_info['end_date'].split('-')))
-            # end_date_time = datetime.datetime(end_date_split[0], end_date_split[1], end_date_split[2], tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
-            # province_info['end_date'] = end_date_time
-
-            serializer_province = self.province_serializer_class(data=province_info)
-            serializer_province.is_valid(raise_exception=True)
-            serializer_province.save(schedule_pk=schedule)
-        
+        # 스케쥴 생성 후 본인이 참여했다고 db 생성
         new_user_schedule = self.user_schedule_serializer_class(user_pk=request.user, schedule_pk=schedule)
         new_user_schedule.is_valid(raise_exception=True)
         new_user_schedule.save()
 
-        return Response({'schedule': serializer_schedule.data}, status=status.HTTP_201_CREATED)
-
+        return Response({"schedule_pk": schedule_pk}, status=status.HTTP_201_CREATED)
+        
     def retrieve(self, request, pk):
         """
             스케줄 상세 정보를 가져오는 함수입니다.
@@ -322,15 +294,27 @@ class CourseViewSet(viewsets.ModelViewSet):
     # 스케쥴 생성 후 코스 추가할 때
     def create(self, request, *args, **kwargs):
         schedule_pk = request.data['schedule_pk']
-        schedule_instance = get_object_or_404(Schedule, id=schedule_pk)
-        #코스 생성하는 사람이 스케쥴 작성일 경우만  
-        if schedule_instance.user_pk == request.user: 
-            new_course = self.serializer_class(data=request.data)
-            if new_course.is_valid(raise_exception=True):
-                new_course.save(user_pk=request.user, schedule_pk=schedule_instance)
-                return Response(status=status.HTTP_201_CREATED)
+        spot_pk = request.data['spot_pk']
+        custom_spot_pk = request.data['custom_spot_pk']
+
+        schedule = get_object_or_404(Schedule, id=schedule_pk)
+        if schedule.user_pk == request.user: 
+            if spot_pk:
+                spot = get_object_or_404(Spot, id=spot_pk)
+                new_course = self.serializer_class(data=request.data)
+                new_course.is_valid(raise_exception=True)
+                new_course.save(user_pk=request.user, schedule_pk=schedule, spot_pk=spot)
+
+            else:
+                custom_spot = get_object_or_404(CustomSpot, id=custom_spot_pk)
+                new_course = self.serializer_class(data=request.data)
+                new_course.is_valid(raise_exception=True)
+                new_course.save(user_pk=request.user, schedule_pk=schedule, custom_spot_pk=custom_spot)
+            return Response(status=status.HTTP_201_CREATED)
+
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
+        
 
 
 # ScheduleArea
@@ -345,7 +329,7 @@ class ScheduleAreaViewSet(viewsets.ModelViewSet):
         schedule_instance = get_object_or_404(Schedule, id=schedule_pk)
         area_instance = get_object_or_404(Area, area_code=area_code)
         if schedule_instance.user_pk == request.user: #스케쥴 작성자와 내가 같다면
-            new_area = self.serializer_class(data=request.data)
+            new_area = self.serializer_class(schedule_pk=schedule_instance, data=request.data)
             if new_area.is_valid(raise_exception=True):
                 new_area.save(schedule_pk=schedule_instance, area_code=area_instance)
                 return Response(status=status.HTTP_201_CREATED)
