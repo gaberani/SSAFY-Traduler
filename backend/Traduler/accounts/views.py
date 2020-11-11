@@ -6,13 +6,13 @@ from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserSpotFavoriteSerializer
 # from .models import UserSpotFavorite, Spot
 from spots.models import UserSpotFavorite, Spot
 from spots.serializers import SpotSerializer
 
 from schedules.models import Schedule, ScheduleAdvice, UserSchedule, Course
-from schedules.serializers import UserScheduleSerializer
+from schedules.serializers import UserScheduleSerializer, ScheduleSerializer
 
 from django.db.models import Prefetch
 from traduler.mixin import *
