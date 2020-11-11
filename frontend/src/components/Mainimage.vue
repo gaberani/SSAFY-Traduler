@@ -30,7 +30,7 @@ export default {
     background-image : url("../assets/mainimage.jpg");
     background-size:cover;
     width:100%;
-    min-height: 70vh;
+    min-height: 35vw;
     background-position: center;
     filter:saturate(150%);
 }

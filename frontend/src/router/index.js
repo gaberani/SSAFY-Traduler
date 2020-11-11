@@ -40,7 +40,22 @@ const routes = [
     path: '/schedule',
     name: 'Schedule',
     component: () => import('@/views/schedules/Schedule')
-  }
+  },
+  {
+    path: '/schedulemain',
+    name: 'ScheduleMain',
+    component: () => import('@/views/ScheduleMain')
+  },
+  {
+    path: '/sdresult',
+    name: 'SDresult',
+    component: () => import('@/views/SDresult')
+  },
+  {
+    path: '/detailschedule',
+    name: 'DetailSchedule',
+    component: () => import('@/views/schedules/DetailSchedule')
+  },
 ]
 
 const router = new VueRouter({
