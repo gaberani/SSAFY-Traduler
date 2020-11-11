@@ -381,7 +381,7 @@ class ScheduleAdviceViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get('curPage', 1)
         schedule = get_object_or_404(Schedule, id=schedule_pk)
         contained_advice = schedule.contained_advice.all().order_by('-id')
-        page, serialized_advice = pageProcess(contained_advice, self.serializer_class, cur_page, 10)
+        page, serialized_advice = pageProcess(contained_advice, self.serializer_class, cur_page, 5)
         return Response({'page': page, 'advice': serialized_advice}, status=status.HTTP_200_OK)
 
 
