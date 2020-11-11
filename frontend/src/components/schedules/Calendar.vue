@@ -1,9 +1,10 @@
 <template>
   <v-row class="fill-height">
     <v-col>
-      <v-sheet height="600">
+      <!-- {{ this.$attrs.AllCourses}} -->
+      <v-sheet height="700">
         <v-calendar
-            start="2020-11-06"
+            :start="startcourseday"
             ref="calendar"
             v-model="value"
             color="primary"
@@ -34,22 +35,25 @@
           </template>
         </v-calendar>
         <!-- 모달창 -->
-        <v-menu
+        <v-dialog
           v-model="selectedOpen"
           :close-on-content-click="false"
           :activator="selectedElement"
+          max-width="1000px"
+          min-width="500px"
           offset-x
         >
           <v-card
             color="grey lighten-4"
-            min-width="350px"
+            min-height="500px"
             flat
           >
+            <!-- 모달 카드 헤더 -->
             <v-toolbar
               :color="Courses.color"
               dark
             >
-              <v-toolbar-title v-html="Courses.name"></v-toolbar-title>
+              <v-toolbar-title><h2>{{ Courses.name }}</h2></v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
@@ -59,55 +63,163 @@
               </v-btn>
             </v-toolbar>
 
+            <!-- 모달 카드 내용 -->
             <v-card-text>
               <v-row>
-                <span>{{ Courses }}</span>
+                <!-- <span>{{ Courses }}</span> -->
+                <!-- 카드 왼쪽 -->
                 <v-col
-                    cols="12"
-                    sm="6"
-                    md="6"
-                >
-<!--                  <v-time-picker-->
-<!--                      v-model="departureTime"-->
-<!--                      full-width-->
-<!--                      :allowed-minutes="allowedMinutes"-->
-<!--                  >-->
-<!--                    <v-spacer></v-spacer>-->
-<!--                  </v-time-picker>-->
-                </v-col>
-                <v-col
-                  cols="12"
+                  cols="9"
                   sm="6"
-                  md="6"
                 >
-<!--                  <v-time-picker-->
-<!--                      v-model="arrivalTime"-->
-<!--                      full-width-->
-<!--                      :allowed-minutes="allowedMinutes"-->
-<!--                  >-->
-<!--                    <v-spacer></v-spacer>-->
-<!--                  </v-time-picker>-->
+                  <!-- 출발, 도착 시간 -->
+                  <v-row class="time_outline">
+                    <v-col cols="12">
+                      <h2>일정</h2>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      sm="6"
+                      md="3"
+                    >
+                      <v-select
+                        v-model="departureHour"
+                        :items="Hours"
+                        menu-props="auto"
+                        label="출발(시)"
+                        outlined
+                        dense
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      sm="6"
+                      md="3"
+                    >
+                      <v-select
+                        v-model="departureMinute"
+                        :items="Minutes"
+                        menu-props="auto"
+                        label="출발(분)"
+                        outlined
+                        dense
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      sm="6"
+                      md="3"
+                    >
+                      <v-select
+                        v-model="arrivalHour"
+                        :items="Hours"
+                        menu-props="auto"
+                        label="도착(시)"
+                        outlined
+                        dense
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                      cols="6"
+                      sm="6"
+                      md="3"
+                    >
+                      <v-select
+                        v-model="arrivalMinute"
+                        :items="Minutes"
+                        menu-props="auto"
+                        label="도착(분)"
+                        outlined
+                        dense
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+
+                  <!-- 예산 -->
+                  <v-row class="budget_outline" style="margin: 3px 0">
+                    <v-row style="margin: 5px 5px 4px 12px;">
+                      <div style="text-aling:center">
+                        <h2>예산</h2>
+                      </div>
+                      <v-spacer></v-spacer>
+                      <v-btn icon>
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </v-row>
+                      <v-col
+                        v-for="budget in budgets"  
+                        :key="budget.budget_name"
+                        cols="12"
+                        style="padding: 0px 0px 4px 14px;"
+                      >
+                        <h3>{{budget.budget_name}} : {{budget.budget_value}}</h3>
+                        <v-spacer></v-spacer>
+                      </v-col>
+                  </v-row>
+                  <!-- 메모 -->
+                  <v-row class="budget_outline" style="margin: 3px 0">
+                    <v-row style="margin: 5px 5px 4px 12px;">
+                      <h2>메모</h2>
+                    </v-row>
+                    <v-row
+                      class="memo_area"
+                    >
+                      <v-col
+                        v-for="memo in Courses.memos"
+                        :key="memo"
+                        cols="12"
+                      >
+                      </v-col>
+                    </v-row>
+                  </v-row>
+                </v-col>
+
+
+                <!-- 카드 오른쪽 -->
+                <v-col
+                  cols="3"
+                  sm="6"
+                  class="card-right-side"
+                >
+                  <v-row v-if="Courses.spot_info" style="margin: 5px 5px 4px 12px;">
+                    <h2>장소</h2>
+                    {{ Courses.spot_info.lat }}, {{ Courses.spot_info.lon }}, {{ Courses.spot_info.id }}
+                    <SpotDetailMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon" :item="Courses.spot_info.id"/>
+                  </v-row>
+                  <!-- <v-row -->
+                    <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
+                    <!-- <SpotMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon"/> -->
+                  <!-- </v-row> -->
                 </v-col>
               </v-row>
             </v-card-text>
+
+            <!-- 모달 하단 버튼 -->
             <v-card-actions>
               <v-btn
-                text
+                class="text--white"
+                color="#FF5E5E"
+                @click="CourseUpdate"
+              >
+                수정
+              </v-btn>
+              <v-btn
+                color="#FF9617"
+                @click="CourseDelete"
+              >
+                삭제
+              </v-btn>
+
+              <v-spacer></v-spacer>
+              <v-btn
                 color="secondary"
                 @click="selectedOpen = false"
               >
-                Cancel
-              </v-btn>
-              <v-btn
-                text
-                color="warning"
-                @click="TimeTest"
-              >
-                Delete
+                취소
               </v-btn>
             </v-card-actions>
           </v-card>
-        </v-menu>
+        </v-dialog>
       </v-sheet>
     </v-col>
   </v-row>
@@ -115,14 +227,18 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 import SERVER from '@/api/api'
+
+import SpotDetailMap from '@/components/spots/SpotDetailMap.vue'
 
 // 캘린더 시간은 ms 기준이다.
 export default {
   name: "Calendar",
+  components: {SpotDetailMap},
   data() {
     return {
-      startcourseday: '2020-11-08',
+      startcourseday: "2020-11-06",
       value: '',
       events: [],
       colors: ['#2196F3', '#3F51B5', '#673AB7', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],
@@ -134,14 +250,25 @@ export default {
       extendOriginal: null,
 
       Courses: [],
+      budgets: [],
+      budgets_names: ["식비", "교통비", "입장료", "숙소비", "기타"],
       selectedElement: null,
       selectedOpen: false,
       focus: '',
-      departureTime: null,
-      arrivalTime: null,
+
+      // 출발, 도착 시간 변수
+      Hours: [...Array(24)].map((v,i) => i+1),
+      Minutes: [...Array(4)].map((v,i) => i*15),
+      departureHour: null,
+      departureMinute: null,
+      arrivalHour: null,
+      arrivalMinute: null,
+
+      test: null
     }
   },
   created() {
+    console.log('Calendar Create')
     this.$http
       .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
         // 'http://127.0.0.1:8000/schedule/38/', {
@@ -150,9 +277,14 @@ export default {
         },
       })
       .then(res => {
+        this.test = res.data
         res.data.course.forEach(el => this.Courses.push(el))
         this.getInitialEvents()
       })
+    // console.log(this.$attrs.AllCourses)
+    // this.$attrs.AllCourses.course.forEach(el => {
+    //   this.Courses.push(el)
+    // })
   },
   mounted () {
     this.$refs.calendar.checkChange()
@@ -172,21 +304,28 @@ export default {
         const start = new Date(this.Courses[i].start_time).getTime()
         const end = new Date(this.Courses[i].end_time).getTime()
         // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
-        const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
-        events.push({
-          name: this.Courses[i].spot_info.title,
-          color: this.rndElement(this.colors),
-          start: this.roundTime(start),
-          end: this.roundTime(end),
-          timed,
-          datetimed
-        })
+        // const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
+        this.Courses[i]["timed"] = timed
+        this.Courses[i]["name"] = this.Courses[i].spot_info.title
+        this.Courses[i]["start"] = this.roundTime(start)
+        this.Courses[i]["end"] = this.roundTime(end)
+        this.Courses[i]["color"] = this.rndElement(this.colors)
+        // events.push({
+        //   name: this.Courses[i].spot_info.title,
+        //   color: this.rndElement(this.colors),
+        //   start: this.roundTime(start),
+        //   end: this.roundTime(end),
+        //   timed,
+        //   // datetimed
+        // })
+        events.push(this.Courses[i])
       }
       this.events = events
     },
     // 드래그 시작 이벤트 처리
     startDrag ({ event, timed }) {
       if (event && timed) {
+        console.log('drag event start OK')
         this.dragEvent = event
         this.dragTime = null
         this.extendOriginal = null
@@ -199,10 +338,8 @@ export default {
       if (this.dragEvent && this.dragTime === null) {
         const start = this.dragEvent.start
         this.dragTime = mouse - start
-        // console.log(new Date(mouse) + '//' + new Date(start) +'//'+ new Date(this.dragEvent.end))
       // 일정이 없는 비어있는 공간을 클릭
-      } else {  //
-        // 모달 CalendarCreate로 수정해도 괜찮을듯
+      } else {
         this.createStart = this.roundTime(mouse)
         this.createEvent = {
           name: `일정 #${this.events.length}`,
@@ -210,11 +347,11 @@ export default {
           start: this.createStart,
           end: this.createStart,
           timed: true,
-          datetimed: tms
         }
         this.events.push(this.createEvent)
       }
     },
+
     // 드래그를 아래로 할 경우 영역이 늘어남
     extendBottom (event) {
       this.createEvent = event
@@ -224,16 +361,20 @@ export default {
     // 마우스 움직이는 동안 처리
     mouseMove (tms) {
       const mouse = this.toTime(tms)
-
+      // 이미 있는 이벤트 드래그
       if (this.dragEvent && this.dragTime !== null) {
+        console.log(this.dragEvent)
         const start = this.dragEvent.start
         const end = this.dragEvent.end
         const duration = end - start
         const newStartTime = mouse - this.dragTime
         const newStart = this.roundTime(newStartTime)
         const newEnd = newStart + duration
+        console.log(newStartTime, newStart, newEnd)
+
         this.dragEvent.start = newStart
         this.dragEvent.end = newEnd
+      // 새로 생성되는 이벤트 드래그
       } else if (this.createEvent && this.createStart !== null) {
         const mouseRounded = this.roundTime(mouse, false)
         const min = Math.min(mouseRounded, this.createStart)
@@ -305,36 +446,67 @@ export default {
     rndDate(start, end) {
       return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
     },
-
+    // 일주일, 4일로 변경해서 볼 수 있게 하는 옵션 메서드
     viewDay ({ date }) {
       this.focus = date
       this.type = 'day'
     },
-    // 스케줄 하나 클릭 시 모달 관리
+    // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
+      // 이미 있는 코스 조회 시 데이터 엮어주기
+      // console.log('showEvent !')
+      this.departureHour = new Date(event.start).getHours()
+      this.departureMinute = new Date(event.start).getMinutes()
+      this.arrivalHour = new Date(event.end).getHours()
+      this.arrivalMinute = new Date(event.end).getMinutes()
+      this.budgets = []
+      let idx = 0
+      Object.keys(event).forEach(el => {
+        if (el.includes('budget')) {
+          this.budgets.push({
+            original_name: el,
+            budget_name: this.budgets_names[idx],
+            budget_value: event[el]
+          })
+          idx += 1
+        }
+      })
+      console.log(this.budgets)
+      // 모달 열기
       const open = () => {
         this.Courses = event
+        // 모달창 열 위치를 정함
         this.selectedElement = nativeEvent.target
         setTimeout(() => {
           this.selectedOpen = true
         }, 10)
       }
 
+      // 모달 닫기
       if (this.selectedOpen) {
         this.selectedOpen = false
+        // 10ms 대기시간
         setTimeout(open, 10)
       } else {
         open()
       }
       nativeEvent.stopPropagation()
     },
-    TimeTest() {
-      console.log(this.departureTime, this.arrivalTime)
-    }
+
+    // Course U & D
+    CourseDelete() {
+      console.log(this.Courses.id)
+    },
+    CourseUpdate() {
+      console.log('TRY Course Update')
+    },
   },
 }
 </script>
 
 <style scoped>
-
+.budget_outline {border: 2px solid black;border-radius: 20px}
+.time_outline {border: 2px solid black;border-radius: 20px;margin: 5px 0; min-height:200px}
+.memo_area {min-height: 100px}
+.card-right-side {border: 2px solid black;border-radius: 20px; margin: 16px 0}
 </style>
