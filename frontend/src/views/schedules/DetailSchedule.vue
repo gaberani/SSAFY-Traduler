@@ -35,8 +35,8 @@
 									<div style="margin-top:1.2vw;">
 										<span v-if="schedule.style_type_pk===1" class="typefont">힐링</span>
 										<span v-else-if="schedule.style_type_pk===2" class="typefont">액티비티</span>
-										<span v-else-if="schedule.style_type_pk===3" class="typefont">힐링</span>
-										<span v-else class="typefont">힐링</span>
+										<span v-else-if="schedule.style_type_pk===3" class="typefont">맛집 탐방</span>
+										<span v-else class="typefont">역사 탐방</span>
 									</div>
 								</v-col>
 								<v-col
@@ -83,7 +83,7 @@
 					sm="7"
 					style="margin-top:25px;"
         >
-        <SpotMap2 :data="exschedule.id" :schedule="exschedule" class="cardmap"></SpotMap2>
+        <SpotMap2 :item="schedule.id" :SDdetail="SDdetail" class="cardmap"></SpotMap2>
         </v-col>
         <v-col
 					cols="12"
@@ -94,7 +94,7 @@
 							<h3 style="margin-top:10px; font-size:1.3vw;">도움 게시판</h3>
 							<p v-if="advices.length===0" style="margin-top:10px;font-size:1vw;"> 등록된 게시글이 없습니다.</p>
 						</center>
-						<p style="margin-left:8px;margin-bottom:5px; font-size:1.3vw;" v-for="ad in advices" :key="ad.id"><i class="fas fa-circle"></i>  {{ad}}</p>
+						<p style="margin-top:10px;margin-left:8px;margin-bottom:5px; font-size:1.3vw;" v-for="ad in advices" :key="ad.id"><i class="fas fa-circle"></i>  {{ad.content}} - {{ad.user.nickname}}</p>
 					</div>    
         </v-col>
       </v-row>
@@ -128,7 +128,49 @@ export default {
     data() {
 			return {
 				schedule:[],
-				SDdetail:[],
+				SDdetail:{"course": [
+        {
+            "id": 41,
+            "spot_info": {
+                "id": 418,
+                "is_liked": false,
+                "title": "자양동 양꼬치거리 (중국음식문화거리)",
+                "overview": "지하철 2호선 · 7호선 건대입구역 5번 출구로 나와 로데오거리를 지나 한강둔치 방향으로 50m 정도 걸어 내려가면 일명 \"양꼬치 거리\"로 유명한 중국음식문화거리를 만나게 된다. 중국 동포들이 운영하는 양꼬치 전문점들이 즐비한 이곳은 \"신 차이나타운\"이라고 부르기도 한다. 한국어보다 중국어 간판이 더 많은 곳으로, 양꼬치 전문점이나 퓨전 중국요리점 등이 있어 서울에서 다양한 음식문화를 느낄 수 있는 명소이다.",
+                "lon": 127.065,
+                "lat": 37.5394,
+                "tel": null,
+                "tel_name": null,
+                "image": "http://tong.visitkorea.or.kr/cms/resource/63/2372563_image2_1.jpg",
+                "address": "서울특별시 광진구 자양동",
+                "content_type_pk": 12,
+                "area_code": "A06",
+                "category_code": "A02030600"
+            },
+            "custom_spot_info": null,
+            "memos": [],
+            "start_time": "2020-11-06T18:00:00+09:00",
+            "end_time": "2020-11-07T21:00:00+09:00",
+            "content": "양꼬치거리에서 양꼬치를 먹으려고 해요 맥주도 한잔??",
+            "budget_food": 20000,
+            "budget_transport": 0,
+            "budget_entrance": 0,
+            "budget_room": 0,
+            "budget_etc": 0,
+            "schedule_pk": 38,
+            "spot_pk": 418,
+            "custom_spot_pk": null,
+            "user_pk": 24
+        },],
+					"course_coords": [
+                [37.5394, 127.065],
+                [37.5348, 127.092],
+                [37.6855, 127.073],
+                [37.6855, 127.073],
+                [37.5118, 127.059]
+            ],"avg_coord": [
+                37.567874999999994,
+                127.07225
+            ]},
 				SDcourse:[],
 				advices:[],
 				exschedule: 
@@ -169,8 +211,8 @@ export default {
 			}
     },
     computed: {
-		...mapGetters(["config","LoginFlag"]),
-    },
+			...mapGetters(["config","LoginFlag"]),
+		},
     methods: {
 			formatDate(date) {
 				moment.locale('ko')
@@ -186,29 +228,48 @@ export default {
 						fmtime
 				} 
 			},
+			getDetail() {
+				const params = new URL(document.location).searchParams;
+				this.$http
+				.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
+						headers: {
+								Authorization: this.config,
+						},
+				})
+				.then(response => {
+				this.schedule = response.data.schedule
+				this.SDdetail = response.data
+				this.SDcourse = response.data.course
+				console.log(this.schedule)
+				console.log(this.SDdetail)
+				// 맵을 위해서 임시데이터   
+				})
+				.catch(error => {
+				console.log(error.response)
+				})
+			}
     },
     created() {
+			// /advice?schedule_pk={schedule_pk}&curPage={페이지}
 			const params = new URL(document.location).searchParams;
 			this.$http
-			.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
+			.get(process.env.VUE_APP_SERVER_URL +`/advice?schedule_pk=${params.get('id')}`,{
 					headers: {
 							Authorization: this.config,
 					},
 			})
 			.then(response => {
-			this.schedule = response.data.schedule
+				// console.log(response)
+			console.log(response.data)
 			this.advices = response.data.advice
-			this.SDdetail = response.data
-			this.SDcourse = response.data.course
-			console.log(this.schedule)
-			console.log(this.SDdetail)
 			// 맵을 위해서 임시데이터   
 			})
 			.catch(error => {
 			console.log(error.response)
 			})
+			this.getDetail()
+		},
 		}
-    }
 </script>
 
 <style scoped>
