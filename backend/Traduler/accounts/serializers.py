@@ -60,4 +60,4 @@ class UserSpotFavoriteSerializer(serializers.ModelSerializer):
     spot_detail = SpotSerializer(source='spot_pk', required=False) 
     class Meta:
         model = UserSpotFavorite
-        fields = 'all'
+        fields = '__all__'
