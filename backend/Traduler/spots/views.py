@@ -84,10 +84,11 @@ class SpotViewSet(viewsets.ModelViewSet):
     # 추천 스팟 리턴
     @action(detail=False, methods=["GET"])
     def get_recommend_spots(self, request):
-        recom_spots = self.queryset.order_by('?')[:5] # 일단은 랜덤으로
+        random_area = Area.objects.filter(content_type=0).order_by('?')[0]
+        recom_spots = self.queryset.filter(area_code__area_code__startswith=random_area.area_code).order_by('?')[:5]
         serialized_recom_spots = self.serializer_class(data=recom_spots, context={'user': request.user}, many=True)
         serialized_recom_spots.is_valid()
-        return Response(serialized_recom_spots.data, status=status.HTTP_200_OK)
+        return Response({'recom_area': random_area.area_code_name, 'recom_spots': serialized_recom_spots.data}, status=status.HTTP_200_OK)
 
 
 
