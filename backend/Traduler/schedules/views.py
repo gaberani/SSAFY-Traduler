@@ -119,7 +119,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
         for serialized_schedule in result:
             serialized_schedule['coords'] = []
-            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id'])
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
