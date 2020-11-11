@@ -35,7 +35,7 @@ class Schedule(models.Model):
     max_member = models.IntegerField()           # 최대 참여 인원
     member_type_pk = models.ForeignKey(MemberType, on_delete=models.SET_NULL, db_column='member_type_pk', blank=True, null=True)
     style_type_pk = models.ForeignKey(StyleType, on_delete=models.SET_NULL, db_column='style_type_pk', blank=True, null=True)
-    user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
+    user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk', related_name='written_schedule')
 
     class Meta:
         managed = False
