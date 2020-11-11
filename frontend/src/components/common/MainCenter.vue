@@ -85,7 +85,7 @@ export default {
       }
     },
     computed: {
-      ...mapGetters(["LoginFlag", "config", "userInfo"]),
+      ...mapGetters('accounts', ["LoginFlag", "config", "userInfo"]),
       headers() {
         return (this.LoginFlag ? {headers: {Authorization: this.config}} : null)
       },

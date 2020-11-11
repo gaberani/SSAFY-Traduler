@@ -89,10 +89,10 @@ export default {
 		}
 	},
 	computed: {
-    ...mapGetters(["LoginFlag"])
+    ...mapGetters('accounts', ["LoginFlag"])
   },
 	methods: {
-		...mapActions(["SubmitLoginData"]),
+		...mapActions('accounts', ["SubmitLoginData"]),
 		gotoSignup() {
 			this.$router.push({name: 'Signup'})
 		}

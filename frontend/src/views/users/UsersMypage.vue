@@ -43,7 +43,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapActions(["GetUserInfo"])
+		...mapActions('accounts', ["GetUserInfo"])
 	}
 }
 </script>

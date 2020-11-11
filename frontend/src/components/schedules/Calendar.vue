@@ -158,7 +158,7 @@ export default {
     this.$refs.calendar.checkChange()
   },
   computed: {
-    ...mapGetters(['config'])
+    ...mapGetters('accounts', ['config'])
   },
   methods: {
     // allowedMinutes: v => v === 0 | v === 15 | v === 30 | v === 45,

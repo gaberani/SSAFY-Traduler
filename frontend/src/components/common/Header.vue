@@ -25,10 +25,10 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
     name: 'Header',
     methods: {
-      ...mapActions(["SubmitLogout"]),
+      ...mapActions('accounts', ["SubmitLogout"]),
     },
     computed: {
-      ...mapGetters(['LoginFlag'])
+      ...mapGetters('accounts', ['LoginFlag'])
     }
 }
 </script>

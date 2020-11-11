@@ -184,7 +184,7 @@ export default {
 		}
 	},
 	methods: {
-    ...mapActions(["SubmitSignupData"]),
+    ...mapActions('accounts', ["SubmitSignupData"]),
     // 성별 입력 메서드
     onClickWoman() {
       if (this.UserSignupData.gender !== '여성') {
