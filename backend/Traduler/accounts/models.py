@@ -6,7 +6,7 @@ class User(AbstractUser):
     nickname = models.CharField(max_length=20)
     gender = models.CharField(max_length=2)
     age = models.IntegerField(default=0)
-    profile_image = models.TextField()
+    profile_image = models.ImageField(null=True)
     introduce = models.TextField()
 
 
