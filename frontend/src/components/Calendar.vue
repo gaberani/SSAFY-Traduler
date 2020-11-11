@@ -3,6 +3,7 @@
     <v-col>
       <v-sheet height="600">
         <v-calendar
+            start="2020-11-06"
             ref="calendar"
             v-model="value"
             color="primary"
@@ -45,10 +46,10 @@
             flat
           >
             <v-toolbar
-              :color="OneSchedule.color"
+              :color="Courses.color"
               dark
             >
-              <v-toolbar-title v-html="OneSchedule.name"></v-toolbar-title>
+              <v-toolbar-title v-html="Courses.name"></v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
@@ -60,32 +61,32 @@
 
             <v-card-text>
               <v-row>
-                <span>{{ OneSchedule }}</span>
+                <span>{{ Courses }}</span>
                 <v-col
                     cols="12"
                     sm="6"
                     md="6"
                 >
-                  <v-time-picker
-                      v-model="departureTime"
-                      full-width
-                      :allowed-minutes="allowedMinutes"
-                  >
-                    <v-spacer></v-spacer>
-                  </v-time-picker>
+<!--                  <v-time-picker-->
+<!--                      v-model="departureTime"-->
+<!--                      full-width-->
+<!--                      :allowed-minutes="allowedMinutes"-->
+<!--                  >-->
+<!--                    <v-spacer></v-spacer>-->
+<!--                  </v-time-picker>-->
                 </v-col>
                 <v-col
                   cols="12"
                   sm="6"
                   md="6"
                 >
-                  <v-time-picker
-                      v-model="arrivalTime"
-                      full-width
-                      :allowed-minutes="allowedMinutes"
-                  >
-                    <v-spacer></v-spacer>
-                  </v-time-picker>
+<!--                  <v-time-picker-->
+<!--                      v-model="arrivalTime"-->
+<!--                      full-width-->
+<!--                      :allowed-minutes="allowedMinutes"-->
+<!--                  >-->
+<!--                    <v-spacer></v-spacer>-->
+<!--                  </v-time-picker>-->
                 </v-col>
               </v-row>
             </v-card-text>
@@ -120,6 +121,7 @@ export default {
   name: "Calendar",
   data() {
     return {
+      startcourseday: '2020-11-08',
       value: '',
       events: [],
       colors: ['#2196F3', '#3F51B5', '#673AB7', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],
@@ -130,12 +132,12 @@ export default {
       createStart: null,
       extendOriginal: null,
 
-      OneSchedule: {},
+      Courses: [],
       selectedElement: null,
       selectedOpen: false,
       focus: '',
       departureTime: null,
-      arrivalTime: null
+      arrivalTime: null,
     }
   },
   created() {
@@ -146,7 +148,8 @@ export default {
         },
       })
       .then(res => {
-        console.log(res)
+        res.data.course.forEach(el => this.Courses.push(el))
+        this.getInitialEvents()
       })
   },
   mounted () {
@@ -156,7 +159,29 @@ export default {
     ...mapGetters(['config'])
   },
   methods: {
-    allowedMinutes: v => v === 0 | v === 15 | v === 30 | v === 45,
+    // allowedMinutes: v => v === 0 | v === 15 | v === 30 | v === 45,
+    // 초기 이벤트 설정
+    getInitialEvents () {
+      const events = []
+      const eventCount = this.Courses.length
+      // 스케쥴 코스 개수만큼 이벤트 생성하기
+      for (let i = 0; i < eventCount; i++) {
+        const timed = true
+        const start = new Date(this.Courses[i].start_time).getTime()
+        const end = new Date(this.Courses[i].end_time).getTime()
+        // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
+        const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
+        events.push({
+          name: this.Courses[i].spot_info.title,
+          color: this.rndElement(this.colors),
+          start: this.roundTime(start),
+          end: this.roundTime(end),
+          timed,
+          datetimed
+        })
+      }
+      this.events = events
+    },
     // 드래그 시작 이벤트 처리
     startDrag ({ event, timed }) {
       if (event && timed) {
@@ -167,18 +192,16 @@ export default {
     },
     // 스케줄 확인 & 생성
     startTime (tms) {
-      console.log(tms)    // dateTime 형식
       const mouse = this.toTime(tms)
       // 이미 있는 것을 드래그 or 클릭
       if (this.dragEvent && this.dragTime === null) {
         const start = this.dragEvent.start
         this.dragTime = mouse - start
-        console.log(new Date(mouse) + '//' + new Date(start) +'//'+ new Date(this.dragEvent.end))
+        // console.log(new Date(mouse) + '//' + new Date(start) +'//'+ new Date(this.dragEvent.end))
       // 일정이 없는 비어있는 공간을 클릭
       } else {  //
         // 모달 CalendarCreate로 수정해도 괜찮을듯
         this.createStart = this.roundTime(mouse)
-        console.log('createStart:', this.createStart)
         this.createEvent = {
           name: `일정 #${this.events.length}`,
           color: this.rndElement(this.colors),
@@ -251,11 +274,7 @@ export default {
           ? time - time % roundDownTime
           : time + (roundDownTime - (time % roundDownTime))
     },
-    // DateTime에 맞게 변환(v-time-picker에 쓰기위함)
-    ConvertDateTime (rTime) {
-      console.log(rTime)
-    },
-    // 시간 얻어오기
+    // dateTime ms로 변환한 시간 얻어오기
     toTime (tms) {
       return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
     },
@@ -270,39 +289,6 @@ export default {
           : event === this.createEvent
               ? `rgba(${r}, ${g}, ${b}, 0.7)`
               : event.color
-    },
-    getInitialEvents ({ start, end }) {
-      const events = []
-
-      const min = new Date(`${start.date}T00:00:00`).getTime()
-      const max = new Date(`${end.date}T23:59:59`).getTime()
-
-      // const days = (max - min) / 86400000
-      // const eventCount = this.rnd(days, days + 20)
-
-      const eventCount = 4
-      // eventCount만큼 이벤트 랜덤 생성하기
-      for (let i = 0; i < eventCount; i++) {
-        // const timed = this.rnd(0, 3) !== 0
-        const timed = true
-        const firstTimestamp = this.rnd(min, max)
-        const secondTimestamp = this.rnd(2, timed ? 8 : 288) * 900000
-        const start = firstTimestamp - (firstTimestamp % 900000)
-        const end = start + secondTimestamp
-        // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
-        const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
-        console.log(datetimed)
-        events.push({
-          name: this.rndElement(this.names),
-          color: this.rndElement(this.colors),
-          start,
-          end,
-          timed,
-          datetimed
-        })
-      }
-      this.events = events
-      console.log(this.events)
     },
 
     // 숫자 랜덤
@@ -325,7 +311,7 @@ export default {
     // 스케줄 하나 클릭 시 모달 관리
     showEvent ({ nativeEvent, event }) {
       const open = () => {
-        this.OneSchedule = event
+        this.Courses = event
         this.selectedElement = nativeEvent.target
         setTimeout(() => {
           this.selectedOpen = true
