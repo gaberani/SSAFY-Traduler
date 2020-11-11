@@ -198,6 +198,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             serializer_province.is_valid(raise_exception=True)
             serializer_province.save(schedule_pk=schedule)
         
+        new_user_schedule = self.user_schedule_serializer_class(user_pk=request.user, schedule_pk=schedule)
+        new_user_schedule.is_valid(raise_exception=True)
+        new_user_schedule.save()
+
         return Response({'schedule': serializer_schedule.data}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk):
