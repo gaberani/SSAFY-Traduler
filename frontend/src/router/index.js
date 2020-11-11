@@ -12,21 +12,6 @@ const routes = [
     component: () => import('@/views/Home')
   },
   {
-    path: '/spot',
-    name: 'SpotMain',
-    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotMain.vue')
-  },
-  {
-    path: '/spot/search',
-    name: 'SpotSearch',
-    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotSearch.vue')
-  },
-  {
-    path: '/spot/:spot_id',
-    name: 'SpotDetail',
-    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotDetail.vue')
-  },
-  {
     path: '/login',
     name: 'UsersLogin',
     component: () => import('@/views/users/UsersLogin')
@@ -42,24 +27,34 @@ const routes = [
     component: () => import('@/views/users/UsersMypage')
   },
   {
+    path: '/spot',
+    name: 'SpotMain',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotMain.vue')
+  },
+  {
+    path: '/spot/search',
+    name: 'SpotSearch',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotSearch.vue')
+  },
+  {
+    path: '/spot/:spot_id',
+    name: 'SpotDetail',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotDetail.vue')
+  },
+  {
     path: '/schedule',
-    name: 'Schedule',
-    component: () => import('@/views/schedules/Schedule')
-  },
-  {
-    path: '/schedulemain',
     name: 'ScheduleMain',
-    component: () => import('@/views/ScheduleMain')
+    component: () => import('@/views/schedules/ScheduleMain')
   },
   {
-    path: '/sdresult',
-    name: 'SDresult',
-    component: () => import('@/views/SDresult')
-  },
-  {
-    path: '/detailschedule',
+    path: '/schedule/:schedule_id',
     name: 'DetailSchedule',
     component: () => import('@/views/schedules/DetailSchedule')
+  },
+  {
+    path: '/scheduleresult',
+    name: 'Scheduleresult',
+    component: () => import('@/views/schedules/Scheduleresult')
   },
 ]
 

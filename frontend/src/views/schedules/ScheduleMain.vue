@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import SearchSchedule from '@/components/SearchSchedule';
-import SDMainCenter from '@/components/SDMainCenter';
-import Footer from '@/components/Footer';
+import SearchSchedule from '@/components/schedules/SearchSchedule';
+import SDMainCenter from '@/components/schedules/SDMainCenter';
+import Footer from '@/components/common/Footer';
 export default {
     components:{SearchSchedule, SDMainCenter, Footer},
     name: 'ScheduleMain',

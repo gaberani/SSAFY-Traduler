@@ -8,9 +8,9 @@
 
 <script>
 
-import Mainimage from '@/components/Mainimage';
-import MainCenter from '@/components/MainCenter';
-import Footer from '@/components/Footer';
+import Mainimage from '@/components/common/Mainimage';
+import MainCenter from '@/components/common/MainCenter';
+import Footer from '@/components/common/Footer';
 export default {
   name: 'Home',
   components: {

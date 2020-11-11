@@ -1,10 +1,10 @@
 <template>
   <v-container style="padding:0;">
       <!-- v-if -->
-      <img v-if="schedule.together==1" class="togetherimo" src="../assets/friend.png" alt="">
+      <img v-if="schedule.together==1" class="togetherimo" src="@/assets/friend.png" alt="">
       <!-- v-if -->
       <!-- <img class="helpimo" src="../assets/help.png" alt=""> -->
-      <img v-if="schedule.advice==1" class="helpimo" src="../assets/help2.png" alt="">
+      <img v-if="schedule.advice==1" class="helpimo" src="@/assets/help2.png" alt="">
     <SpotMap :data="this.$attrs.data" :schedule="this.$attrs.schedule" class="cardmap"></SpotMap>
     <button @click="GotoDetail(schedule.id)" class="SDtitle"><span>{{schedule.title}}</span></button>
   </v-container>
@@ -17,18 +17,18 @@ export default {
     components: {SpotMap},
     data() {
 		return {
-            item: '',
-            schedule:[],
-        }
+        item: '',
+        schedule:[],
+      }
     },
     created() {
-        this.schedule =this.$attrs.schedule
-        // console.log(this.schedule)
+      this.schedule =this.$attrs.schedule
+      // console.log(this.schedule)
     },
     methods: {
-        GotoDetail(SDid) {
-            this.$router.push('/detailschedule?id='+ SDid)
-        }
+      GotoDetail(schedule_id) {
+        this.$router.push({name: 'DetailSchedule', params: {schedule_id: schedule_id}})
+      }
     }
 }
 </script>

@@ -15,9 +15,9 @@
         <div class="mb-3 mt-2">
           <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">NEW</h1>
           <h3 style="display:inline; font-size:1.7vw;  "> 스케줄</h3>
-          <img src="../assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
+          <img src="@/assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
           <span class="imo"> 동행 모집</span>
-          <img src="../assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
+          <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
           <span class="imo"> 도움 요청</span>
           <button class="plusbtn">더보기</button> 
         </div>
@@ -76,79 +76,78 @@
 </template>
 
 <script>
-import ScheduleCard from '@/components/ScheduleCard';
+import ScheduleCard from '@/components/schedules/ScheduleCard';
+
+import SERVER from '@/api/api'
+import axios from 'axios'
+
 export default {
   components:{ScheduleCard},
   data() {
     return {
-      schedule: 
-        {
-            "id": 38,
-            "user": {
-                "username": "Edgar3906",
-                "nickname": "이동혁",
-                "gender": "남성",
-                "age": 28,
-                "introduce": "",
-                "profile_image": ""
-            },
-            "title": "서울 여행!",
-            "overview": "주말동안 서울에 있는 관광 명소를 갈 생각이에요!!",
-            "private": 1,
-            "advice": 1,
-            "together": 1,
-            "scrap_count": 0,
-            "start_date": "2020-11-06T18:00:00+09:00",
-            "end_date": "2020-11-08T18:00:00+09:00",
-            "max_member": 5,
-            "member_type_pk": 4,
-            "style_type_pk": 4,
-            "user_pk": 24,
-            "coords": [
-                [37.5394, 127.065],
-                [37.5348, 127.092],
-                [37.6855, 127.073],
-                [37.6855, 127.073],
-                [37.5118, 127.059]
-            ],
-            "avg_coord": [
-                37.567874999999994,
-                127.07225
-            ]
+      schedule: {
+        "id": 0,
+        "user": {
+          "username": "",
+          "nickname": "",
+          "gender": "",
+          "age": 0,
+          "introduce": "",
+          "profile_image": ""
         },
-        newschedules:[],
-        bestschedules:[],
-        helpschedules:[],
+        "title": "",
+        "overview": "",
+        "private": 1,
+        "advice": 1,
+        "together": 1,
+        "scrap_count": 0,
+        "start_date": "",
+        "end_date": "",
+        "max_member": 0,
+        "member_type_pk": 0,
+        "style_type_pk": 0,
+        "user_pk": 0,
+        "coords": [[0, 0]],
+        "avg_coord": [0, 0]
+      },
+      newschedules:[],
+      bestschedules:[],
+      helpschedules:[],
     }
   },
   methods: {
     getNewSD() {
-      this.$http
-      .get(process.env.VUE_APP_SERVER_URL +`/schedule/`)
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
-      this.newschedules = response.data.schedule.reverse().slice(0,3)
-      console.log(this.newschedules)
+        this.newschedules = response.data.schedule.reverse().slice(0,3);
       })
       .catch(error => {
-      console.log(error.response)
+        console.log(error.response);
       })
     },
     getHelpSD() {
       this.$http
-      .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
-      +`&member_type=&style_type=`
-      +`&together=&advice=1`
-      +`&start_date=&end_date=`)
+      .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
+        query: {
+          title: '',
+          member_type: '',
+          style_type: '',
+          together: '',
+          advice: 1,
+          start_date: '',
+          end_date: '',
+        }})
       .then(response => {
-      this.helpschedules = response.data.schedule.slice(0,3)
-      // console.log(this.helpschedules)
+        this.helpschedules = response.data.schedule.slice(0,3);
+        // console.log(this.helpschedules)
       })
       .catch(error => {
-      console.log(error.response)
+      console.log(error.response);
       })
     }
   },
   created() {
+    // console.log(SERVER)
     this.getNewSD();
     this.getHelpSD();
   }

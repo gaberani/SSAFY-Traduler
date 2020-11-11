@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import SearchSchedule from '@/components/SearchSchedule';
-import SearchSDresult from '@/components/SearchSDresult';
-import Footer from '@/components/Footer';
+import SearchSchedule from '@/components/schedules/SearchSchedule';
+import SearchSDresult from '@/components/schedules/SearchSDresult';
+import Footer from '@/components/common/Footer';
 export default {
     components:{SearchSchedule, SearchSDresult,Footer},
-    name: 'SDresult',
+    name: 'Scheduleresult',
 }
 </script>
 

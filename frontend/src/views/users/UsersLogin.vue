@@ -38,6 +38,7 @@
 						color="#FF5E5E"
 						prepend-inner-icon="mdi-lock"
             label="비밀번호를 입력해주세요"
+            @keydown.enter="SubmitLoginData(UserLoginData)"
             required
           ></v-text-field>
         </v-col>

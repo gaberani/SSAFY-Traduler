@@ -29,7 +29,7 @@
 
   import SearchSpot from '@/components/spots/SearchSpot';
   import SpotCard from '@/components/spots/SpotCard';
-  import Footer from '@/components/Footer';
+  import Footer from '@/components/common/Footer';
 
   export default {
     data () {

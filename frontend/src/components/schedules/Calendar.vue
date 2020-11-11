@@ -115,6 +115,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import SERVER from '@/api/api'
 
 // 캘린더 시간은 ms 기준이다.
 export default {
@@ -142,7 +143,8 @@ export default {
   },
   created() {
     this.$http
-      .get('http://127.0.0.1:8000/schedule/38/', {
+      .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
+        // 'http://127.0.0.1:8000/schedule/38/', {
         headers: {
           Authorization: this.config,
         },

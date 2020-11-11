@@ -4,15 +4,16 @@ export default {
 		SPOT: {
 			CATEGORY: '/category/',
 			AREA: '/area/',
-			SPOTS: `/spots/`, // GET, 뒤에 PK값 붙이면 상세보기
+			SPOTS: '/spots/', // GET, 뒤에 PK값 붙이면 상세보기
       RECOMMEND: '/spots/get_recommend_spots/',
       BEST: '/spots/get_best_spots/',
-			LIKE: `/like/`,		// POST : 좋아요, DELETE : 취소
+			LIKE: '/like/',		// POST : 좋아요, DELETE : 취소
 			COMMNET: '/comment/',								// POST : 생성, PATCH : 수정, DELETE : 삭제
 			CUSTOM_SPOT_CREATE: '/custom_spots/'			// POST : 생성
 		},
 		SCHEDULE: {
-
+      SCHEDULES: '/schedule/',
+      ADVICE: '/advice/',
 		},
 		USER: {
 			SIGNUP: '/rest-auth/signup/',

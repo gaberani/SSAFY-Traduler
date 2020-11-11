@@ -5,9 +5,9 @@
             <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">함께 </h1>
             <h3 style="display:inline; font-size:1.7vw; ">떠나요</h3>
             <!-- 나중에 이모티콘으로 교체 버튼 임시 -->
-            <img src="../assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
+            <img src="@/assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
             <span class="imo"> 동행 모집</span>
-            <img src="../assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
+            <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
             <span class="imo"> 도움 요청</span>
             <button class="plusbtn">더보기</button>
             <div>
@@ -60,7 +60,7 @@ import SERVER from '@/api/api'
 import { mapGetters } from 'vuex'
 
 import SpotCard from '@/components/spots/SpotCard';
-import ScheduleCard from '@/components/ScheduleCard';
+import ScheduleCard from '@/components/schedules/ScheduleCard';
 
 export default {
     components:{SpotCard,ScheduleCard},
@@ -116,7 +116,7 @@ export default {
       }
     },
     created() {
-      this.getTogetherSD();
+      // this.getTogetherSD();
       this.getBestSpots();
     }
   }

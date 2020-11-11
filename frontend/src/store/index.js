@@ -42,7 +42,6 @@ export default new Vuex.Store({
           Vue.prototype.$http
             .post(process.env.VUE_APP_SERVER_URL + '/rest-auth/login/', UserLoginData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
             .then(res => {
-              console.log(res)
               const token = res.data.token
               cookies.set('auth-token', token)
               window.sessionStorage.setItem('username', UserLoginData.username)
@@ -125,8 +124,7 @@ export default new Vuex.Store({
         }
         Vue.prototype.$http
           .get(process.env.VUE_APP_SERVER_URL + '/accounts/', config)
-          .then(res => {
-            console.log(res)
+          .then(() => {
             commit("GET_USER_INFO", {username: 'asdasd'})
           })
       }

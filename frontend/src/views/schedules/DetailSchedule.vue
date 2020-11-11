@@ -119,157 +119,138 @@
 </template>
 
 <script>
-import SpotMap2 from '@/components/SpotMap2.vue'
+import SpotMap2 from '@/components/schedules/SpotMap2.vue'
+
 import { mapGetters } from "vuex";
+import SERVER from '@/api/api'
+import axios from 'axios'
+
 import moment from 'moment';
 import 'moment/locale/ko'
+
 export default {
-    components: {SpotMap2},
-    data() {
-			return {
-				schedule:[],
-				SDdetail:{"course": [
-        {
-            "id": 41,
+  components: {
+    SpotMap2
+  },
+  data() {
+    return {
+      schedule: [],
+      SDdetail: {
+        "course": [
+          {
+            "id": 0,
             "spot_info": {
-                "id": 418,
-                "is_liked": false,
-                "title": "자양동 양꼬치거리 (중국음식문화거리)",
-                "overview": "지하철 2호선 · 7호선 건대입구역 5번 출구로 나와 로데오거리를 지나 한강둔치 방향으로 50m 정도 걸어 내려가면 일명 \"양꼬치 거리\"로 유명한 중국음식문화거리를 만나게 된다. 중국 동포들이 운영하는 양꼬치 전문점들이 즐비한 이곳은 \"신 차이나타운\"이라고 부르기도 한다. 한국어보다 중국어 간판이 더 많은 곳으로, 양꼬치 전문점이나 퓨전 중국요리점 등이 있어 서울에서 다양한 음식문화를 느낄 수 있는 명소이다.",
-                "lon": 127.065,
-                "lat": 37.5394,
-                "tel": null,
-                "tel_name": null,
-                "image": "http://tong.visitkorea.or.kr/cms/resource/63/2372563_image2_1.jpg",
-                "address": "서울특별시 광진구 자양동",
-                "content_type_pk": 12,
-                "area_code": "A06",
-                "category_code": "A02030600"
+              "id": 0,
+              "is_liked": false,
+              "title": "",
+              "overview": "",
+              "lon": 0,
+              "lat": 0,
+              "tel": null,
+              "tel_name": null,
+              "image": "",
+              "address": "",
+              "content_type_pk": 0,
+              "area_code": "",
+              "category_code": ""
             },
             "custom_spot_info": null,
             "memos": [],
-            "start_time": "2020-11-06T18:00:00+09:00",
-            "end_time": "2020-11-07T21:00:00+09:00",
-            "content": "양꼬치거리에서 양꼬치를 먹으려고 해요 맥주도 한잔??",
-            "budget_food": 20000,
+            "start_time": "",
+            "end_time": "",
+            "content": "",
+            "budget_food": 0,
             "budget_transport": 0,
             "budget_entrance": 0,
             "budget_room": 0,
             "budget_etc": 0,
-            "schedule_pk": 38,
-            "spot_pk": 418,
+            "schedule_pk": 0,
+            "spot_pk": 0,
             "custom_spot_pk": null,
-            "user_pk": 24
-        },],
-					"course_coords": [
-                [37.5394, 127.065],
-                [37.5348, 127.092],
-                [37.6855, 127.073],
-                [37.6855, 127.073],
-                [37.5118, 127.059]
-            ],"avg_coord": [
-                37.567874999999994,
-                127.07225
-            ]},
-				SDcourse:[],
-				advices:[],
-				exschedule: 
-        {
-            "id": 38,
-            "user": {
-                "username": "Edgar3906",
-                "nickname": "이동혁",
-                "gender": "남성",
-                "age": 28,
-                "introduce": "",
-                "profile_image": ""
-            },
-            "title": "서울 여행!",
-            "overview": "주말동안 서울에 있는 관광 명소를 갈 생각이에요!!",
-            "private": 1,
-            "advice": 1,
-            "together": 1,
-            "scrap_count": 0,
-            "start_date": "2020-11-06T18:00:00+09:00",
-            "end_date": "2020-11-08T18:00:00+09:00",
-            "max_member": 5,
-            "member_type_pk": 4,
-            "style_type_pk": 4,
-            "user_pk": 24,
-            "coords": [
-                [37.5394, 127.065],
-                [37.5348, 127.092],
-                [37.6855, 127.073],
-                [37.6855, 127.073],
-                [37.5118, 127.059]
-            ],
-            "avg_coord": [
-                37.567874999999994,
-                127.07225
-            ]
+            "user_pk": 0
+          },
+        ],
+        "course_coords": [[0, 0]],
+        "avg_coord": [0, 0]
+      },
+      SDcourse: [],
+      advices: [],
+      exschedule: {
+        "id": 0,
+        "user": {
+          "username": "",
+          "nickname": "",
+          "gender": "",
+          "age": 0,
+          "introduce": "",
+          "profile_image": ""
         },
-			}
+        "title": "",
+        "overview": "",
+        "private": 0,
+        "advice": 1,
+        "together": 1,
+        "scrap_count": 0,
+        "start_date": "",
+        "end_date": "",
+        "max_member": 0,
+        "member_type_pk": 0,
+        "style_type_pk": 0,
+        "user_pk": 0,
+        "coords": [[0, 0]],
+        "avg_coord": [0, 0]
+      },
+    }
+  },
+  computed: {
+    ...mapGetters(["config", "LoginFlag"]),
+    headers() {
+      return (this.LoginFlag ? {Authorization: this.config} : null)
     },
-    computed: {
-			...mapGetters(["config","LoginFlag"]),
-		},
-    methods: {
-			formatDate(date) {
-				moment.locale('ko')
-				const fmdate = moment(date).format('dddd, MM월 DD일')
-				return{
-						fmdate
-				} 
-			},
-			formattime(time) {
-				moment.locale('ko')
-				const fmtime = moment(time).format('MM월 DD일 hh:mm')
-				return{
-						fmtime
-				} 
-			},
-			getDetail() {
-				const params = new URL(document.location).searchParams;
-				this.$http
-				.get(process.env.VUE_APP_SERVER_URL +`/schedule/${params.get('id')}`,{
-						headers: {
-								Authorization: this.config,
-						},
-				})
-				.then(response => {
-				this.schedule = response.data.schedule
-				this.SDdetail = response.data
-				this.SDcourse = response.data.course
-				console.log(this.schedule)
-				console.log(this.SDdetail)
-				// 맵을 위해서 임시데이터   
-				})
-				.catch(error => {
-				console.log(error.response)
-				})
-			}
+    
+  },
+  methods: {
+    formatDate(date) {
+      moment.locale('ko');
+      return moment(date).format('dddd, MM월 DD일')
     },
-    created() {
-			// /advice?schedule_pk={schedule_pk}&curPage={페이지}
-			const params = new URL(document.location).searchParams;
-			this.$http
-			.get(process.env.VUE_APP_SERVER_URL +`/advice?schedule_pk=${params.get('id')}`,{
-					headers: {
-							Authorization: this.config,
-					},
-			})
-			.then(response => {
-				// console.log(response)
-			console.log(response.data)
-			this.advices = response.data.advice
-			// 맵을 위해서 임시데이터   
-			})
-			.catch(error => {
-			console.log(error.response)
-			})
-			this.getDetail()
-		},
-		}
+    formattime(time) {
+      moment.locale('ko');
+      return moment(time).format('MM월 DD일 hh:mm')
+    },
+    getDetail() {
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
+        headers: this.headers
+      })
+      .then(response => {
+        this.SDdetail = response.data;
+        this.schedule = response.data.schedule;
+        this.SDcourse = response.data.course;
+      })
+      .catch(error => {
+        console.log(error.response)
+      })
+    },
+    getAdvice() {
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.ADVICE, {
+        headers: this.headers,
+        params: {
+          schedule_pk: this.$route.params.schedule_id
+        }
+      })
+      .then(response => {
+        this.advices = response.data.advice;
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
+    }
+  },
+  created() {
+    this.getDetail();
+    this.getAdvice();
+  },
+  }
 </script>
 
 <style scoped>

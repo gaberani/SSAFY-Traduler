@@ -157,64 +157,66 @@
 
 <script>
 export default {
-    data() {
-      return {
-          SDselect: 'title',
-          area_code: '',
-          memberIdx: 0,
-          typeIdx: 0,
-          startdate: '',
-          enddate: '',
-          menu3: false,
-          menu2: false,
-          together: false,
-          help: false,
-        //   보낼 때 together * 1
-          checkList : [[true,true,true,true], [false, true, true, true], [true, false, true, true], [true, true, false, true], [true, true, true, false]],
-        // category_code: '',
-        // area_code: '',
-          query: '',
+  data() {
+    return {
+      SDselect: 'title',
+      area_code: '',
+      memberIdx: 0,
+      typeIdx: 0,
+      startdate: '',
+      enddate: '',
+      menu3: false,
+      menu2: false,
+      together: true,
+      help: true,
+    //   보낼 때 together * 1
+      checkList : [[true,true,true,true], [false, true, true, true], [true, false, true, true], [true, true, false, true], [true, true, true, false]],
+    // category_code: '',
+    // area_code: '',
+      query: '',
+    }
+  },
+  computed: {
+    searchMemberIdx() {
+      return (this.memberIdx===0 ? '' : this.memberIdx)
+    },
+    searchStyleIdx() {
+      return (this.typeIdx===0 ? '' : this.typeIdx)
+    }
+  },
+  methods: {
+    searchschedule() {
+      this.$router.push({name: 'Scheduleresult', query: {
+        title: this.query,
+        member_type: this.searchMemberIdx,
+        style_type: this.searchStyleIdx,
+        together: this.together * 1,
+        advice: this.help * 1,
+        start_data: this.startdate,
+        end_date: this.end_date
+      }})
+    },
+    changememIdx(number) {
+      if (this.memberIdx === number) {
+        this.memberIdx = 0;
+      } else {
+        this.memberIdx = number;
       }
     },
-    methods: {
-        searchschedule() {
-            if (this.memberIdx === 0) {
-                this.memberIdx = ''
-            }
-            if (this.typeIdx === 0) {
-                this.typeIdx = ''
-            }
-            this.$router.push("/sdresult?title=" + this.query 
-            +"&member_type="+this.memberIdx + "&style_type="+this.typeIdx
-            +"&together="+ this.together*1 +"&advice="+ this.help*1
-            +"&start_date="+this.startdate + "&end_date="+this.enddate)
-            console.log(this.enddate)
-        },
-        changememIdx(number) {
-            if (this.memberIdx === number) {
-                this.memberIdx = 0
-            } else {
-                this.memberIdx = number
-            }
-        },
-        changetypeIdx(number) {
-            if (this.typeIdx === number) {
-                this.typeIdx = 0
-            } else {
-                this.typeIdx = number
-            }
-        }
-    },
-    computed: {
-
-    },
-    
+    changetypeIdx(number) {
+      if (this.typeIdx === number) {
+        this.typeIdx = 0;
+      } else {
+        this.typeIdx = number;
+      }
+    }
+  },
 }
 </script>
 
 <style scoped>
 .schedulemainimg {
-    background-image : url("../assets/schedulemain.jpg");
+    background-image : url("../../assets/schedulemain.jpg");
     background-size:cover;
     width:100%;
     min-height: 35vw;

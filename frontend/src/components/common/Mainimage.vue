@@ -27,7 +27,7 @@ export default {
 
 <style>
 .mainimg {
-    background-image : url("../assets/mainimage.jpg");
+    background-image : url("../../assets/mainimage.jpg");
     background-size:cover;
     width:100%;
     min-height: 35vw;

@@ -73,9 +73,9 @@ export default {
       // 지도의 타입 설정
       map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
     },
-    GotoDetail(SDid) {
-            this.$router.push('/detailschedule?id='+ SDid)
-        }
+    GotoDetail(schedule_id) {
+      this.$router.push({name: 'DetailSchedule', params: {schedule_id: schedule_id}})
+    }
   }
 }
 </script>
@@ -87,4 +87,5 @@ export default {
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
 }
+
 </style>
