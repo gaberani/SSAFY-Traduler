@@ -45,7 +45,7 @@
 </template>
 
 <script>
-export default {
+  export default {
     data() {
       return {
         category_code: '',
@@ -54,12 +54,19 @@ export default {
       }
     },
     methods: {
-        searchspots() {
-            this.$router.push("/spot/search?title=" + this.query 
-            +"&category="+this.category_code + "&area="+this.area_code)
-        }
+      searchspots() {
+          // this.$router.push("/spot/search?title=" + this.query 
+          // + "&category=" + this.category_code + "&area=" + this.area_code + "&curPage=1")
+          this.$router.push({ name: 'SpotSearch', query: {
+            title: this.query,
+            category: this.category_code,
+            area: this.area_code,
+            curPage: 1
+          }
+        })
+      }
     },
-}
+  }
 </script>
 
 <style scoped>

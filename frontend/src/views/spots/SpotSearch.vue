@@ -11,7 +11,7 @@
       </div>
       <div class="text-center">
         <v-pagination
-          v-model="page"
+          v-model="curPage"
           :length="spotspage.endPage"
           :total-visible="7"
           class="mt-5"
@@ -34,9 +34,9 @@
   export default {
     data () {
       return {
-        page: 1,
         spots: [],
         spotspage: [],
+        curPage: 1
       }
     },
     components:{
@@ -51,8 +51,8 @@
       },
     },
     watch: {
-      page() {
-        this.getSpotList();
+      curPage() {
+        this.movePage();
       }
     },
     methods: {
@@ -62,7 +62,7 @@
             title: this.$route.query.title,
             category: this.$route.query.category,
             area: this.$route.query.area,
-            curPage: this.page
+            curPage: this.$route.query.curPage
           },
           headers: this.headers
         })
@@ -71,10 +71,20 @@
           this.spotspage = res.data.page;
         })
         .catch(err => console.log(err.response))
+      },
+      movePage() {
+        this.$router.push({ query: {
+          title: this.$route.query.title,
+          category: this.$route.query.category,
+          area: this.$route.query.area,
+          curPage: this.curPage
+          }
+        }).catch(()=>{})
       }
     },
     created(){
       this.getSpotList();
+      this.curPage = this.$route.query.curPage * 1
     },
   }
 </script>

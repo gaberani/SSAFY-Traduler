@@ -5,9 +5,9 @@
     >
       <h1 class="spot-title">{{ spot.title }}</h1>
       <div
-        style="display: flex; justify-content: center; margin-top: 5vw;">
+        class="spot_scores">
         <v-rating
-          v-model="avgScore"
+          v-model="spot.avg_score"
           color="yellow darken-3"
           background-color="grey darken-1"
           empty-icon="$ratingFull"
@@ -24,7 +24,7 @@
           @click.stop="unlikespot" 
         >
           <div>
-            <v-icon color="yellow">mdi-star</v-icon>{{ totalLikes }}
+            <v-icon color="yellow">mdi-star</v-icon>{{ spot.total_likes }}
           </div>
         </v-btn>
         <v-btn
@@ -35,7 +35,7 @@
           @click.stop="likespot" 
         >
           <div>
-            <v-icon>mdi-star</v-icon>{{ totalLikes }}
+            <v-icon>mdi-star</v-icon>{{ spot.total_likes }}
           </div>
         </v-btn>
       </div>
@@ -50,8 +50,8 @@
           <h3 class="spot-infos">{{ spot.title }}</h3>
           <h3 class="spot-infos">{{ area_name }} / {{ category_name }}</h3>
           <h3 v-if="spot.tel != null" class="spot-infos">{{ spot.tel }} / {{ spot.tel_name }}</h3>
-          <h3 class="spot-infos">평균 평점 : {{ avgScore }} 점</h3>
-          <h3 class="spot-infos">즐겨찾기한 유저 수 : {{ totalLikes }}</h3>
+          <h3 class="spot-infos">평균 평점 : {{ spot.avg_score }} 점</h3>
+          <h3 class="spot-infos">즐겨찾기한 유저 수 : {{ spot.total_likes }}</h3>
         </v-col>
       </v-row>
       <v-row style="margin-top: 3vw;">
@@ -136,15 +136,15 @@
           overview: "",
           tel: null,
           tel_name: null,
-          title: ""
+          title: "",
+          avg_score: 0,
+          totla_likes: 0,
         },
         spotcomments: [],
         score: 5,
         content: "",
         page: 1,
         pageInfo: [],
-        avgScore: 0,
-        totalLikes: 0,
       }
     },
     components: {
@@ -173,7 +173,7 @@
         axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
         .then(() => {
           this.spot.is_liked = true;
-          this.totalLikes += 1;
+          this.spot.total_likes += 1;
         })
         .catch(err => console.log(err.response))
       },
@@ -181,7 +181,7 @@
         axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
         .then(() => {
           this.spot.is_liked = false;
-          this.totalLikes -= 1;
+          this.spot.total_likes -= 1;
         })
         .catch(err => console.log(err.response))
       },
@@ -231,8 +231,6 @@
         this.spot = spotDetail.spot
         this.spotcomments = spotDetail.comments;
         this.pageInfo = spotDetail.page;
-        this.avgScore = spotDetail.score;
-        this.totalLikes = spotDetail.total_likes;
       })
       .catch(error => console.log(error))
     },
@@ -240,6 +238,13 @@
 </script>
 
 <style scoped>
+  .spot_scores {
+    display: flex;
+    justify-content: center;
+    margin-top: 5vw;
+    align-items: center;
+  }
+
   .spotimg {
     background-size: cover;
     width: 100%;

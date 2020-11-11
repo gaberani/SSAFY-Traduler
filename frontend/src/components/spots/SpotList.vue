@@ -1,40 +1,38 @@
 <template>
   <div class="spotlist">
-      <div>
-        <h4 style="font-size:1.3vw;">현재 작성중인 여행지</h4>
+    <div>
+      <div class="mb-3 mt-3">
+        <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">추천</h1>
+        <h3 style="display:inline; font-size:1.7vw;"> {{ recom_area }} 여행지</h3>
       </div>
-      <div>
-        <div class="mb-3 mt-3">
-            <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">추천</h1>
-            <h3 style="display:inline; font-size:1.7vw;">여행지</h3>
-        </div>
-        <div v-for="recom_spot in recom_spots" :key="recom_spot.id" style="display:inline;" >
-            <SpotCard :spot="recom_spot" />
-        </div>
+      <div v-for="recom_spot in recom_spots" :key="recom_spot.id" style="display:inline;" >
+        <SpotCard :spot="recom_spot" />
       </div>
-      <div>
-        <div class="mb-3 mt-2">
-            <h1 style="display:inline; color:#FF9617; font-size:2.7vw;">BEST</h1>
-            <h3 style="display:inline; font-size:1.7vw;">여행지</h3>
-        </div>
-        <div v-for="best_spot in best_spots" :key="best_spot.id" style="display:inline;" >
-            <button class="besttag" >BEST</button>
-            <SpotCard :spot="best_spot" />
-        </div>
+    </div>
+    <div>
+      <div class="mb-3 mt-2">
+        <h1 style="display:inline; color:#FF9617; font-size:2.7vw;">BEST</h1>
+        <h3 style="display:inline; font-size:1.7vw;"> 여행지</h3>
       </div>
+      <div v-for="best_spot in best_spots" :key="best_spot.id" style="display:inline;" >
+        <button class="besttag" >BEST</button>
+        <SpotCard :spot="best_spot" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import axios from 'axios'
+  import { mapGetters } from 'vuex'
+  import axios from 'axios'
 
-import SpotCard from '@/components/spots/SpotCard';
-import SERVER from '@/api/api'
+  import SpotCard from '@/components/spots/SpotCard';
+  import SERVER from '@/api/api'
 
-export default {
+  export default {
     data () {
       return {
+        recom_area: '',
         recom_spots: [],
         best_spots: [],
       }
@@ -56,7 +54,8 @@ export default {
       get_recommend_spots() {
         axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.RECOMMEND, this.headers)
         .then(res => {
-          this.recom_spots = res.data.slice(0, 3);
+          this.recom_area = res.data.recom_area
+          this.recom_spots = res.data.recom_spots.slice(0, 3);
         })
         .catch(err => console.log(err.response))
       },
@@ -68,8 +67,7 @@ export default {
         .catch(err => console.log(err.response))
       }
     }
-
-}
+  }
 </script>
 
 <style>

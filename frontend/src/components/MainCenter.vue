@@ -55,8 +55,13 @@
 </template>
 
 <script>
+import axios from 'axios'
+import SERVER from '@/api/api'
+import { mapGetters } from 'vuex'
+
 import SpotCard from '@/components/spots/SpotCard';
 import ScheduleCard from '@/components/ScheduleCard';
+
 export default {
     components:{SpotCard,ScheduleCard},
     data () {
@@ -79,36 +84,42 @@ export default {
         togetherSDs:[],
       }
     },
+    computed: {
+      ...mapGetters(["LoginFlag", "config", "userInfo"]),
+      headers() {
+        return (this.LoginFlag ? {headers: {Authorization: this.config}} : null)
+      },
+    },
     methods: {
       getTogetherSD() {
-      this.$http
-      .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
-      +`&member_type=&style_type=`
-      +`&together=1&advice=`
-      +`&start_date=&end_date=`)
-      .then(response => {
-      this.togetherSDs = response.data.schedule.slice(0,6)
-      // console.log(this.helpschedules)
-      })
-      .catch(error => {
-      console.log(error.response)
-      })
-    }
+        this.$http
+        .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
+          +`&member_type=&style_type=`
+          +`&together=1&advice=`
+          +`&start_date=&end_date=`)
+        .then(response => {
+          this.togetherSDs = response.data.schedule.slice(0,6);
+          // console.log(this.helpschedules)
+        })
+        .catch(error => {
+          console.log(error.response);
+        })
+      },
+      getBestSpots() {
+        axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.BEST, this.headers)
+        .then(res => {
+          this.bestmain = res.data.slice(0,3);
+        })
+        .catch(error => {
+          console.log(error.response);
+          })
+      }
     },
     created() {
-      this.$http
-      .get(process.env.VUE_APP_SERVER_URL +`/spots/get_best_spots/`)
-      .then(res => {
-        this.bestmain = res.data.best_spots.slice(0,3)
-        // console.log(this.bestmain)
-      })
-      .catch(error => {
-				console.log(error.response)
-        })
-      this.getTogetherSD()
+      this.getTogetherSD();
+      this.getBestSpots();
     }
-
-}
+  }
 </script>
 
 <style>

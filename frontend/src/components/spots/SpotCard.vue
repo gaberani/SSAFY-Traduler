@@ -48,7 +48,7 @@
 
       <v-divider style="background-color:#FF5E5E;"></v-divider>
 
-      <div class="modalbody" style="height: 30vw;">
+      <div class="modalbody" style="height: 28vw;">
         <v-container>
           <v-row>
             <v-col cols="6">
@@ -56,14 +56,35 @@
             </v-col>
             <v-col cols="6">
               <SpotDetailMap :lat="spot.lat" :lon="spot.lon" :item="spot.id"/>
-              <p>{{ spot.address }}</p>
+              <p style="text-align: center; font-size: 1vw; margin-top:1vw">{{ spot.address }}</p>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row class="modal-footer">
+
+            <v-col cols="2" offset="2">
+              <v-btn
+                depressed
+                v-if="spot.is_liked==true"
+                @click.stop="unlikespot" 
+              >
+                <div>
+                  <v-icon color="red">mdi-heart</v-icon>{{ spot.total_likes }}
+                </div>
+              </v-btn>
+              <v-btn
+                depressed
+                v-else
+                @click.stop="likespot"
+              >
+                <div>
+                  <v-icon>mdi-heart</v-icon>{{ spot.total_likes }}
+                </div>
+              </v-btn>
+            </v-col>
 
             <v-col cols="4">
               <v-rating
-                v-model="testScore"
+                v-model="spot.avg_score"
                 color="yellow darken-3"
                 background-color="grey darken-1"
                 empty-icon="$ratingFull"
@@ -74,33 +95,8 @@
               ></v-rating>
             </v-col>
 
-            <v-col cols="4">
-              <v-btn
-                depressed
-                color="blue-grey lighten-4"
-                style="margin-left: 5vw;"
-                v-if="spot.is_liked==true"
-                @click.stop="unlikespot" 
-              >
-                <div>
-                  <v-icon color="yellow">mdi-star</v-icon>0
-                </div>
-              </v-btn>
-              <v-btn
-                depressed
-                color="blue-grey lighten-4"
-                style="margin-left: 5vw;"
-                v-else
-                @click.stop="likespot" 
-              >
-                <div>
-                  <v-icon>mdi-star</v-icon>0
-                </div>
-              </v-btn>
-            </v-col>
-
-            <v-col cols="4">
-              <router-link :to="{name: 'SpotDetail', params: {spot_id: spot.id} }">더보기!!!!!!!!!!!!</router-link>
+            <v-col cols="2">
+              <router-link :to="{name: 'SpotDetail', params: {spot_id: spot.id} }" style="text-decoration: none;"><v-btn color='error' depressed>상세보기</v-btn></router-link>
             </v-col>
 
           </v-row>
@@ -155,7 +151,7 @@
         axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
         .then(() => {
           this.spot.is_liked = true;
-          this.detailspot.total_likes += 1;
+          this.spot.total_likes += 1;
         })
         .catch(err => console.log(err.response))
       },
@@ -163,7 +159,7 @@
         axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
         .then(() => {
           this.spot.is_liked = false;
-          this.detailspot.total_likes -= 1;
+          this.spot.total_likes -= 1;
         })
         .catch(err => console.log(err.response))
       },
@@ -306,5 +302,8 @@
   /* 스크롤 바 위에 마우스 올렸을 때(hover) 색상 */
   .modaldetail::-webkit-scrollbar-thumb:hover {
     background-color: #fd4b4b;
-  } 
+  }
+  .modal-footer {
+    align-items: center;
+  }
 </style>
