@@ -11,7 +11,7 @@ from .serializers import UserSerializer
 from spots.models import UserSpotFavorite, Spot
 from spots.serializers import SpotSerializer
 
-from schedules.models import Schedule, ScheduleAdvice, UserSchedule
+from schedules.models import Schedule, ScheduleAdvice, UserSchedule, Course
 from schedules.serializers import UserScheduleSerializer
 
 from django.db.models import Prefetch
@@ -44,27 +44,33 @@ class AccountViewSet(viewsets.ModelViewSet):
     def my_info(self, request):
         user = request.user
         user_serializer = self.serializer_class(user)
+        cur_spot_page = request.GET.get('curSpotPage', 1)
+        cur_schedule_page = request.GET.get('curSchedulePage', 1)
 
         # 즐겨찾기한 장소
-        user_spots = UserSpotFavorite.objects.filter(user_pk=user.id).select_related('spot_pk')
-        
-        # values 사용해서 각각의 column에 접근하기
-        # data = user_spots.values('spot_pk__title', 'spot_pk__lon', 'spot_pk__lat')
-        # data = user_spots.only('spot_pk')
-
-        # serializer 내부에서 접근하기
-        # data = UserSpotFavoriteSerializer(user_spots, many=True)
-
-        # 배열에 추가하면서 직렬화하기
-        favorite_spots = []
-        for user_spot in user_spots:
-            favorite_spots.append(SpotSerializer(user_spot.spot_pk).data)
-
+        user_spots = user.liked_spots.all()
+        spot_page, favorite_spots = pageProcess(user_spots, UserSpotFavoriteSerializer, cur_spot_page, 3, request.user)
 
         # 내가 작성한 스케쥴
+        user_written_schedules = user.written_schedule.all()
+        schedule_page, written_schedules = pageProcess(user_written_schedules, ScheduleSerializer, cur_schedule_page, 3, request.user)
 
+        for serialized_schedule in written_schedules:
+            serialized_schedule['coords'] = []
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id']).order_by('start_time')
+            sum_lat, sum_lon = 0, 0
+            for contained_course in contained_courses:
+                # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
+                if contained_course.spot_pk:
+                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    sum_lat += contained_course.spot_pk.lat
+                    sum_lon += contained_course.spot_pk.lon
+                else:
+                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+        
 
-        return Response({'user': user_serializer.data, 'favorite_spots': favorite_spots})
+        return Response({'user': user_serializer.data, 'favorite_spots': favorite_spots, 'spot_page': spot_page, 'written_schedules': written_schedules, 'schedule_page': schedule_page} )
 
 
 
