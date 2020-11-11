@@ -62,20 +62,11 @@ class SpotViewSet(viewsets.ModelViewSet):
         filtered_comments = self.comment_queryset.filter(spot_pk=pk)
         page, result = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
-        average_score = filtered_comments.aggregate(Avg('score'))
-        if average_score["score__avg"]:
-            score = round(average_score["score__avg"], 2)
-        else:
-            score = 0
-        total_likes = UserSpotFavorite.objects.filter(spot_pk=pk).count()
-
 
         return Response({
             "spot": serialized_spot.data, 
             "page": page, 
-            "comments": result, 
-            "score": score,
-            "total_likes": total_likes}, 
+            "comments": result}, 
             status=status.HTTP_200_OK)
 
     # 가장 평점 높은 스팟 리턴하기 

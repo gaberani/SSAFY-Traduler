@@ -55,7 +55,7 @@ class SpotComment(models.Model):
     score = models.IntegerField() # 점수
     reg_time = models.DateTimeField(auto_now_add=True)
     user_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user_pk')
-    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk')
+    spot_pk = models.ForeignKey(Spot, on_delete=models.CASCADE, db_column='spot_pk', related_name='spot_comments')
 
     class Meta:
         managed = False
