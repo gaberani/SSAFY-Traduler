@@ -137,5 +137,7 @@ export default new Vuex.Store({
   getters: {
     LoginFlag: state => !! state.authToken,
     config: (state) => `jwt ${state.authToken}`,
+    // header: (state) => `{headers: {Authorization: ${state.authToken}}}`
+    userInfo: state => state.UserInfo
   }
 })

@@ -11,12 +11,12 @@ export default {
   data() {
     return {
       item: '',
-      schedule:[],
+      schedule: [],
     }
   },
   created() {
-    this.item = this.$attrs.data
-    this.schedule = this.$attrs.schedule
+    this.item = this.$attrs.data;
+    this.schedule = this.$attrs.schedule;
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {

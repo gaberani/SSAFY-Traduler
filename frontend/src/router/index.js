@@ -7,19 +7,24 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/spot',
-    name: 'Spot',
-    component: () => import(/* webpackChunkName: "spot" */ '../views/Spot.vue')
-  },
-  {
     path: '/',
     name: 'Home',
     component: () => import('@/views/Home')
   },
   {
-    path: '/spotresult',
-    name: 'SpotResult',
-    component: () => import(/* webpackChunkName: "spot" */ '../views/SpotResult.vue')
+    path: '/spot',
+    name: 'SpotMain',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotMain.vue')
+  },
+  {
+    path: '/spot/search',
+    name: 'SpotSearch',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotSearch.vue')
+  },
+  {
+    path: '/spot/:spot_id',
+    name: 'SpotDetail',
+    component: () => import(/* webpackChunkName: "spot" */ '../views/spots/SpotDetail.vue')
   },
   {
     path: '/login',
@@ -59,6 +64,9 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
   mode: 'history',
   base: process.env.BASE_URL,
   routes
