@@ -21,7 +21,8 @@ from spots.models import Area, Category, ContentType, Spot, UserSpotFavorite
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['username', 'nickname', 'gender', 'age', 'introduce', 'profile_image']
+        fields = ['username', 'nickname', 'gender', 'age', 'introduce', 'profile_image','id']
+        read_only_fields = ('id',)
 
 from spots.serializers import SpotSerializer
 
