@@ -34,7 +34,7 @@ export default {
         state.authToken = null
       }
     },
-    GET_USER_INFO(state, info) {
+    SET_USER_INFO(state, info) {
       state.UserInfo = info
     }
   },
@@ -81,6 +81,7 @@ export default {
           .finally(() => {
             cookies.remove('auth-token')
             commit("LOGIN_STATE", false)
+            window.sessionStorage.removeItem('username')
             if (router.history.current.name !== 'Home') {
               router.push({ name:'Home'})
             }
@@ -125,7 +126,7 @@ export default {
         Vue.prototype.$http
           .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.USER.EDITORDEL, config)
           .then(() => {
-            commit("GET_USER_INFO", {username: 'asdasd'})
+            commit("SET_USER_INFO", {username: 'asdasd'})
           })
       }
     }
