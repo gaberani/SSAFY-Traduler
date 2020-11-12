@@ -44,14 +44,24 @@ class AccountViewSet(viewsets.ModelViewSet):
     def my_info(self, request):
         user = request.user
         user_serializer = self.serializer_class(user)
-        cur_spot_page = request.GET.get('curSpotPage', 1)
-        cur_schedule_page = request.GET.get('curSchedulePage', 1)
 
-        # 즐겨찾기한 장소
+        return Response({'user': user_serializer.data} )
+
+    @action(detail=False, methods=['GET'])
+    def favorite_spots(self, request):
+        user = request.user
+        cur_spot_page = request.GET.get('curSpotPage', 1)
+
         user_spots = user.liked_spots.all()
         spot_page, favorite_spots = pageProcess(user_spots, UserSpotFavoriteSerializer, cur_spot_page, 3, request.user)
+        return Response({'favorite_spots': favorite_spots, 'spot_page': spot_page}, status=status.HTTP_200_OK)
 
-        # 내가 작성한 스케쥴
+
+    @action(detail=False, methods=['GET'])
+        def written_schedules(self, request):
+        user = request.user
+        cur_schedule_page = request.GET.get('curSchedulePage', 1)
+
         user_written_schedules = user.written_schedule.all()
         schedule_page, written_schedules = pageProcess(user_written_schedules, ScheduleSerializer, cur_schedule_page, 3, request.user)
 
@@ -60,7 +70,6 @@ class AccountViewSet(viewsets.ModelViewSet):
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
-                # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
                     serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
                     sum_lat += contained_course.spot_pk.lat
@@ -68,11 +77,8 @@ class AccountViewSet(viewsets.ModelViewSet):
                 else:
                     serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
             serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
-        
 
-        return Response({'user': user_serializer.data, 'favorite_spots': favorite_spots, 'spot_page': spot_page, 'written_schedules': written_schedules, 'schedule_page': schedule_page} )
-
-
+        return Response({'written_schedules': written_schedules, 'schedule_page': schedule_page} )
 
 
 # UserSchedule View Set
