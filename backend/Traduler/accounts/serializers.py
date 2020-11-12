@@ -66,7 +66,7 @@ class UserSpotFavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserSpotFavorite
-        fields = 'all'
+        fields = '__all__'
 
     def get_total_likes(self, obj):
         return obj.spot_pk.liked.count()
