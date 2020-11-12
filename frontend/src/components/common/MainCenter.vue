@@ -116,7 +116,7 @@ export default {
       }
     },
     created() {
-      // this.getTogetherSD();
+      this.getTogetherSD();
       this.getBestSpots();
     }
   }

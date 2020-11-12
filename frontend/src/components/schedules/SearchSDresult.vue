@@ -93,6 +93,7 @@ export default {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
         params: {
           title: this.$route.query.title,
+          area: this.$route.query.area,
           member_type: this.$route.query.member_type,
           style_type: this.$route.query.style_type,
           together: this.$route.query.together,
