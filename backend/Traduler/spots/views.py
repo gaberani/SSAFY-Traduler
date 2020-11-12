@@ -59,7 +59,7 @@ class SpotViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get("curPage", 1)
 
         # 댓글 가져오기
-        filtered_comments = self.comment_queryset.filter(spot_pk=pk)
+        filtered_comments = self.comment_queryset.filter(spot_pk=pk).order_by('-id')
         page, result = pageProcess(filtered_comments, SpotCommentSerializer, cur_page, 10)
 
 
