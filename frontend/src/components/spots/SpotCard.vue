@@ -48,7 +48,7 @@
 
       <v-divider style="background-color:#FF5E5E;"></v-divider>
 
-      <div class="modalbody" style="height: 28vw;">
+      <div class="modalbody" style="height: 30vw;">
         <v-container>
           <v-row>
             <v-col cols="6">

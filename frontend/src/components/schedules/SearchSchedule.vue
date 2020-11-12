@@ -188,6 +188,7 @@ export default {
     searchschedule() {
       this.$router.push({name: 'Scheduleresult', query: {
         title: this.query,
+        area: this.area_code,
         member_type: this.searchMemberIdx,
         style_type: this.searchStyleIdx,
         together: this.together * 1,

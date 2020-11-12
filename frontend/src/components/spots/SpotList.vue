@@ -2,8 +2,8 @@
   <div class="spotlist">
     <div>
       <div class="mb-3 mt-3">
-        <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">추천</h1>
-        <h3 style="display:inline; font-size:1.7vw;"> {{ recom_area }} 여행지</h3>
+        <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">{{ recom_area }}</h1>
+        <h3 style="display:inline; font-size:1.7vw;"> 는(은) 어때요?</h3>
       </div>
       <div v-for="recom_spot in recom_spots" :key="recom_spot.id" style="display:inline;" >
         <SpotCard :spot="recom_spot" />

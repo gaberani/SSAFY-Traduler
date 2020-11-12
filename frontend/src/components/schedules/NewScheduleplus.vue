@@ -13,7 +13,8 @@
       <hr style=" background-color:#FF5E5E;">
       <div class="newSchedule">
         <div class="mb-3 mt-2">
-          <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">검색 결과</h1>
+          <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">NEW</h1>
+          <h3 style="display:inline; font-size:1.7vw;  "> 스케줄</h3>
           <img src="@/assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
           <span class="imo"> 동행 모집</span>
           <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
@@ -88,30 +89,19 @@ export default {
 	// 		this.getSpotList();}
 	// },
 	methods: {
-		getScheduleList() {
-			// pagination이랑 loginflag 해야함
-      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
-        params: {
-          title: this.$route.query.title,
-          area: this.$route.query.area,
-          member_type: this.$route.query.member_type,
-          style_type: this.$route.query.style_type,
-          together: this.$route.query.together,
-          advice: this.$route.query.advice,
-          start_date: this.$route.query.start_date,
-          end_date: this.$route.query.end_date,
-        }
-      })
+		getNewSchedule() {
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
-        this.schedules = response.data.schedule
+        // 백 수정하면 리버스 없애야함.
+        this.schedules= response.data.schedule.reverse();
       })
       .catch(error => {
-        console.log(error.response)
+        console.log(error.response);
       })
-		}
+        }
 	},
 	created(){
-			this.getScheduleList();
+			this.getNewSchedule();
 		},
 }
 </script>

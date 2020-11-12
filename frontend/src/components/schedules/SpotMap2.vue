@@ -71,7 +71,11 @@ export default {
         // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
       // var dots = {}; // 여행지 마커 커스텀 오버레이 배열입니다.
-			
+			var bounds = new kakao.maps.LatLngBounds();
+      for (i = 0; i < this.SDdetail.course_coords.length; i++) {
+          // LatLngBounds 객체에 좌표를 추가합니다
+          bounds.extend(linePath[i]);
+      }
       var polyline = new kakao.maps.Polyline({
         path: linePath,         // 선을 구성하는 좌표배열 입니다
         strokeWeight: 5,        // 선의 두께 입니다
@@ -87,13 +91,15 @@ export default {
 						position: Positions[j].latlng, // 마커를 표시할 위치
 				});
 				var iwContent='<div style="width:350px; font-family: SCDream5;">' 
+				+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
 				+ Positions[j].title + '<br>' 
 				+ '<span style="font-size:0.9rem; font-family: SCDream4;">' +Positions[j].address +'</span>' 
 				+ '<img style="width:300px;" src="' +Positions[j].image + '"/>'
 				// + '<button id="test1" style="margin-bottom:5px; display:block; background-color:#FF5E5E; width:100px; border-radius:10px; color:white;">상세보기</button>' 
 				+'</div>'
 				
-				var iwContent2='<div style="width:280px; font-family: SCDream4;">' 
+				var iwContent2='<div style="width:320px; font-family: SCDream4;">' 
+				+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
 				+ Positions[j].title 
 				+ '<p style="font-family: SCDream4; margin:0px; color:#707070; font-size:0.8rem;">자세히 보려면 마커를 눌러주세요.</p>' +'</div>' 
 				
@@ -123,6 +129,7 @@ export default {
 			}
       polyline.setMap(map)
 			marker.setMap(map);
+			map.setBounds(bounds);
       // 드래그, 확대축소 막기
     //   map.setDraggable(false);
     //   map.setZoomable(false);
@@ -138,7 +145,8 @@ export default {
 .map {
   /* margin-left:10px; */
   width: 96%;
-  height: 40vw;
+  height: 660px;
   border-radius:20px;
+  margin-top:5%;
 }
 </style>

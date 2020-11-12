@@ -56,6 +56,11 @@ const routes = [
     name: 'Scheduleresult',
     component: () => import('@/views/schedules/Scheduleresult')
   },
+  {
+    path: '/newschedule',
+    name: 'NewSchedule',
+    component: () => import('@/views/schedules/NewSchedule')
+  },
 ]
 
 const router = new VueRouter({
