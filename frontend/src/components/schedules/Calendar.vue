@@ -268,7 +268,7 @@ export default {
     }
   },
   created() {
-    console.log('Calendar Create')
+    // 지금은 요청해서 받아오고 있음
     this.$http
       .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
         // 'http://127.0.0.1:8000/schedule/38/', {
@@ -282,6 +282,9 @@ export default {
         this.getInitialEvents()
       })
     // console.log(this.$attrs.AllCourses)
+    // DetailSchedule에서 내려받아서 각 코스를 Courses에 담기
+    // DetailSchedule에서 내려받아서 하려고 했는데 created 시점에 비어있는 채로 SDdetail가 들어온뒤에 보이려고 해서
+    // 캘린더가 안만들어지는 문제가 있음
     // this.$attrs.AllCourses.course.forEach(el => {
     //   this.Courses.push(el)
     // })
@@ -298,7 +301,7 @@ export default {
     getInitialEvents () {
       const events = []
       const eventCount = this.Courses.length
-      // 스케쥴 코스 개수만큼 이벤트 생성하기
+      // 스케줄 코스 개수만큼 이벤트 생성하기
       for (let i = 0; i < eventCount; i++) {
         const timed = true
         const start = new Date(this.Courses[i].start_time).getTime()
@@ -433,24 +436,6 @@ export default {
               ? `rgba(${r}, ${g}, ${b}, 0.7)`
               : event.color
     },
-
-    // 숫자 랜덤
-    rnd (a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a
-    },
-    // 이름, 컬러 랜덤
-    rndElement (arr) {
-      return arr[this.rnd(0, arr.length - 1)]
-    },
-    // 날짜 랜덤
-    rndDate(start, end) {
-      return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    },
-    // 일주일, 4일로 변경해서 볼 수 있게 하는 옵션 메서드
-    viewDay ({ date }) {
-      this.focus = date
-      this.type = 'day'
-    },
     // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
       // 이미 있는 코스 조회 시 데이터 엮어주기
@@ -499,6 +484,23 @@ export default {
     },
     CourseUpdate() {
       console.log('TRY Course Update')
+    },
+    // 숫자 랜덤(안씀)
+    rnd (a, b) {
+      return Math.floor((b - a + 1) * Math.random()) + a
+    },
+    // 이름, 컬러 랜덤(안씀)
+    rndElement (arr) {
+      return arr[this.rnd(0, arr.length - 1)]
+    },
+    // 날짜 랜덤(안씀)
+    rndDate(start, end) {
+      return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    },
+    // 일주일, 4일로 변경해서 볼 수 있게 하는 옵션 메서드(안씀)
+    viewDay ({ date }) {
+      this.focus = date
+      this.type = 'day'
     },
   },
 }
