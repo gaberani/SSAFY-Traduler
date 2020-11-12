@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.hashers import check_password
 from django.contrib import auth
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 
 from rest_framework import serializers
 from rest_auth.registration.serializers import RegisterSerializer
@@ -57,7 +58,25 @@ class SpotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserSpotFavoriteSerializer(serializers.ModelSerializer):
-    spot_detail = SpotSerializer(source='spot_pk', required=False) 
+    spot_detail = SpotSerializer(source='spot_pk', required=False)
+
+    total_likes = serializers.SerializerMethodField()
+    avg_score = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+
     class Meta:
         model = UserSpotFavorite
-        fields = '__all__'
+        fields = 'all'
+
+    def get_total_likes(self, obj):
+        return obj.spot_pk.liked.count()
+
+    def get_avg_score(self, obj):
+        avg_val = obj.spot_pk.spot_comments.aggregate(Avg('score')).get('score__avg', 0)
+        if avg_val == None:
+            return 0
+        else:
+            return round(avg_val, 2)
+
+    def get_is_liked(self, obj):
+        return True
