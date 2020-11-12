@@ -19,7 +19,7 @@
           <span class="imo"> 동행 모집</span>
           <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
           <span class="imo"> 도움 요청</span>
-          <button class="plusbtn">더보기</button> 
+          <router-link :to="{name: 'NewSchedule'}"><button class="plusbtn">더보기</button></router-link>
         </div>
         <div>
           <v-col
@@ -119,6 +119,7 @@ export default {
     getNewSD() {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
+        // 백 수정하면 리버스 없애야함.
         this.newschedules = response.data.schedule.reverse().slice(0,3);
       })
       .catch(error => {

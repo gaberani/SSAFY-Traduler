@@ -146,7 +146,15 @@
 					cols="12"
 					sm="2"
         > 
-					<div class="helptable">
+          <div v-if="schedule.advice==0" class="helptable">
+						<center>
+							<h3 style="font-size:2vw; color:#FF5E5E">도움 게시판</h3>
+              <div v-if="advices.length===0" class="onecomment">
+                <p style="margin-top:10px;font-size:1.3vw;"> 도움 요청이 비활성화된 스케줄입니다.</p>
+              </div>
+            </center>
+          </div>
+					<div v-else class="helptable">
 						<center>
 							<h3 style="font-size:2vw; color:#FF5E5E">도움 게시판</h3>
               <div v-if="advices.length===0" class="onecomment">
@@ -178,16 +186,14 @@
           </div>    
         </v-col>
       </v-row>
-      <v-row no-gutters>
+      <v-row style="margin-top:80px;" no-gutters>
         <v-col
 					cols="12"
-					sm="3"
+					sm="10"
         >
-        </v-col>
-        <v-col
-					cols="12"
-					sm="7"
-        >
+        <center>
+          <Calendar/>
+        </center>
         </v-col>
         <v-col
 					cols="12"
@@ -200,7 +206,7 @@
 
 <script>
 import SpotMap2 from '@/components/schedules/SpotMap2.vue'
-
+import Calendar from '@/components/schedules/Calendar.vue'
 import { mapGetters } from "vuex";
 import SERVER from '@/api/api'
 import axios from 'axios'
@@ -210,7 +216,8 @@ import 'moment/locale/ko'
 
 export default {
   components: {
-    SpotMap2
+    SpotMap2,
+    Calendar
   },
   data() {
     return {
@@ -386,7 +393,7 @@ export default {
     },
     formattime(time) {
       moment.locale('ko');
-      return moment(time).format('MM월 DD일 hh:mm')
+      return moment(time).format('MM월 DD일 a hh:mm')
     },
     getDetail() {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
@@ -464,7 +471,7 @@ export default {
     font-size:1vw;
 }
 .courseinf {
-    /* margin-top: 1px; */
+    margin-top: 3px;
     /* margin-left: 20px; */
     height:500px;
     overflow-y: auto;
@@ -499,7 +506,8 @@ export default {
 }
 .spottime {
     font-family: 'SCDream4';
-    font-size:1vw;
+    font-size:0.8vw;
+    margin-left:10px;
     color:#707070;
     display: block;
     margin-bottom: 5px;

@@ -9,19 +9,26 @@
             <span class="imo"> 동행 모집</span>
             <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
             <span class="imo"> 도움 요청</span>
-            <button class="plusbtn">더보기</button>
+            <router-link :to="{name: 'ScheduleMain'}"><button class="plusbtn">더보기</button></router-link>
             <div>
-                <button class="mainspotbtn">전체</button>
-                <button class="mainspotbtn">서울</button>
-                <button class="mainspotbtn">경기도</button>
-                <button class="mainspotbtn">강원도</button>
-                <button class="mainspotbtn">충청남도</button>
-                <button class="mainspotbtn">충청북도</button>
-                <button class="mainspotbtn">전라북도</button>
-                <button class="mainspotbtn">전라남도</button>
-                <button class="mainspotbtn">경상북도</button>
-                <button class="mainspotbtn">경상남도</button>
-                <button class="mainspotbtn">제주도</button>
+                <button class="mainspotbtn" @click="SelectArea('')">전체</button>
+                <button class="mainspotbtn" @click="SelectArea('A')">서울</button>
+                <button class="mainspotbtn" @click="SelectArea('B')">인천</button>
+                <button class="mainspotbtn" @click="SelectArea('C')">대전</button>
+                <button class="mainspotbtn" @click="SelectArea('D')">대구</button>
+                <button class="mainspotbtn" @click="SelectArea('E')">광주</button>
+                <button class="mainspotbtn" @click="SelectArea('F')">부산</button>
+                <button class="mainspotbtn" @click="SelectArea('G')">울산</button>
+                <button class="mainspotbtn" @click="SelectArea('H')">세종</button>
+                <button class="mainspotbtn" @click="SelectArea('I')">경기도</button>
+                <button class="mainspotbtn" @click="SelectArea('J')">강원도</button>
+                <button class="mainspotbtn" @click="SelectArea('K')">충청북도</button>
+                <button class="mainspotbtn" @click="SelectArea('L')">충청남도</button>
+                <button class="mainspotbtn" @click="SelectArea('M')">경상북도</button>
+                <button class="mainspotbtn" @click="SelectArea('N')">경상남도</button>
+                <button class="mainspotbtn" @click="SelectArea('O')">전라북도</button>
+                <button class="mainspotbtn" @click="SelectArea('P')">전라남도</button>
+                <button class="mainspotbtn" @click="SelectArea('Q')">제주도</button>
             </div>
             <div>
               <!-- 6개로 해서 두 줄로 나오게 할 것 -->
@@ -94,6 +101,21 @@ export default {
       getTogetherSD() {
         this.$http
         .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
+          +`&member_type=&style_type=`
+          +`&together=1&advice=`
+          +`&start_date=&end_date=`)
+        .then(response => {
+          this.togetherSDs = response.data.schedule.slice(0,6);
+          // console.log(this.helpschedules)
+        })
+        .catch(error => {
+          console.log(error.response);
+        })
+      },
+      SelectArea(area) {
+         this.$http
+        .get(process.env.VUE_APP_SERVER_URL +`/schedule?title=`
+          +`&area=`+area
           +`&member_type=&style_type=`
           +`&together=1&advice=`
           +`&start_date=&end_date=`)

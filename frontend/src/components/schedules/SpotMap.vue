@@ -56,7 +56,11 @@ export default {
         // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
       // var dots = {}; // 여행지 마커 커스텀 오버레이 배열입니다.
-
+      var bounds = new kakao.maps.LatLngBounds();
+      for (i = 0; i < this.schedule.coords.length; i++) {
+          // LatLngBounds 객체에 좌표를 추가합니다
+          bounds.extend(linePath[i]);
+      }
       var polyline = new kakao.maps.Polyline({
         path: linePath,         // 선을 구성하는 좌표배열 입니다
         strokeWeight: 5,        // 선의 두께 입니다
@@ -65,7 +69,7 @@ export default {
         strokeStyle: 'solid'    // 선의 스타일입니다
       });
       polyline.setMap(map)
-
+      map.setBounds(bounds);
       // 드래그, 확대축소 막기
       map.setDraggable(false);
       map.setZoomable(false);
