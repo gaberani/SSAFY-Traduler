@@ -45,7 +45,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         user = request.user
         user_serializer = self.serializer_class(user)
 
-        return Response({'user': user_serializer.data} )
+        return Response({'user': user_serializer.data, 'user_pk': user_serializer['id']})
 
     @action(detail=False, methods=['GET'])
     def favorite_spots(self, request):
