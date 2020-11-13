@@ -170,6 +170,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # 지금 schedule은 완성 되었습니다.
 
         schedule_pk = serializer_schedule.data['id']
+        schedule = self.queryset.get(id=schedule_pk)
         # 스케쥴 생성 후 본인이 참여했다고 db 생성
         new_user_schedule = self.user_schedule_serializer_class(user_pk=request.user, schedule_pk=schedule, status=2)
         new_user_schedule.is_valid(raise_exception=True)
