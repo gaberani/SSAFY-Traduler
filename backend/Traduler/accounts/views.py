@@ -110,32 +110,6 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         return Response({'page': page, 'submit_requests': serialized_submit_requests}, status=status.HTTP_200_OK)
 
 
-    """
-    def list(self, request, *args, **kwargs):
-        
-            #특정 유저에게 자기가 초대받은 스케줄 목록을 보여줍니다.
-            #Token이 반드시 필요합니다!!
-        
-        if request.user.is_authenticated:
-            user = request.user
-            cur_page = request.GET.get('curPage', 1)
-            # 해당 유저의 요청 메시지들 중 status가 1인 것들만 가져옵니다.(status==1 : 초대받은 거)
-            invited_schedules = user.submitted_user_requests.filter(status=1)
-            # 아직 페이지네이션을 고려하지 않고 진행하고 있습니다..
-            # serialized_invited_schedules = self.serializer_class(invited_schedules, many=True).data
-            page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 3, request.user)
-
-            # 해당 유처가 "신청한" 이력도 한번에 들고 옵니다!!
-            submit_requests = user.submitted_user_requests.filter(status=0)
-            # serialized_submit_requests = self.serializer_class(submit_requests, many=True).data
-            page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 3, request.user)
-
-            # 유저가 초대받은 / 유저가 초대한
-            return Response({"invited_schedules": serialized_invited_schedules, "submit_requests": serialized_submit_requests}, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-    """
-
     # 특정 스케쥴에 대해 신청하기
     def create(self, request, *args, **kwargs):
         schedule_pk = request.data.get('schedule_pk', None)
