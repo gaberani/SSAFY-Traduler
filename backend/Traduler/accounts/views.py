@@ -127,6 +127,30 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
             serializer_user_schedule.save(user_pk=user, schedule_pk=schedule)
             return Response({"success": 'success'}, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def joined_schedules(self, request):
+        user = request.user
+        joined_schedules = user.submitted_user_requests.filter(status=2)
+        serialized_schedules = self.serializer_class(joined_schedules, many=True)
+
+
+        for serialized_schedule in serialized_schedules.data:
+            serialized_schedule['coords'] = []
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
+            sum_lat, sum_lon = 0, 0
+
+            for contained_course in contained_courses:
+                # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
+                if contained_course.spot_pk:
+                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    sum_lat += contained_course.spot_pk.lat
+                    sum_lon += contained_course.spot_pk.lon
+                else:
+                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+    
+        return Response(serialized_schedules.data)
+
     def retrieve(self, request, pk):
         """    
             38 -> 38번 스케줄에 참가요청 메시지를 보여줌
