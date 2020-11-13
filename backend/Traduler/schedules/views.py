@@ -152,7 +152,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         new_user_schedule.is_valid(raise_exception=True)
         new_user_schedule.save()
 
-        return Response({"schedule_pk": schedule_pk}, status=status.HTTP_201_CREATED)
+        return Response({'page': page, "schedule_pk": schedule_pk}, status=status.HTTP_201_CREATED)
         
     def retrieve(self, request, pk):
         """
