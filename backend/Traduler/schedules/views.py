@@ -138,7 +138,22 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.order_by('-scrap_count')[:3]
         serialized_schedules = self.serializer_class(queryset, many=True)
 
-        return Response(serialized_schedules.data, status=status.HTTP_200_OK)
+        for serialized_schedule in serialized_schedules.data:
+            serialized_schedule['coords'] = []
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['id']).order_by('start_time')
+            sum_lat, sum_lon = 0, 0
+            for contained_course in contained_courses:
+                # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
+                if contained_course.spot_pk:
+                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    sum_lat += contained_course.spot_pk.lat
+                    sum_lon += contained_course.spot_pk.lon
+                else:
+                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+        
+
+        return Response({"schedules": serialized_schedules.data}, status=status.HTTP_200_OK)
 
 
     def create(self, request, *args, **kwargs):
@@ -156,7 +171,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
         schedule_pk = serializer_schedule.data['id']
         # 스케쥴 생성 후 본인이 참여했다고 db 생성
-        new_user_schedule = self.user_schedule_serializer_class(user_pk=request.user, schedule_pk=schedule)
+        new_user_schedule = self.user_schedule_serializer_class(user_pk=request.user, schedule_pk=schedule, status=2)
         new_user_schedule.is_valid(raise_exception=True)
         new_user_schedule.save()
 
