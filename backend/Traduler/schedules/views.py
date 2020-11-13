@@ -132,7 +132,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
             else:
-                serialized_schedule['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['avg_coord'] = [37.4879, 126.8577]
         
         return Response({"schedule": result}, status=status.HTTP_200_OK)
 
@@ -156,7 +156,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
             else:
-                serialized_schedule['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['avg_coord'] = [37.4879, 126.8577]
         
 
         return Response({"schedules": serialized_schedules.data}, status=status.HTTP_200_OK)
@@ -217,7 +217,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         if contained_courses:
             avg_coord = [round(sum_lat/len(course_coords), 4), round(sum_lon/len(course_coords), 4)]
         else:
-            avg_coord = [37.7576, 128.8737]
+            avg_coord = [37.4879, 126.8577]
 
         # 목적지 정보 가져오기
         contained_provinces = schedule.contained_provinces.all().order_by('start_date')
