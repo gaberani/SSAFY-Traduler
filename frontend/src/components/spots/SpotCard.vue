@@ -14,7 +14,11 @@
           v-bind="attrs"
           v-on="on"
           class="imgbtn"
+          lazy-src="@/assets/images/lazy-loading.jpg"
         >
+          <template v-slot:placeholder>
+            <lazy-loading />
+          </template>
           <button style="margin-left:84%; margin-top:3%; outline:none;">
           <!-- 아이콘 바꾸기 -->
             <i class="fas fa-star" v-if="spot.is_liked==true" @click.stop="unlikespot" style="font-size:1.8vw; color:yellow;"></i>
@@ -158,6 +162,7 @@
           .then(() => {
             this.spot.is_liked = true;
             this.spot.total_likes += 1;
+            this.$emit('like')
           })
           .catch(err => console.log(err.response))
         }
@@ -173,6 +178,7 @@
           .then(() => {
             this.spot.is_liked = false;
             this.spot.total_likes -= 1;
+            this.$emit('unlike')
           })
           .catch(err => console.log(err.response))
         }
