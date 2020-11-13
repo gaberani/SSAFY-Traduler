@@ -98,7 +98,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get('curPage', 1)
         user = request.user
         invited_schedules = user.submitted_user_requests.filter(status=1)
-        page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 3, request.user)
+        page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 5, request.user)
         return Response({'page': page, 'invited_schedules': serialized_invited_schedules}, status=status.HTTP_200_OK)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
@@ -106,7 +106,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         cur_page = request.GET.get('curPage', 1)
         user = request.user
         submit_requests = user.submitted_user_requests.filter(status=0)
-        page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 3, request.user)
+        page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 5, request.user)
         return Response({'page': page, 'submit_requests': serialized_submit_requests}, status=status.HTTP_200_OK)
 
 
