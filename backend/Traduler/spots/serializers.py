@@ -33,6 +33,11 @@ class SpotSerializer(serializers.ModelSerializer):
         else:
             return round(avg_val, 2)
 
+class SemiSpotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Spot
+        fields = ['id', 'title', 'image']
+
 
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
