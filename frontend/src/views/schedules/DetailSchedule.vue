@@ -21,6 +21,7 @@
                 class="togetherbtn"
                 v-bind="attrs"
                 v-on="on"
+                v-if="schedule.together===1"
               >
                 동행 신청
               </v-btn>
@@ -192,7 +193,7 @@
 					sm="10"
         >
         <center>
-          <Calendar/>
+          <DetailCalendar/>
         </center>
         </v-col>
         <v-col
@@ -206,7 +207,7 @@
 
 <script>
 import SpotMap2 from '@/components/schedules/SpotMap2.vue'
-import Calendar from '@/components/schedules/Calendar.vue'
+import DetailCalendar from '@/components/schedules/DetailCalendar.vue'
 import { mapGetters } from "vuex";
 import SERVER from '@/api/api'
 import axios from 'axios'
@@ -217,7 +218,7 @@ import 'moment/locale/ko'
 export default {
   components: {
     SpotMap2,
-    Calendar
+    DetailCalendar,
   },
   data() {
     return {

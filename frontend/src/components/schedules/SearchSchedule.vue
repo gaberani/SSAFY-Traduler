@@ -71,16 +71,16 @@
                     cols="2"
                     style="border-right:2px #707070 solid;">
                         <input type="radio" name="typeS" id="typeS_1" />
-                        <label class="radiobox" for="typeS_1" style="width:45%;" @click="changetypeIdx(1)" :class="{noCheck: checkList[typeIdx][0]}">액티비티</label>
+                        <label class="radiobox" for="typeS_1" style="width:45%;" @click="changetypeIdx(1)" :class="{noCheck: checkList[typeIdx][0]}">힐링</label>
 
                         <input type="radio" name="typeS" id="typeS_2" />
-                        <label class="radiobox" for="typeS_2" style="width:45%;" @click="changetypeIdx(2)" :class="{noCheck: checkList[typeIdx][1]}">힐링</label>
+                        <label class="radiobox" for="typeS_2" style="width:45%;" @click="changetypeIdx(2)" :class="{noCheck: checkList[typeIdx][1]}">액티비티</label>
 
                         <input type="radio" name="typeS" id="typeS_3" />
-                        <label class="radiobox" for="typeS_3" style="width:45%;" @click="changetypeIdx(3)" :class="{noCheck: checkList[typeIdx][2]}">힐링</label>
+                        <label class="radiobox" for="typeS_3" style="width:45%;" @click="changetypeIdx(3)" :class="{noCheck: checkList[typeIdx][2]}">맛집 탐방</label>
 
                         <input type="radio" name="typeS" id="typeS_4"/>
-                        <label class="radiobox" for="typeS_4" style="width:45%;" @click="changetypeIdx(4)" :class="{noCheck: checkList[typeIdx][3]}">힐링</label>
+                        <label class="radiobox" for="typeS_4" style="width:45%;" @click="changetypeIdx(4)" :class="{noCheck: checkList[typeIdx][3]}">역사 탐방</label>
                     </v-col>
                     <v-col
                     cols="1.2"

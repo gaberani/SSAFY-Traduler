@@ -19,7 +19,7 @@
           class="datebtn" 
           @click="$refs.calendar.next()"
           color="#FF5E5E"
-          style="margin-left:37%;"
+          style="margin-left:25%;"
         >
           Next
         </v-btn>
@@ -261,7 +261,7 @@
 <script>
 import { mapGetters } from 'vuex'
 
-// import SERVER from '@/api/api'
+import SERVER from '@/api/api'
 
 import ScheduleDetailMap from '@/components/schedules/ScheduleDetailMap.vue'
 import moment from 'moment';
@@ -302,23 +302,23 @@ export default {
       test: null
     }
   },
-//   created() {
+  created() {
     // 지금은 요청해서 받아오고 있음
-    // this.$http
-    //   .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
-    //     // 'http://127.0.0.1:8000/schedule/38/', {
-    //     headers: {
-    //       Authorization: this.config,
-    //     },
-    //   })
-    //   .then(res => {
-    //     this.test = res.data
-    //     res.data.course.forEach(el => this.Courses.push(el))
-    //     this.schedule = res.data.schedule
-    //     // console.log(this.schedule)
-    //     this.getInitialEvents()
+    this.$http
+      .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
+        // 'http://127.0.0.1:8000/schedule/38/', {
+        headers: {
+          Authorization: this.config,
+        },
+      })
+      .then(res => {
+        this.test = res.data
+        res.data.course.forEach(el => this.Courses.push(el))
+        this.schedule = res.data.schedule
+        // console.log(this.schedule)
+        this.getInitialEvents()
         
-    //   })
+      })
     // console.log(this.$attrs.AllCourses)
     // DetailSchedule에서 내려받아서 각 코스를 Courses에 담기
     // DetailSchedule에서 내려받아서 하려고 했는데 created 시점에 비어있는 채로 SDdetail가 들어온뒤에 보이려고 해서
@@ -326,7 +326,7 @@ export default {
     // this.$attrs.AllCourses.course.forEach(el => {
     //   this.Courses.push(el)
     // })
-//   },
+  },
   mounted () {
     this.$refs.calendar.checkChange()
   },
