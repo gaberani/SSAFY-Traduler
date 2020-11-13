@@ -49,7 +49,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     """
     permission_classes=[BasicCRUDPermisson]
     # 스케줄 관련 모델 / Serializer
-    queryset = Schedule.objects.all()
+    queryset = Schedule.objects.all().order_by('-id')
     serializer_class = ScheduleSerializer
     # 코스(스케줄 상세 과정) 관련 모델 / Serializer
     #course_queryset = Course.objects.all()
@@ -132,6 +132,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
         
         return Response({"schedule": result}, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def get_top_three(self, request):
+        queryset = self.queryset.order_by('-scrap_count')[:3]
+        serialized_schedules = self.serializer_class(queryset, many=True)
+
+        return Response(serialized_schedules.data, status=status.HTTP_200_OK)
+
 
     def create(self, request, *args, **kwargs):
         """
