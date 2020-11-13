@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, I
 from rest_framework.response import Response
 
 from .models import Spot, Category, Area, SpotComment, UserSpotFavorite, CustomSpot
-from .serializers import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer
+from .serializers import SpotSerializer, CategorySerializer, AreaSerializer, SpotCommentSerializer,CustomSpotSerializer, SemiSpotSerializer
 from traduler.mixin import *
 from traduler.permissions import *
 
@@ -52,6 +52,11 @@ class SpotViewSet(viewsets.ModelViewSet):
         page, result = pageProcess(filtered_spots, self.serializer_class, cur_page, 9, request.user)
 
         return Response({"page": page, "result": result}, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def semi_list(self,request):
+        serialized_spots = SemiSpotSerializer(self.queryset, many=True)
+        return Response(serialized_spots.data)
 
     def retrieve(self, request, pk):
         spot = self.queryset.get(id=pk)
