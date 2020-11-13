@@ -100,18 +100,21 @@
       </v-row>
       <v-row no-gutters>
         <v-col
+          cols="12"
+          sm="1"
+        ></v-col>
+        <v-col
+					cols="12"
+					sm="8"
+          style="margin-top: 10vh;"
+        >
+          <Calendar/>
+          <!-- <Calendar :AllCourses="this.SDdetail"/> -->
+          <!-- {{SDdetail}} -->
+        </v-col>
+        <v-col
 					cols="12"
 					sm="3"
-        >
-        </v-col>
-        <v-col
-					cols="12"
-					sm="7"
-        >
-        </v-col>
-        <v-col
-					cols="12"
-					sm="2"
         > 
         </v-col>
       </v-row>
@@ -120,6 +123,7 @@
 
 <script>
 import SpotMap2 from '@/components/schedules/SpotMap2.vue'
+import Calendar from '@/components/schedules/Calendar.vue'
 
 import { mapGetters } from "vuex";
 import SERVER from '@/api/api'
@@ -130,10 +134,12 @@ import 'moment/locale/ko'
 
 export default {
   components: {
-    SpotMap2
+    SpotMap2,
+    Calendar
   },
   data() {
     return {
+      calendarflag: 0,
       schedule: [],
       SDdetail: {
         "course": [
@@ -207,7 +213,6 @@ export default {
     headers() {
       return (this.LoginFlag ? {Authorization: this.config} : null)
     },
-    
   },
   methods: {
     formatDate(date) {
@@ -244,11 +249,12 @@ export default {
       .catch(error => {
         console.log(error.response);
       })
-    }
+    },
   },
   created() {
     this.getDetail();
     this.getAdvice();
+    console.log('Get Detail')
   },
   }
 </script>
