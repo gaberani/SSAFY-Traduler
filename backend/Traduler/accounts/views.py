@@ -102,7 +102,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
         for serialized_schedule in serialized_invited_schedules:
             serialized_schedule['coords'] = []
-            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedules']['id']).order_by('start_time')
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
@@ -125,7 +125,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
         for serialized_schedule in serialized_submit_requests:
             serialized_schedule['coords'] = []
-            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedules']['id']).order_by('start_time')
+            contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
