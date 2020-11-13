@@ -205,7 +205,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
                     serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
             serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
     
-        return Response(serialized_requests)
+        return Response({"page":page, "schedule": serialized_requests})
 
     def retrieve(self, request, pk):
         """    
