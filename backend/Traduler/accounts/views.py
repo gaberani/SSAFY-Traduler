@@ -79,7 +79,7 @@ class AccountViewSet(viewsets.ModelViewSet):
                         serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
             else:
-                serialized_schedule['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['avg_coord'] = [37.4879, 126.8577]
 
         return Response({'written_schedules': written_schedules, 'schedule_page': schedule_page} )
 
@@ -118,7 +118,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
             else:
-                serialized_schedule['schedule']['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['schedule']['avg_coord'] = [37.4879, 126.8577]
         return Response({'page': page, 'invited_schedules': serialized_invited_schedules}, status=status.HTTP_200_OK)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
@@ -143,7 +143,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
             else:
-                serialized_schedule['schedule']['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['schedule']['avg_coord'] = [37.4879, 126.8577]
 
         return Response({'page': page, 'submit_requests': serialized_submit_requests}, status=status.HTTP_200_OK)
 
@@ -188,7 +188,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
             else:
-                serialized_schedule['schedule']['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['schedule']['avg_coord'] = [37.4879, 126.8577]
 
         return Response({'page':page, 'schedule':serialized_schedules})
 
@@ -215,7 +215,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
                         serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
                 serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
             else:
-                serialized_schedule['schedule']['avg_coord'] = [37.7576, 128.8737]
+                serialized_schedule['schedule']['avg_coord'] = [37.4879, 126.8577]
         return Response({"page":page, "schedule": serialized_requests})
 
     def retrieve(self, request, pk):
