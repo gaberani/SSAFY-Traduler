@@ -100,7 +100,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         invited_schedules = user.submitted_user_requests.filter(status=1)
         page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 5, request.user)
 
-        for serialized_schedule in serialized_invited_schedules.data:
+        for serialized_schedule in serialized_invited_schedules:
             serialized_schedule['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedules']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
@@ -123,7 +123,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         submit_requests = user.submitted_user_requests.filter(status=0)
         page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 5, request.user)
 
-        for serialized_schedule in serialized_submit_requests.data:
+        for serialized_schedule in serialized_submit_requests:
             serialized_schedule['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedules']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
