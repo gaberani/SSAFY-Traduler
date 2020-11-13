@@ -37,7 +37,7 @@
     </v-col>
     
     <v-col cols="5" style="text-align: right;">
-      <textarea v-model="commentInput" style="width: 100%; height: 100%; border: 1px solid black; font-family: 'SCDream4'" />
+      <textarea v-model="commentInput" style="width: 100%; height: 100%; border: 1px solid black; font-family: 'SCDream4'" maxlength="80"/>
       <span>{{ commentLength }} / 80자</span>
     </v-col>
 
