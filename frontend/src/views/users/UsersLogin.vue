@@ -94,7 +94,7 @@ export default {
 	methods: {
 		...mapActions('accounts', ["SubmitLoginData"]),
 		gotoSignup() {
-			this.$router.push({name: 'Signup'})
+			this.$router.push({name: 'UsersSignup'})
 		}
 	}
 }
