@@ -49,7 +49,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     """
     permission_classes=[BasicCRUDPermisson]
     # 스케줄 관련 모델 / Serializer
-    queryset = Schedule.objects.all()
+    queryset = Schedule.objects.all().order_by('-id')
     serializer_class = ScheduleSerializer
     # 코스(스케줄 상세 과정) 관련 모델 / Serializer
     #course_queryset = Course.objects.all()
@@ -133,6 +133,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         
         return Response({"schedule": result}, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def get_top_three(self, request):
+        queryset = self.queryset.order_by('-scrap_count')[:3]
+        serialized_schedules = self.serializer_class(queryset, many=True)
+
+        return Response(serialized_schedules.data, status=status.HTTP_200_OK)
+
+
     def create(self, request, *args, **kwargs):
         """
             데이터는 schedule_info / course_info / province_info 로 구분되어 들어옵니다.
@@ -152,7 +160,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         new_user_schedule.is_valid(raise_exception=True)
         new_user_schedule.save()
 
-        return Response({"schedule_pk": schedule_pk}, status=status.HTTP_201_CREATED)
+        return Response({'page': page, "schedule_pk": schedule_pk}, status=status.HTTP_201_CREATED)
         
     def retrieve(self, request, pk):
         """
