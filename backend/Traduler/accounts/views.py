@@ -101,18 +101,18 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         page, serialized_invited_schedules = pageProcess(invited_schedules, self.serializer_class, cur_page, 5, request.user)
 
         for serialized_schedule in serialized_invited_schedules:
-            serialized_schedule['coords'] = []
+            serialized_schedule['schedule']['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
-                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    serialized_schedule['schedule']['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
                     sum_lat += contained_course.spot_pk.lat
                     sum_lon += contained_course.spot_pk.lon
                 else:
-                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
-            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+                    serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
         
         return Response({'page': page, 'invited_schedules': serialized_invited_schedules}, status=status.HTTP_200_OK)
 
@@ -124,18 +124,18 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         page, serialized_submit_requests = pageProcess(submit_requests, self.serializer_class, cur_page, 5, request.user)
 
         for serialized_schedule in serialized_submit_requests:
-            serialized_schedule['coords'] = []
+            serialized_schedule['schedule']['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
-                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    serialized_schedule['schedule']['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
                     sum_lat += contained_course.spot_pk.lat
                     sum_lon += contained_course.spot_pk.lon
                 else:
-                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
-            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+                    serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
         
         return Response({'page': page, 'submit_requests': serialized_submit_requests}, status=status.HTTP_200_OK)
 
@@ -166,19 +166,19 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
 
 
         for serialized_schedule in serialized_schedules:
-            serialized_schedule['coords'] = []
+            serialized_schedule['schedule']['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
 
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
-                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    serialized_schedule['schedule']['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
                     sum_lat += contained_course.spot_pk.lat
                     sum_lon += contained_course.spot_pk.lon
                 else:
-                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
-            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+                    serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
     
         return Response({'page':page, 'schedule':serialized_schedules})
 
@@ -191,19 +191,19 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         page, serialized_requests = pageProcess(requests, self.serializer_class, cur_page, 3)
 
         for serialized_schedule in serialized_requests:
-            serialized_schedule['coords'] = []
+            serialized_schedule['schedule']['coords'] = []
             contained_courses = Course.objects.filter(schedule_pk=serialized_schedule['schedule']['id']).order_by('start_time')
             sum_lat, sum_lon = 0, 0
 
             for contained_course in contained_courses:
                 # 포함된 코스가 spot / custome_spot 2종류이므로 분기해줬습니다...
                 if contained_course.spot_pk:
-                    serialized_schedule['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
+                    serialized_schedule['schedule']['coords'].append([contained_course.spot_pk.lat, contained_course.spot_pk.lon])
                     sum_lat += contained_course.spot_pk.lat
                     sum_lon += contained_course.spot_pk.lon
                 else:
-                    serialized_schedule['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
-            serialized_schedule['avg_coord'] = [sum_lat/len(serialized_schedule['coords']), sum_lon/len(serialized_schedule['coords'])]
+                    serialized_schedule['schedule']['coords'].append([contained_course.custom_spot_pk.lat, contained_course.custom_spot_pk.lon])
+            serialized_schedule['schedule']['avg_coord'] = [sum_lat/len(serialized_schedule['schedule']['coords']), sum_lon/len(serialized_schedule['schedule']['coords'])]
     
         return Response({"page":page, "schedule": serialized_requests})
 
