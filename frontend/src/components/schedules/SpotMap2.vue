@@ -39,7 +39,7 @@ export default {
       const script = document.createElement('script');
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}`;
+      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}&libraries=services,clusterer,drawing`;
       document.head.appendChild(script);
     }
 		},
@@ -64,16 +64,29 @@ export default {
       var linePath = [];
 			var Positions = [];
       for (var i=0; i<this.SDdetail.course_coords.length; i++) {
-				linePath.push(new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1])); 
-				Positions.push({title:this.SDdetail.course[i].spot_info.title,
-				latlng:new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1]),
-				address:this.SDdetail.course[i].spot_info.address,
-				image:this.SDdetail.course[i].spot_info.image,
-				id:this.SDdetail.course[i].spot_info.id,
-				course: i+1,
-				});   
-				// title:this.SDdetail.course[i].spot_info.title,
+				if (this.SDdetail.course[i].spot_pk !=null){
+					linePath.push(new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1])); 
+					Positions.push({title:this.SDdetail.course[i].spot_info.title,
+					latlng:new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1]),
+					address:this.SDdetail.course[i].spot_info.address,
+					image:this.SDdetail.course[i].spot_info.image,
+					id:this.SDdetail.course[i].spot_info.id,
+					course: i+1,
+					});
+				} else {
+					{
+					linePath.push(new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1])); 
+					Positions.push({title:this.SDdetail.course[i].custom_spot_info.title,
+					latlng:new kakao.maps.LatLng(this.SDdetail.course_coords[i][0], this.SDdetail.course_coords[i][1]),
+					// address:this.SDdetail.course[i].spot_info.address,
+					// image:this.SDdetail.course[i].cspot_info.image,
+					id:this.SDdetail.course[i].custom_spot_info.id,
+					course: i+1,
+					});
+				}  
 				}
+				// title:this.SDdetail.course[i].spot_info.title,
+			}
         // console.log(linePath)
       // var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
       // var dots = {}; // 여행지 마커 커스텀 오버레이 배열입니다.
@@ -96,30 +109,44 @@ export default {
 						map: map, // 마커를 표시할 지도
 						position: Positions[j].latlng, // 마커를 표시할 위치
 				});
-				var iwContent='<div style="width:350px; font-family: SCDream5;">' 
-				+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
-				+ Positions[j].title + '<br>' 
-				+ '<span style="font-size:0.9rem; font-family: SCDream4;">' +Positions[j].address +'</span>' 
-				+ '<img style="width:300px;" src="' +Positions[j].image + '"/>'
-				// + '<button id="test1" style="margin-bottom:5px; display:block; background-color:#FF5E5E; width:100px; border-radius:10px; color:white;">상세보기</button>' 
-				+'</div>'
-				
-				var iwContent2='<div style="width:320px; font-family: SCDream4;">' 
-				+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
-				+ Positions[j].title 
-				+ '<p style="font-family: SCDream4; margin:0px; color:#707070; font-size:0.8rem;">자세히 보려면 마커를 눌러주세요.</p>' +'</div>' 
-				
-				var infowindow = new kakao.maps.InfoWindow({
-				content: iwContent, // 인포윈도우에 표시할 내용
-				removable :true
-				});
-				var infowindow2 = new kakao.maps.InfoWindow({
-				content: iwContent2, // 인포윈도우에 표시할 내용
-				});
-						kakao.maps.event.addListener(marker, 'click', makeOverListener(map, marker, infowindow));
+				if (Positions[j].address) {
+					var iwContent='<div style="width:350px; font-family: SCDream5;">' 
+					+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
+					+ Positions[j].title + '<br>' 
+					+ '<span style="font-size:0.9rem; font-family: SCDream4;">' +Positions[j].address +'</span>' 
+					+ '<img style="width:300px;" src="' +Positions[j].image + '"/>'
+					// + '<button id="test1" style="margin-bottom:5px; display:block; background-color:#FF5E5E; width:100px; border-radius:10px; color:white;">상세보기</button>' 
+					+'</div>'
+					var infowindow = new kakao.maps.InfoWindow({
+					content: iwContent, // 인포윈도우에 표시할 내용
+					removable :true
+					
+					});
+					kakao.maps.event.addListener(marker, 'click', makeOverListener(map, marker, infowindow));
+					var iwContent2='<div style="width:320px; font-family: SCDream4;">' 
+					+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
+					+ Positions[j].title 
+					+ '<p style="font-family: SCDream4; margin:0px; color:#707070; font-size:0.8rem;">자세히 보려면 마커를 눌러주세요.</p>' +'</div>' 
+					
+					var infowindow2 = new kakao.maps.InfoWindow({
+					content: iwContent2, // 인포윈도우에 표시할 내용
+					});
 						kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow2));
 						// kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
 						kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow2));
+				
+				} else {
+				var iwContent3='<div style="width:320px; font-family: SCDream4;">' 
+				+'<button style="color:white; margin-top:3px; margin-bottom:4px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
+				+ Positions[j].title 
+				
+				var infowindow3 = new kakao.maps.InfoWindow({
+				content: iwContent3, // 인포윈도우에 표시할 내용
+				});
+						kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow3));
+						// kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+						kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow3));
+				}
 			}
 			function makeOverListener(map, marker, infowindow) {
 					return function() {
