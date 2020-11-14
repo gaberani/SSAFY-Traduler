@@ -215,31 +215,55 @@
                   </v-row>
                   <!-- 메모 -->
                   <v-row class="budget_outline" style="margin: 3px 0">
-                    <v-row style="margin: 5px 5px 4px 12px;">
-                      <div style="text-aling:center">
-                        <h2>메모</h2>
-                      </div>
-                      <v-spacer></v-spacer>
-                      <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
-                        <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                    </v-row>
-                    <v-row>
-                      <v-col
-                        v-for="memo in Course.memos"
-                        :key="memo.id"
-                        cols="12"
-                        style="padding: 0 12px"
-                      >
-                        {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
-                        <v-btn icon @click="onClickmemoDelBtn(memo.id)">
-                          <v-icon color="red">mdi-close</v-icon>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
+                    <v-col cols="12">
+                      <v-row style="margin: 5px 5px 4px 12px;">
+                        <div style="text-aling:center">
+                          <h2>메모</h2>
+                        </div>
+                        <v-spacer></v-spacer>
+                        
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          v-for="memo in Course.memos"
+                          :key="memo.id"
+                          cols="12"
+                          style="padding: 0 12px"
+                        >
+                          {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                          <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn icon v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
+                            <v-icon color="red">mdi-close</v-icon>
+                          </v-btn>
+                          <!-- <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                          <v-icon>mdi-check-circle</v-icon>
+                        </v-btn> -->
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="8">
+                          <v-text-field
+                            v-model="newMemoContent"
+                            dense
+                            required
+                            hide-details="auto"
+                            placeholder="메모 작성"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="2">
+                          <v-btn
+                            class="text--white"
+                            color="primary"
+                            @click="onClickMemoCreateBtn"
+                          >
+                            작성
+                          </v-btn>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                      </v-row>
+                    </v-col>
                   </v-row>
                 </v-col>
 
@@ -335,7 +359,8 @@ export default {
       budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
       budgetEditFlag: false,
       memoEditFlag: false,
-      
+      newMemoContent: '',
+
       // 출발, 도착 시간 변수
       Hours: [...Array(24)].map((v,i) => i+1),
       Minutes: [...Array(4)].map((v,i) => i*15),
@@ -588,11 +613,16 @@ export default {
         .post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO,
           {
             "course_pk": this.Course.id,
-            "content": "메모테스트"
+            "content": this.newMemoContent
           },
           {headers: {Authorization: this.config}}
         )
-        .then(res => console.log(res.data))
+        .then(res => {
+          console.log(res)
+          console.log(this.Course.memos.push(res.data))
+          this.newMemoContent = ''
+        })
+        .catch(err => console.log(err))
     },
     onClickmemoDelBtn(memo_id) {
       this.$http
@@ -600,6 +630,7 @@ export default {
           {headers: {Authorization: this.config}}
         )
         .then(() => alert('메모가 삭제되었습니다.'))
+        .catch(err => console.log(err))
     },
     // 메모 임시 수정 시작
     onClickmemoEditBtn() {
@@ -625,15 +656,22 @@ export default {
     },
     CourseUpdate() {
       // const original_budgets = ['budget_entrance', 'budget_etc', 'budget_food', 'budget_room', 'budget_transport']
+      let SubmitCourseData = {}
       console.log(this.Course)
+      let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'budget', 'spot_pk', 'custom_spot_pk', 'user_pk']
+      Object.keys(this.Course).forEach(el => {
+        if (FormDateKey.includes(el)) {
+          SubmitCourseData[el] = this.Course[el]
+        }
+      })
+      SubmitCourseData.budget_entrance = 4000
       this.$http
-        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + this.Course.id, 
-          {headers: {Authorization: this.config}},
-          this.Course
-          )
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${this.Course.id}/`, 
+          SubmitCourseData, // body
+          {headers: {Authorization: this.config} // header
+        })
         .then(res => console.log(res.data))
         .catch(err => {
-          console.log(this.Course)
           if (err.response === 401) {
             alert('스케줄을 만든 사람만 수정이 가능합니다')
           }
