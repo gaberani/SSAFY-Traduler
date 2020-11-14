@@ -300,7 +300,7 @@
 							<i class="fas fa-flag" style="font-size:2rem;"></i>
               <v-dialog
                 v-model="dialog2"
-                max-width="300"
+                max-width="500"
                 v-if="username == schedule.user.username">
               >
                 <template v-slot:activator="{ on, attrs }">
@@ -319,135 +319,266 @@
                       코스 추가
                     </span>
                   </v-card-title>
-                  <center>
+                    <v-tabs
+                      color="deep-purple accent-4"
+                      style="width:100%;"
+                    >
+                      <v-tab style="font-family: 'SCDream5';margin-left:10px;font-size:1rem;">여행지 데이터</v-tab>
+                      <v-tab style="font-family: 'SCDream5';font-size:1rem;">커스텀 여행지</v-tab>
+                      <v-tab-item
+                        v-for="n in 2"
+                        :key="n"
+                        style="margin-top:8px;"
+                      >
+                      <div v-if="n==1">
+                        <center>
+                          <multiselect class="spotselect" :optionsLimit='5' 
+                            v-model="spot2" 
+                            :options="spots2" 
+                            :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name"></multiselect>
+                          <!-- <v-select
+                            style="font-family: 'SCDream5';font-size:1.1rem; width:50%;"
+                            :items="selectarea"
+                            label="여행지 선택"
+                            dense
+                            hide-details
+                          ></v-select> -->
+                          <v-menu
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            width="50%"
+                            >
+                            <template v-slot:activator="{ on, attrs }" >
+                                <v-text-field
+                                v-model="startdate"
+                                placeholder="가는날 (이후)"
+                                prepend-icon="mdi-car"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                
+                                style="width:50%; font-family: 'SCDream5';"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="startdate"
+                                @input="menu2 = false"
+                            ></v-date-picker>
+                        </v-menu>
+                        
+                        <v-select
+                          v-model="DdepartureHour"
+                          :items="DHours"
+                          menu-props="auto"
+                          label="출발(시)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block; font-family: 'SCDream4';"
+                        ></v-select>
+                      
+                        <v-select
+                          v-model="DdepartureMinute"
+                          :items="DMinutes"
+                          menu-props="auto"
+                          label="출발(분)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%; margin-left:10px; display:inline-block; font-family: 'SCDream4';"
+                        ></v-select>							
+                        <v-menu
+                            v-model="menu3"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                v-model="enddate"
+                                placeholder="오는날 (이전)"
+                                prepend-icon="mdi-home"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                style="width:50%; font-family: 'SCDream5';"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="enddate"
+                                @input="menu3 = false"
+                            ></v-date-picker>
+                        </v-menu>
+                        <v-select
+                          v-model="DarrivalHour"
+                          :items="DHours"
+                          menu-props="auto"
+                          label="도착(시)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block;font-family: 'SCDream4';"
+                        ></v-select>
+                      
+                        <v-select
+                          v-model="DarrivalMinute"
+                          :items="DMinutes"
+                          menu-props="auto"
+                          label="도착(분)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block; margin-left:10px;font-family: 'SCDream4';"
+                        ></v-select>
+                        </center>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="#FF5E5E"
+                            text
+                            style="font-family: 'SCDream4'"
+                            @click="dialog2 = false"
+                          >
+                            취소
+                          </v-btn>
+                          <v-btn
+                            color="rgba( 13, 136, 255)"
+                            text
+                            style="font-family: 'SCDream4'"
+                            @click="schedulePlus"
+                          >
+                            추가하기
+                          </v-btn>
+                        </v-card-actions>
+                      </div>
+                      <!-- custom_spot -->
+                      <div v-if="n==2">
+                        <center>
+                          <CustomSpotMap/>
+                          <v-menu
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            width="50%"
+                            >
+                            <template v-slot:activator="{ on, attrs }" >
+                                <v-text-field
+                                v-model="startdate"
+                                placeholder="가는날 (이후)"
+                                prepend-icon="mdi-car"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                
+                                style="width:50%; font-family: 'SCDream5';"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="startdate"
+                                @input="menu2 = false"
+                            ></v-date-picker>
+                        </v-menu>
+                        
+                        <v-select
+                          v-model="DdepartureHour"
+                          :items="DHours"
+                          menu-props="auto"
+                          label="출발(시)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block; font-family: 'SCDream4';"
+                        ></v-select>
+                      
+                        <v-select
+                          v-model="DdepartureMinute"
+                          :items="DMinutes"
+                          menu-props="auto"
+                          label="출발(분)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%; margin-left:10px; display:inline-block; font-family: 'SCDream4';"
+                        ></v-select>							
+                        <v-menu
+                            v-model="menu3"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                v-model="enddate"
+                                placeholder="오는날 (이전)"
+                                prepend-icon="mdi-home"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                style="width:50%; font-family: 'SCDream5';"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="enddate"
+                                @input="menu3 = false"
+                            ></v-date-picker>
+                        </v-menu>
+                        <v-select
+                          v-model="DarrivalHour"
+                          :items="DHours"
+                          menu-props="auto"
+                          label="도착(시)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block;font-family: 'SCDream4';"
+                        ></v-select>
+                      
+                        <v-select
+                          v-model="DarrivalMinute"
+                          :items="DMinutes"
+                          menu-props="auto"
+                          label="도착(분)"
+                          outlined
+                          dense
+                          hide-details
+                          style="width:40%;display:inline-block; margin-left:10px;font-family: 'SCDream4';"
+                        ></v-select>
+                        </center>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="#FF5E5E"
+                            text
+                            style="font-family: 'SCDream4'"
+                            @click="dialog2 = false"
+                          >
+                            취소
+                          </v-btn>
+                          <v-btn
+                            color="rgba( 13, 136, 255)"
+                            text
+                            style="font-family: 'SCDream4'"
+                            @click="schedulePlus"
+                          >
+                            추가하기
+                          </v-btn>
+                        </v-card-actions>
+                      </div>
+                      </v-tab-item>
+                    </v-tabs>
                     <!-- <v-select
                       style="font-family: 'SCDream5';font-size:1.3rem; width:80%;"
                       :items="selectarea"
                       label="지역 선택"
                       dense
                     ></v-select> -->
-                    <multiselect class="spotselect" :optionsLimit='5' 
-                      v-model="spot2" 
-                      :options="spots2" 
-                      :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name"></multiselect>
-                    <!-- <v-select
-                      style="font-family: 'SCDream5';font-size:1.1rem; width:50%;"
-                      :items="selectarea"
-                      label="여행지 선택"
-                      dense
-                      hide-details
-                    ></v-select> -->
-                    <v-menu
-                      v-model="menu2"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      width="50%"
-                      >
-                      <template v-slot:activator="{ on, attrs }" >
-                          <v-text-field
-                          v-model="startdate"
-                          placeholder="가는날 (이후)"
-                          prepend-icon="mdi-car"
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          
-                          style="width:50%; font-family: 'SCDream5';"
-                          ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="startdate"
-                          @input="menu2 = false"
-                      ></v-date-picker>
-                  </v-menu>
-                  
-                  <v-select
-                    v-model="DdepartureHour"
-                    :items="DHours"
-                    menu-props="auto"
-                    label="출발(시)"
-                    outlined
-                    dense
-                    hide-details
-                    style="width:40%;display:inline-block; font-family: 'SCDream4';"
-                  ></v-select>
-                
-                  <v-select
-                    v-model="DdepartureMinute"
-                    :items="DMinutes"
-                    menu-props="auto"
-                    label="출발(분)"
-                    outlined
-                    dense
-                    hide-details
-                    style="width:40%; margin-left:10px; display:inline-block; font-family: 'SCDream4';"
-                  ></v-select>							
-                  <v-menu
-                      v-model="menu3"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      >
-                      <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                          v-model="enddate"
-                          placeholder="오는날 (이전)"
-                          prepend-icon="mdi-home"
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          style="width:50%; font-family: 'SCDream5';"
-                          ></v-text-field>
-                      </template>
-                      <v-date-picker
-                          v-model="enddate"
-                          @input="menu3 = false"
-                      ></v-date-picker>
-                  </v-menu>
-                  <v-select
-                    v-model="DarrivalHour"
-                    :items="DHours"
-                    menu-props="auto"
-                    label="도착(시)"
-                    outlined
-                    dense
-                    hide-details
-                    style="width:40%;display:inline-block;font-family: 'SCDream4';"
-                  ></v-select>
-                
-                  <v-select
-                    v-model="DarrivalMinute"
-                    :items="DMinutes"
-                    menu-props="auto"
-                    label="도착(분)"
-                    outlined
-                    dense
-                    hide-details
-                    style="width:40%;display:inline-block; margin-left:10px;font-family: 'SCDream4';"
-                  ></v-select>
-                  </center>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      color="#FF5E5E"
-                      text
-                      style="font-family: 'SCDream4'"
-                      @click="dialog2 = false"
-                    >
-                      취소
-                    </v-btn>
-                    <v-btn
-                      color="rgba( 13, 136, 255)"
-                      text
-                      style="font-family: 'SCDream4'"
-                      @click="schedulePlus"
-                    >
-                      추가하기
-                    </v-btn>
-                  </v-card-actions>
                 </v-card>
               </v-dialog>
 							<div style="width:90%; margin-left:1%; border-left:3.3px black solid; margin-top:3px;">
@@ -534,6 +665,7 @@
 
 <script>
 import SpotMap2 from '@/components/schedules/SpotMap2.vue'
+import CustomSpotMap from '@/components/schedules/CustomSpotMap.vue'
 import DetailCalendar from '@/components/schedules/DetailCalendar.vue'
 import { mapGetters } from "vuex";
 import SERVER from '@/api/api'
@@ -546,7 +678,8 @@ export default {
   components: {
     SpotMap2,
     DetailCalendar,
-    Multiselect
+    Multiselect,
+    CustomSpotMap
   },
   data() {
     return {
