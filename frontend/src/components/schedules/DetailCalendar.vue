@@ -1,59 +1,52 @@
 <template>
   <v-row class="fill-height">
     <v-col>
-      <!-- {{ this.$attrs.AllCourses}} -->
-        <v-btn 
-          class="datebtn" 
-          @click="$refs.calendar.prev()"
-          color="#FF5E5E"
-        >
-          Prev
-        </v-btn>
-        <!-- <v-btn style="margin-left:5%;" class="startendbtn" color="rgba( 13, 136, 255)" @click="$refs.calendar.move()">
-          First
-        </v-btn>
-        <v-btn style="margin-left:1%;" class="startendbtn" color="rgba( 13, 136, 255)" @click="$refs.calendar.prev()">
-          Last
-        </v-btn> -->
-        <v-btn 
-          class="datebtn" 
-          @click="$refs.calendar.next()"
-          color="#FF5E5E"
-          style="margin-left:25%;"
-        >
-          Next
-        </v-btn>
+      <v-btn 
+        class="datebtn" 
+        @click="$refs.calendar.prev()"
+        color="#FF5E5E"
+      >
+        Prev
+      </v-btn>
+      <v-btn 
+        class="datebtn" 
+        @click="$refs.calendar.next()"
+        color="#FF5E5E"
+        style="margin-left:25%;"
+      >
+        Next
+      </v-btn>
       <v-sheet height="100%" width="97%">
         <v-calendar
-            :start="formatDate(schedule.start_date)"
-            :end ="formatDate(schedule.end_date)"
-            ref="calendar"
-            v-model="value"
-            color="primary"
-            type="4day"
-            :events="events"
-            :event-color="getEventColor"
-            :event-ripple="false"
-            @click:event="showEvent"
-            @click:more="viewDay"
-            @click:date="viewDay"
-            @change="getInitialEvents"
-            @mousedown:event="startDrag"
-            @mousedown:time="startTime"
-            @mousemove:time="mouseMove"
-            @mouseup:time="endDrag"
-            @mouseleave.native="cancelDrag"
-            style="font-family: 'SCDream6'"
+          :start="formatDate(schedule.start_date)"
+          :end ="formatDate(schedule.end_date)"
+          ref="calendar"
+          v-model="value"
+          color="primary"
+          type="4day"
+          :events="events"
+          :event-color="getEventColor"
+          :event-ripple="false"
+          @click:event="showEvent"
+          @click:more="viewDay"
+          @click:date="viewDay"
+          @change="getInitialEvents"
+          @mousedown:event="startDrag"
+          @mousedown:time="startTime"
+          @mousemove:time="mouseMove"
+          @mouseup:time="endDrag"
+          @mouseleave.native="cancelDrag"
+          style="font-family: 'SCDream6'"
         >
           <template v-slot:event="{ event, timed, eventSummary }">
             <div
-                class="v-event-draggable"
-                v-html="eventSummary()"
+              class="v-event-draggable"
+              v-html="eventSummary()"
             ></div>
             <div
-                v-if="timed"
-                class="v-event-drag-bottom"
-                @mousedown.stop="extendBottom(event)"
+              v-if="timed"
+              class="v-event-drag-bottom"
+              @mousedown.stop="extendBottom(event)"
             ></div>
           </template>
         </v-calendar>
@@ -98,11 +91,9 @@
                   <!-- 출발, 도착 시간 -->
                   <v-row class="time_outline">
                     <v-col cols="12" style="padding-bottom:0px;">
-                      <h2 style="">일정 </h2> 
-                      
+                      <h2 style="">일정</h2> 
                         <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:60px;  ">{{formatDate2(Course.start_time)}}</span>
                         <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:138px; ">{{formatDate2(Course.end_time)}}</span>
-                      
                     </v-col>
                     <v-col
                       cols="6"
@@ -201,6 +192,7 @@
                         :key="memo"
                         cols="12"
                       >
+                        {{memo}}
                       </v-col>
                     </v-row>
                   </v-row>
@@ -219,10 +211,6 @@
                     <ScheduleDetailMap :lat="Course.spot_info.lat" :lon="Course.spot_info.lon" :item="Course.spot_info.id"/>
                     <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Course.spot_info.image" alt="">
                   </v-row>
-                  <!-- <v-row -->
-                    <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
-                    <!-- <SpotMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon"/> -->
-                  <!-- </v-row> -->
                 </v-col>
               </v-row>
             </v-card-text>
@@ -321,13 +309,6 @@ export default {
         console.log(this.schedule)
         this.getInitialEvents()
       })
-    // console.log(this.$attrs.AllCourses)
-    // DetailSchedule에서 내려받아서 각 코스를 Courses에 담기
-    // DetailSchedule에서 내려받아서 하려고 했는데 created 시점에 비어있는 채로 SDdetail가 들어온뒤에 보이려고 해서
-    // 캘린더가 안만들어지는 문제가 있음
-    // this.$attrs.AllCourses.course.forEach(el => {
-    //   this.Courses.push(el)
-    // })
   },
   watch: {
 		Courses: {
@@ -353,7 +334,6 @@ export default {
       moment.locale('ko');
       return moment(date).format('MM/DD dddd')
     },
-    // allowedMinutes: v => v === 0 | v === 15 | v === 30 | v === 45,
     // 초기 이벤트 설정
     getInitialEvents () {
       const events = []
@@ -364,20 +344,11 @@ export default {
         const start = new Date(this.Courses[i].start_time).getTime()
         const end = new Date(this.Courses[i].end_time).getTime()
         // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
-        // const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
         this.Courses[i]["timed"] = timed
         this.Courses[i]["name"] = this.Courses[i].spot_info.title
         this.Courses[i]["start"] = this.roundTime(start)
         this.Courses[i]["end"] = this.roundTime(end)
         this.Courses[i]["color"] = this.rndElement(this.colors)
-        // events.push({
-        //   name: this.Courses[i].spot_info.title,
-        //   color: this.rndElement(this.colors),
-        //   start: this.roundTime(start),
-        //   end: this.roundTime(end),
-        //   timed,
-        //   // datetimed
-        // })
         events.push(this.Courses[i])
       }
       this.events = events
@@ -496,7 +467,6 @@ export default {
     // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
       // 이미 있는 코스 조회 시 데이터 엮어주기
-      // console.log('showEvent !')
       this.departureHour = new Date(event.start).getHours()
       this.departureMinute = new Date(event.start).getMinutes()
       this.arrivalHour = new Date(event.end).getHours()
