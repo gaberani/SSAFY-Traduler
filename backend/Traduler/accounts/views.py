@@ -246,7 +246,7 @@ class UserScheduleViewSet(viewsets.ModelViewSet):
         """
         schedule = get_object_or_404(Schedule, pk=request.data['schedule_pk'])
         User = get_user_model()
-        user = get_object_or_404(User, pk=request.data['user_pk'])
+        user = get_object_or_404(User, username=request.data['username'])
         if request.user.is_authenticated:
             if schedule.user_pk == request.user:
                 if schedule.submitted_schedule_requests.filter(user_pk=user).exists():
