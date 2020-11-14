@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Avg
+from django.db.models import Avg, Prefetch
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import permission_classes, action
@@ -49,7 +49,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     """
     permission_classes=[BasicCRUDPermisson]
     # 스케줄 관련 모델 / Serializer
-    queryset = Schedule.objects.all().order_by('-id')
+    queryset = Schedule.objects.prefetch_related('contained_courses').order_by('-id')
     serializer_class = ScheduleSerializer
     # 코스(스케줄 상세 과정) 관련 모델 / Serializer
     #course_queryset = Course.objects.all()
@@ -107,13 +107,26 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             end_test = end_date + ' 23:59+09:00'
             filtered_schedules = filtered_schedules.filter(end_date__lte = end_test)
 
+        # for s in filtered_schedules:
+        #     # print(s.spot_pk)
+        #     ss = s.contained_courses.spot_pk.area_code
+        #     print(ss)
+        # if area_code:
+        #     filtered_schedules = filtered_schedules.filter(contained_courses__spot_pk__area_code__area_code__startswith=area_code)
+        
+
         empty_queryset = Schedule.objects.none()
         if area_code:
             for filtered_schedule in filtered_schedules:
-                if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
-                    empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
-        else:
-            empty_queryset = filtered_schedules
+                for course in filtered_schedule.contained_courses.all():
+                    if course.spot_pk and area_code in course.spot_pk.area_code.area_code:
+                        empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
+                        break
+
+        #         if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
+        #             empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
+        # else:
+        #     empty_queryset = filtered_schedules
 
         page , result = pageProcess(empty_queryset, self.serializer_class, cur_page, 9)
 
@@ -134,7 +147,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             else:
                 serialized_schedule['avg_coord'] = [37.4879, 126.8577]
         
-        return Response({"schedule": result}, status=status.HTTP_200_OK)
+        return Response({"page":page, "schedule": result}, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def get_top_three(self, request):
