@@ -1,6 +1,8 @@
-# 회원 관리
+# REST API 문서
 
-1. 회원 가입 - token 반환해줌!
+## 회원 관리
+
+1. 회원 가입 - token 반환
 
     ```bash
     POST /rest-auth/signup
@@ -16,7 +18,7 @@
     }
     ```
 
-2. 로그인 - token 반환해줌!
+2. 로그인 - token 반환
 
     ```bash
     POST /rest-auth/login
@@ -35,15 +37,37 @@
     POST /rest-auth/logout
     ```
 
-4. 회원 정보 조회 (user_pk가 없다면 내 정보 조회, 있다면 해당하는 유저 조회) - **Authorization**
+4. 회원 정보 조회 (내 정보 조회) - **Authorization**
 
     ```bash
-    GET /accounts/{user_pk}
+    GET /accounts/my_info
     ```
 
-5. 회원 정보 수정 - **Authorization**
+    * 즐겨찾기한 여행지 정보 확인
 
-    이미지는 이미지 서버에 올린 후 return 값을 받아서 추가할 것
+        ```bash
+        GET /accounts/favorite_spots
+        ```
+
+        ```json
+        "params": {
+            "curSpotPage": Int
+        }
+        ```
+
+    * 작성한 스케줄 확인
+
+        ```bash
+        GET /accounts/written_schedules
+        ```
+
+        ```json
+        "params": {
+            "curSchedulePage": Int
+        }
+        ```
+
+5. 회원 정보 수정 - **Authorization**
 
     ```bash
     PATCH /accounts
@@ -51,8 +75,9 @@
 
     ```json
     {
-        profile_image: String,
-        introduce: String
+        "nickname": String,
+        "profile_image": String,
+        "introduce": String
     }
     ```
 
@@ -62,341 +87,439 @@
     DELETE /accounts
     ```
 
-# 여행지 정보 관련
+
+
+## 여행지 정보 관련
+
+- 카테고리 목록 불러오기
+
+    ```bash
+    GET /category/
+    ```
+
+- Area 코드 목록 불러오기
+
+    ```bash
+    GET /area/
+    ```
 
 1. 여행지 목록 조회
 
-    1. 검색 기능 - 타이틀과 카테고리(대분류, 중분류, 소분류 포함된 "카테고리 코드")로 검색
+    1. 검색 기능 - 타이틀과 대분류로 검색
 
         ```bash
-        GET /spots?title=검색어&category=카테고리코드
+        GET /spots
         ```
 
         ```json
-        {
+        "params": {
             "title": String,
             "category": String,
+            "area": String
         }
         ```
 
-    2. 현재 작성 중인 여행코스에 포함된 여행지 - **Authorization**
+    2. 추천 여행지 (3개)
 
         ```bash
-        GET /spots/writing
+        GET /spots/get_recommend_spots
         ```
 
-    3. 추천 여행지 (3개)
+    3. 평점 높은 여행지 (3개)
 
         ```bash
-        GET /spots/recommend
+        GET /spots/get_best_spots
         ```
 
-2. 여행지 상세 정보 조회
+2. 여행지 상세 정보 조회 
 
     ```bash
     GET /spots/{spot_pk}
     ```
 
-    평균 평점 / 즐겨찾기 수 / 댓글 정보들도 전달 필요
-
-3. 여행지 즐겨찾기 추가 - **Authorization**
-
-    ```bash
-    POST /spots/like
-    ```
-
-    - Body
-
-    ```json
-    {
-        "spot_pk": {여행지_pk}
-    }
-    ```
-
-4. 여행지 즐겨찾기 삭제 - **Authorization**
-
-    ```json
-    DELETE /spots/like/{spot_pk}
-    ```
-
-5. 여행지 평점 및 댓글
-
-    - 생성 - **Authorization**
+    1. 여행지 즐겨찾기 추가 - **Authorization**
 
         ```bash
-        POST /comment
+        POST /spots/{spot_pk}/like/
         ```
 
-        - Body
-
-        ```json
-        {
-            "spot_pk": {여행지_pk},
-            "score": Int{여행지_평점},
-            "content": String{여행지에 대한 코멘트} 
-        }
-        ```
-
-    - 수정 - **Authorization**
+    2. 여행지 즐겨찾기 삭제 - **Authorization**
 
         ```bash
-        PATCH /comment
+        DELETE /spots/{spot_pk}/like/
         ```
 
-        - Body
+    3. 여행지 평점 및 댓글
 
-        ```json
-        {
-            "comment_pk" : {comment_pk},
-            "score": Int,
-            "content": String
-        }
-        ```
-
-    - 삭제 - **Authorization**
-
-        ```bash
-        DELETE /comment/{comment_pk}
-        ```
-
-# 스케쥴 관련
-
-1. 스케쥴
-
-    1. 스케쥴 목록 불러오기
-
-        1. 필터링 (최신순, 스크랩순, 조회순)
-
-            1. 제목검색
-            2. 멤버구성 (혼자, 가족, 커플, 멤버구성)
-            3. 스케쥴스타일(액티비티, 힐링, 기타, ❓스타일)
-            4. 지역별 (8도)
-            5. 동행 모집 여부
-            6. 조언 요청 여부
-            7. 시작 날짜 / 끝 날짜
+        1. 생성 - **Authorization**
 
             ```bash
-            GET /schedule?title&member_type&style_type&area_code&together&advice&start_date&end_date
+            POST /comment/
             ```
 
             ```json
-            {
-                "title": String,
-                "member_type": Int,
-                "style_type": Int,
-                "area_code": Int,
-                "together": TINYINT,
-                "advice": TINYINT,
-                "start_date": String,
-                "end_date": String
+            "body": {
+                "spot_pk": {여행지_pk},
+                "score": Int{여행지_평점},
+                "content": String{여행지에 대한 코멘트}
             }
             ```
 
-    2. 스케쥴 CRUD
-
-        - 조회
-
-            - 스케쥴 상세 정보 모두 불러오기
-
-                ```bash
-                GET /schedule/{schedule_pk}
-                ```
-
-        - 생성 - **Authorization**
+        2. 수정 - **Authorization**
 
             ```bash
-            POST /schedule
+            PATCH /comment/{comment_pk}/
             ```
 
             ```json
-            {
-                "title":String,
+            "body": {
+                "spot_pk": {여행지_pk},
+                "score": Int,
+                "content": String
+            }
+            ```
+
+        3. 삭제 - **Authorization**
+
+            ```bash
+            DELETE /comment/{comment_pk}
+            ```
+
+3. 사용자 커스텀 여행지 생성
+
+    ```json
+    POST /custom_spots
+    ```
+
+    ```json
+    "body": {
+    	"title": String,
+    	"lat": Float,
+    	"lon": Float,
+    }
+    ```
+
+
+
+## 스케쥴 관련
+
+1. 스케줄
+
+    1. 스케줄 검색
+
+        ```bash
+        GET /schedule
+        ```
+
+        ```json
+        "params": {
+            "title": String, // 여행지 제목 검색 
+            "member_type": Int, // 멤버 구성 타입으로 검색
+            "style_type": Int, // 여행 스타일로 검색
+            "area_code": String, // 여행지에 특정 지역의 여행지가 포함되었는지 검색
+            "together": TINYINT, // 0: 모집 안 함, 1: 모집 중
+            "advice": TINYINT, // 0: 도움 필요 X, 1: 도움 필요
+            "start_date": String, (2020-11-4) // 시작 일자 이후 시작하는 스캐줄 검색
+            "end_date": String (2020-11-4) // 종료 일자 이전에 종료되는 스케줄 검색
+        }
+        ```
+
+    2. 스케줄 CRUD  
+
+        - 상세 정보 조회
+
+            ```bash
+            GET /schedule/{schedule_pk}
+            ```
+
+        - 스케줄 생성 - **Authorization** ✔
+
+            ```bash
+            POST /schedule/
+            ```
+
+            ```json
+            "body": {
+                "*title":String,
                 "overview": String,
                 "private": TINYINT,
                 "advice": TINYINT,
-                "together": TINYINT,
-                "courses": [{
-                    "start_time": String,
-                    "end_time": String,
-                    "content": String,
-                    "budget_food": INT,
-                    "budget_transport": INT,
-                    "budget_entrance": INT,
-                    "budget_room": INT,
-                    "budget_etc": INT,
-                    "spot_pk": INT,
-                    "custom_spot_pk": INT
-                },
-                {
-                    "start_time": ,
-                    "end_time": ,
-                    "content": ,
-                    "budget_food": ,
-                    "budget_transport": ,
-                    "budget_entrance": ,
-                    "budget_room": ,
-                    "budget_etc": ,
-                    "spot_pk": ,
-                    "custom_spot_pk": 
-                }, ...]
+                "together": TINYINT
             }
             ```
 
         - 수정 - **Authorization**
 
             ```bash
-            PATCH /schedule
-            ```
-
-            - Body
-
-            ```json
-            {
-            	"schedule_pk" : {schedule_pk},
-            	...
-            }
+            PATCH /schedule/{schedule_pk}/
             ```
 
         - 삭제 - **Authorization**
 
             ```bash
-            DELETE /schedule/{schedule_pk}
+            DELETE /schedule/{schedule_pk}/
             ```
 
-2. 스케쥴 내 상세 과정 메모 - 참가자
+    - 스케줄 생성 관련 API
 
-    > 스케쥴 참가자들이 각 코스에 대한 의견을 반영할 수 있는 수단
+        - 목적지 생성
 
-    - 생성 - **Authorization**
+            ```bash
+            POST /schedule_area/
+            ```
 
-        ```bash
-        POST /memo
-        ```
+            ```json
+            "body": {
+            "schedule_pk" : Int,
+            "area_code": String, 
+            }
+            ```
 
-        ```json
-        {
-            "course_pk": Int,
-            "content": String
-        }
-        ```
-
-    - 수정 - **Authorization**
-
-        ```bash
-        PATCH /memo
-        ```
+        - 목적지 수정
 
         ```json
-        {
-            "course_pk": Int,
-            "content": String
-        }
+        PATCH /schedule_area/{schedule_area pk}/
         ```
 
-    - 삭제 - **Authorization**
-
-        ```bash
-        DELETE /memo/{memo_pk}
-        ```
-
-3. 도움 게시판
-
-    > 스케쥴에 대한 도움 댓글을 작성할 수 있는 게시판
-
-    - 생성 - **Authorization**
-
-        ```bash
-        POST /advice
-        ```
+        - 목적지 삭제
 
         ```json
-        {
-            "schedule_pk": Int,
-            "content": String
-        }
+        DELETE /schedule_area/{schedule_area pk}/
         ```
 
-    - 수정 - **Authorization**
 
-        ```bash
-        PATCH /advice
-        ```
+### 스케줄 스크랩 기능
 
-        ```json
-        {
-            "schedule_pk": Int,
-            "content": String
-        }
-        ```
-
-    - 삭제 - **Authorization**
-
-        ```bash
-        DELETE /advice/{advice_pk}
-        ```
-
-4. 스케쥴 스크랩
-
-    > 다른 유저의 스케쥴을 스크랩(복사)할 수 있는 기능
-
-    - 스크랩 - **Authorization**
-
-        ```bash
-        POST /schedule/scrape
-        ```
-
-        ```json
-        {
-            "schedule_pk": Int
-        }
-        ```
-
-5. 스케줄 참가
-
-    > 다른 유저의 스케쥴에 참가자로 참여할 수 있는 기능
-
-    - 신청 - **Authorization**
-
-        ```bash
-        POST /schedule/join
-        ```
-
-        ```json
-        {
-            "schedule_pk": Int,
-            "content": String
-        }
-        ```
-
-    - 승인 - **Authorization**
-
-        ```bash
-        POST /schedule/confirm
-        ```
-
-        ```json
-        {
-            "schedule_pk": Int,
-            "user_pk": Int
-        }
-        ```
-
-# 이미지 서버
-
-1. 업로드 - 이미지 경로 return
+- 스크랩 - **Authorization**
 
     ```bash
-    POST /images/upload
+    POST /schedule/scrap/
     ```
 
     ```json
     {
-        image: BLOB,
+        "schedule_pk": Int
     }
     ```
 
-2. 이미지 경로
+### 스케줄 참가 및 초대 기능
+
+* 스케줄 참가 신청 - **Authorization**
 
     ```bash
-    GET /images/{image_URL}
+    POST /join/
     ```
+
+    ```json
+    "body": {
+        "schedule_pk": Int,
+        "content": String
+    }
+    ```
+
+- 스케줄 참가 승인 - **Authorization**
+
+    ```bash
+    POST /join/confirm/
+    ```
+
+    ```json
+    {
+        "user_schedule_pk": Int
+    }
+    ```
+
+- 내 스케쥴에 다른 사람 초대하기 - Auth
+
+    ```bash
+    POST /join/invite/
+    ```
+
+    ```json
+    "body": {
+    	"schedule_pk": {스케쥴 번호},
+    	"user_pk" : {초대하는 유저 pk} 
+    }
+    ```
+
+### 스케줄 내의 코스 관련
+
+- 코스 생성
+
+    ```json
+     POST /course/
+    ```
+
+    ```json
+    "body": {
+        "start_time": String, // "2020-11-08 04:00:00"
+        "end_time" : String, // "2020-11-08 09:00:00"
+        "content" : String,
+        "budget_food": Int,
+        "budget_transport": Int,
+        "budget_room": Int,
+        "budget_etc": Int,
+        "schedule_pk": Int,
+        "custom_spot_pk": Int, // or null
+        "spot_pk": Int // or null
+    }
+    ```
+
+- 코스 수정
+
+    ```bash
+    PATCH /course/{course_pk}/
+    ```
+
+- 코스 삭제
+
+    ```bash
+    DELETE /course/{course_pk}/
+    ```
+
+* **코스에 대한 메모 관련 API**
+
+    * 조회
+
+        ```bash
+        GET /memo
+        ```
+
+        ```json
+        "params": {
+            "course_pk": Int,
+            "curPage": Int
+        }
+        ```
+
+    * 생성
+
+        ```bash
+        POST /memo/
+        ```
+
+        ```json
+        "body": {
+            "course_pk": Int,
+            "content": String
+        }
+        ```
+
+    * 수정 - **Authorization**
+
+        ```bash
+        PATCH /memo/{memo_pk}/
+        ```
+
+        ```json
+        "body": {
+            "course_pk": Int,
+            "content": String
+        }
+        ```
+
+    * 삭제 - **Authorization**
+
+        ```bash
+        DELETE /memo/{memo_pk}/
+        ```
+
+### 스케줄 내의 도움 게시판
+
+- 조회
+
+    ```bash
+    GET /advice
+    ```
+
+    ```json
+    "params": {
+        "schedule_pk": Int,
+        "curPage": Int
+    }
+    ```
+
+- 생성 - **Authorization**
+
+    ```bash
+    POST /advice/
+    ```
+
+    ```json
+    {
+        "schedule_pk": Int,
+        "content": String
+    }
+    ```
+
+- 수정 - **Authorization**
+
+    ```bash
+    PATCH /advice/{advice_pk}/
+    ```
+
+    ```json
+    {
+        "schedule_pk": Int,
+        "content": String
+    }
+    ```
+
+- 삭제 - **Authorization**
+
+    ```bash
+    DELETE /advice/{advice_pk}
+    ```
+
+
+
+## 신청 관련
+
+* 받은 초대 확인
+
+    ```bash
+    GET /join/invitation
+    ```
+
+    ```json
+    "params": {
+        "curPage": Int
+    }
+    ```
+
+* 신청한 스케줄 확인
+
+    ```bash
+    GET /join/requests
+    ```
+
+    ```json
+    "params": {
+        "curPage": Int
+    }
+    ```
+
+* 참여한 스케줄 확인
+
+    ```bash
+    GET /join/joined_schedules
+    ```
+
+    ```json
+    "params": {
+        "curPage": Int
+    }
+    ```
+
+* 받은 신청 확인
+
+    ```bash
+    GET /join/recieved_requests
+    ```
+
+    ```json
+    "params": {
+        "curPage": Int
+    }
+    ```
+
