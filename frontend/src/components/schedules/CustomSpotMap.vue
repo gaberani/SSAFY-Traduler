@@ -1,14 +1,14 @@
 <template>
   <v-container style="padding:0;">
     <center>
-			<form onsubmit="searchPlaces(); return false;">
-				<input style="font-family: 'SCDream5';border-bottom:1px #707070 solid;" type="text" value="이태원" placeholder="검색어를 입력해주세요." id="keyword" size="20"> 
-				<button class="mapsearchbtn" style="font-family: 'SCDream5';background-color:#FF5E5E;width:20%; border-radius:10px; color:white;" type="">검색</button> 
-			</form>
+			<!-- <form onsubmit="searchPlaces(); return false;"> -->
+				<input style="font-family: 'SCDream5';border-bottom:1px #707070 solid;" type="text" v-model="query" placeholder="검색어를 입력해주세요." id="keyword" size="20"> 
+				<button class="mapsearchbtn" style="font-family: 'SCDream5';background-color:#FF5E5E;width:20%; border-radius:10px; color:white;" @click.prevent="searchmap">검색</button> 
+			<!-- </form> -->
       <div id="map2" class="map">
 			</div>
     </center>
-		<h3>{{custom_title}} </h3>
+		<span style="font-family: 'SCDream5'; border-bottom:2px #FF5E5E solid; font-size:1.1rem;">{{custom_title}} </span>
   </v-container>
 </template>
 
@@ -18,9 +18,11 @@ export default {
   data() {
     return {
 			// Places:{}
+			query:"",
 			custom_lat:'',
 			custom_lon:'',
-			custom_title:'123',
+			custom_title:'',
+			keyword:' ',
     }
 	},
 	// props: ['item'],
@@ -28,8 +30,14 @@ export default {
 		this.makeMap();
 	},
 	watch: {
+		keyword() {
+			this.makeMap();
+		}
 	},
   methods: {
+		searchmap() {
+			this.keyword = this.query
+		},
 		makeMap() {
 			if (window.kakao && window.kakao.maps) {
       // kakao와 kakao.maps가 전부 로딩된 뒤에 실행
@@ -45,6 +53,7 @@ export default {
     }
 		},
     initMap() {
+			const self = this
       var infowindow = new kakao.maps.InfoWindow({zIndex:1});
 
 			var mapContainer = document.getElementById('map2'), // 지도를 표시할 div 
@@ -58,22 +67,10 @@ export default {
 
 			// 장소 검색 객체를 생성합니다
 			var ps = new kakao.maps.services.Places(); 
-			searchPlaces();
-			// 키워드로 장소를 검색합니다
-			// ps.keywordSearch('이태원 맛집', placesSearchCB); 
-			function searchPlaces() {
-
-				var keyword = document.getElementById('keyword').value;
-
-				if (!keyword.replace(/^\s+|\s+$/g, '')) {
-						// alert('키워드를 입력해주세요!');
-						return false;
-				}
-
-				// 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
-				ps.keywordSearch( keyword, placesSearchCB);
-				// return false;
-			}
+			// var keyword = this.keyword
+			
+			ps.keywordSearch( this.keyword, placesSearchCB);
+			
 			// 키워드 검색 완료 시 호출되는 콜백함수 입니다
 			function placesSearchCB (data, status) {
 					if (status === kakao.maps.services.Status.OK) {
@@ -91,7 +88,7 @@ export default {
 							map.setBounds(bounds);
 					} 
 			}
-			var customtom =[];
+			// var customtom =[];
 			// 지도에 마커를 표시하는 함수입니다
 			function displayMarker(place) {
 					
@@ -103,28 +100,23 @@ export default {
 					// 마커에 클릭이벤트를 등록합니다
 					kakao.maps.event.addListener(marker, 'click', function() {
 							// 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-							console.log(customtom,place)
-							customtom = place
+							let customspot_info = {
+								"title" : place.place_name,
+								"lat": place.y,
+								"lon": place.x,
+							}
+							self.$emit("select", customspot_info)
+							self.custom_lat = place.y
+							self.custom_lon = place.x
+							self.custom_title = place.place_name
+							console.log(self.custom_lat)
+							console.log(self.custom_lon)
+							console.log(self.custom_title)
 							infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
 							infowindow.open(map, marker);
 					});
 			}
-			console.log(customtom)
-			this.custom_lat = customtom.y
-			this.custom_lon = customtom.x
-			this.custom_title = customtom.place_name
-			console.log(this.custom_lat)
-			console.log(this.custom_lon)
-			console.log(this.custom_title)
 		},
-		// makeCustomspot(place) {
-		// 	this.custom_lat = place.y
-		// 	this.custom_lon = place.x
-		// 	this.custom_title = place.place_name
-		// 	console.log(this.custom_lat)
-		// 	console.log(this.custom_lon)
-		// 	console.log(this.custom_title)
-		// }
 	}
 }
 </script>
@@ -133,7 +125,7 @@ export default {
 .map {
   /* margin-left:10px; */
   width: 96%;
-  height: 200px;
+  height: 185px;
   border-radius:20px;
   margin-top:1%;
 }

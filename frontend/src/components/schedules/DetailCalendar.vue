@@ -219,6 +219,9 @@
                     <ScheduleDetailMap :lat="Course.spot_info.lat" :lon="Course.spot_info.lon" :item="Course.spot_info.id"/>
                     <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Course.spot_info.image" alt="">
                   </v-row>
+                  <v-row v-if="Course.custom_spot_info" style="margin: 5px 5px 4px 12px;">
+                    <ScheduleDetailMap :lat="Course.custom_spot_info.lat" :lon="Course.custom_spot_info.lon" :item="Course.custom_spot_info.id"/>
+                  </v-row>
                   <!-- <v-row -->
                     <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
                     <!-- <SpotMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon"/> -->
@@ -366,7 +369,11 @@ export default {
         // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
         // const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
         this.Courses[i]["timed"] = timed
-        this.Courses[i]["name"] = this.Courses[i].spot_info.title
+        if (this.Courses[i].spot_pk){
+          this.Courses[i]["name"] = this.Courses[i].spot_info.title
+        } else {
+          this.Courses[i]["name"] = this.Courses[i].custom_spot_info.title
+        }
         this.Courses[i]["start"] = this.roundTime(start)
         this.Courses[i]["end"] = this.roundTime(end)
         this.Courses[i]["color"] = this.rndElement(this.colors)
