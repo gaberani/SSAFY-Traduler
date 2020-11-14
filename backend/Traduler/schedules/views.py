@@ -134,7 +134,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             else:
                 serialized_schedule['avg_coord'] = [37.4879, 126.8577]
         
-        return Response({"schedule": result}, status=status.HTTP_200_OK)
+        return Response({"page":page, "schedule": result}, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def get_top_three(self, request):
