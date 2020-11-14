@@ -77,16 +77,9 @@ export default {
             "coords": [[0, 0]],
             "avg_coord": [0, 0]
         },
-        schedules:[],
-        }
-    },
-    // computed: {
-	// 	...mapGetters(["config","LoginFlag"]),
-	// },
-	// watch: {
-	// 	page() {
-	// 		this.getSpotList();}
-	// },
+      schedules:[],
+    }
+  },
 	methods: {
 		getScheduleList() {
 			// pagination이랑 loginflag 해야함

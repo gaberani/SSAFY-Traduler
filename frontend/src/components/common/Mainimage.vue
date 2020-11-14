@@ -199,7 +199,7 @@ export default {
       }
 		},
 		computed: {
-    ...mapGetters(["config",]),
+    ...mapGetters('accounts', ["config",]),
 		},
     methods: {
 			createScheduler() {

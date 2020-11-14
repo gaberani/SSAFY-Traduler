@@ -231,13 +231,13 @@
             <v-card-actions>
               <v-btn
                 class="text--white"
-                color="#FF5E5E"
+                color="#FF9617"
                 @click="CourseUpdate"
               >
                 수정
               </v-btn>
               <v-btn
-                color="#FF9617"
+                color="error"
                 @click="CourseDelete"
               >
                 삭제
@@ -248,7 +248,7 @@
                 color="secondary"
                 @click="selectedOpen = false"
               >
-                취소
+                닫기
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -342,7 +342,7 @@ export default {
     this.$refs.calendar.checkChange()
   },
   computed: {
-    ...mapGetters(['config'])
+    ...mapGetters('accounts', ['config'])
   },
   methods: {
     formatDate(date) {

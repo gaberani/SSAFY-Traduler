@@ -367,7 +367,7 @@ export default {
     searchStyleIdx() {
       return (this.typeIdx===0 ? '' : this.typeIdx)
     },
-    ...mapGetters(["config",]),
+    ...mapGetters('accounts', ["config",]),
   },
   methods: {
     createScheduler() {

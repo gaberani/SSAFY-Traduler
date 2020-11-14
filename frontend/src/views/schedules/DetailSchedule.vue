@@ -451,7 +451,7 @@
                 </v-card>
               </v-dialog>
 							<div style="width:90%; margin-left:1%; border-left:3.3px black solid; margin-top:3px;">
-								<div v-for="(cour,idx) in SDcourse" :key="cour.id">
+								<div v-for="(cour, idx) in SDcourse" :key="cour.id">
 									<p v-if="idx!=0" style="font-size:1.6rem; margin-left:-15px; margin-bottom:5px;"><i class="fas fa-car"></i></p>
 									<button class="courseidx" style="background-color:">{{idx+1}}</button>
 									<span class="spottitle">{{cour.spot_info.title}}</span>
@@ -758,7 +758,7 @@ export default {
 		changeStyletype() {
 			return this.type.indexOf(this.edittravel_type) +1
 		},
-    deletecourse(id,index) {
+    deletecourse(id, index) {
       let res = confirm('코스를 삭제 하시겠습니까?')
       if (res) {
         axios.delete(process.env.VUE_APP_SERVER_URL + `/course/` + id,{
@@ -784,10 +784,10 @@ export default {
 				if (this.DarrivalHour < 10) {
 					this.DarrivalHour = '0'+this.DarrivalHour
 				}
-				if (this.DdepartureMinute.length == 1) {
+				if (this.DdepartureMinute < 10) {
 					this.DdepartureMinute = '0'+this.DdepartureMinute
 				}
-				if (this.DarrivalMinute.length == 1) {
+				if (this.DarrivalMinute < 10) {
 					this.DarrivalMinute = '0'+this.DarrivalMinute
         }
         var d1 = new Date(this.startdate)
@@ -817,26 +817,20 @@ export default {
           headers: this.headers,
         })
         .then(response => {
-          console.log(response)
           this.SDdetail.course_coords.push([
             response.data.spot_info.lat,response.data.spot_info.lon
           ])
           this.SDcourse.push({
-            'spot_info' : { 
-              'title':this.spot2.title
-            },
-            'spot_pk':this.spot2.id,
+            'spot_info' : response.data.spot_info,
+            'spot_pk': response.data.spot_pk,
             'start_time' : this.coursestarttime,
             'end_time' : this.courseendtime,
+            'id': response.data.id
           })
         })
         .catch(error => { 
           console.log(error.response)
         })
-			console.log(this.createcourse)
-			console.log(this.spot2.title)
-			console.log(this.coursestarttime)
-			console.log(this.courseendtime)
 			this.dialog2 = false
 		},
     JoinSchedule() {

@@ -81,13 +81,6 @@ export default {
         schedules:[],
         }
     },
-    // computed: {
-	// 	...mapGetters(["config","LoginFlag"]),
-	// },
-	// watch: {
-	// 	page() {
-	// 		this.getSpotList();}
-	// },
 	methods: {
 		getNewSchedule() {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
