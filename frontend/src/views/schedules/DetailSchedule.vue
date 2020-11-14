@@ -1285,7 +1285,7 @@ export default {
             .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${Course.id}/`,
               {headers: {Authorization: this.config} // header
             })
-            .then(res => {
+            .then(() => {
               // 그 떄의 코스를 배열에서 제거
               this.SDcourse.splice(idx-1, 1)
             })
