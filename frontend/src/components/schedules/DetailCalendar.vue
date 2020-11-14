@@ -177,7 +177,7 @@
                         cols="12"
                         style="padding: 0px 0px 4px 18px;"
                       >
-                        <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.budget_name}}</span> 
+                        <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.original_name}}</span> 
                         <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
                         <!-- <v-spacer></v-spacer> -->
                       </v-col>
@@ -195,7 +195,7 @@
                             cols="3"
                             style="padding: 3px 6px;"
                           >
-                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.budget_name}}</span> 
+                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.original_name}}</span> 
                           </v-col>
                           <v-col
                             cols="7"
@@ -552,8 +552,8 @@ export default {
       Object.keys(event).forEach(el => {
         if (el.includes('budget')) {
           this.budgets.push({
-            original_name: el,
-            budget_name: this.budgetsList[idx],
+            original_name: this.budgetsList[idx],
+            budget_name: el,
             budget_value: event[el]
           })
           idx += 1
@@ -563,7 +563,7 @@ export default {
       if (this.budgets.length === 0) {
           this.budgetsList.forEach(el => {
             this.budgets.push({
-              budget_name: el,
+              original_name: el,
               budget_value: 0
             })
           })
@@ -648,17 +648,23 @@ export default {
         .then(res => console.log(res.data))
     },
 
-    // Course U & D
+    // Course Delete
     CourseDelete() {
       console.log(this.Courses.id)
     },
+    // Course Update
     CourseUpdate() {
       let SubmitCourseData = {}
-      let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'budget', 'spot_pk', 'custom_spot_pk', 'user_pk']
+      let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'spot_pk', 'custom_spot_pk', 'user_pk']
+      // Course Model에 맞춰 조립
       Object.keys(this.Course).forEach(el => {
         if (FormDateKey.includes(el)) {
           SubmitCourseData[el] = this.Course[el]
         }
+      })
+      // budgets도 이름 맞춰서 넣어줌.
+      this.budgets.forEach(el => {
+        SubmitCourseData[el.budget_name] = el.budget_value
       })
       this.$http
         .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${this.Course.id}/`, 
