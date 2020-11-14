@@ -122,6 +122,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                     if course.spot_pk and area_code in course.spot_pk.area_code.area_code:
                         empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
                         break
+        else:
+            empty_queryset = filtered_schedules
 
         #         if filtered_schedule.contained_provinces.all().filter(area_code=area_code).exists():
         #             empty_queryset |= self.queryset.filter(id=filtered_schedule.id)
