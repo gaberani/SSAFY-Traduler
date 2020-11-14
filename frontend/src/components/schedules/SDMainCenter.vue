@@ -19,7 +19,7 @@
           <span class="imo"> 동행 모집</span>
           <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
           <span class="imo"> 도움 요청</span>
-          <button class="plusbtn">더보기</button> 
+          <router-link :to="{name: 'NewSchedule'}"><button class="plusbtn">더보기</button></router-link>
         </div>
         <div>
           <v-col
@@ -43,9 +43,10 @@
             cols="12"
             sm="4"
             style="display:inline-block; padding:6px;"
+            v-for="bestSD in bestschedules" :key="bestSD.id"
           >
           <button class="SDbesttag" >BEST</button>
-          <ScheduleCard :data="1" :schedule="schedule"/>
+          <ScheduleCard :data="bestSD.id*10" :schedule="bestSD"/>
           </v-col>
         </div>
       </div>
@@ -116,10 +117,22 @@ export default {
     }
   },
   methods: {
+    getBestSD() {
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES +'get_top_three/')
+      .then(response => {
+        this.bestschedules = response.data.schedules
+        // console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
+    },
     getNewSD() {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
-        this.newschedules = response.data.schedule.reverse().slice(0,3);
+        // 백 수정하면 리버스 없애야함.
+        this.newschedules = response.data.schedule.slice(0,3);
+        // console.log(this.newschedules)
       })
       .catch(error => {
         console.log(error.response);
@@ -128,17 +141,19 @@ export default {
     getHelpSD() {
       this.$http
       .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
-        query: {
+        params: {
           title: '',
           member_type: '',
           style_type: '',
           together: '',
-          advice: 1,
+          advice:1,
           start_date: '',
           end_date: '',
         }})
       .then(response => {
         this.helpschedules = response.data.schedule.slice(0,3);
+        // console.log(response)
+        // console.log(this.helpschedules)
         // console.log(this.helpschedules)
       })
       .catch(error => {
@@ -148,6 +163,7 @@ export default {
   },
   created() {
     // console.log(SERVER)
+    this.getBestSD();
     this.getNewSD();
     this.getHelpSD();
   }

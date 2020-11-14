@@ -47,14 +47,24 @@ const routes = [
     component: () => import('@/views/schedules/ScheduleMain')
   },
   {
+    path: '/schedule/result',
+    name: 'Scheduleresult',
+    component: () => import('@/views/schedules/Scheduleresult')
+  },
+  {
+    path: '/schedule/new',
+    name: 'NewSchedule',
+    component: () => import('@/views/schedules/NewSchedule')
+  },
+  {
+    path: '/schedule/create',
+    name: 'CreateSchedule',
+    component: () => import('@/views/schedules/CreateSchedule')
+  },
+  {
     path: '/schedule/:schedule_id',
     name: 'DetailSchedule',
     component: () => import('@/views/schedules/DetailSchedule')
-  },
-  {
-    path: '/scheduleresult',
-    name: 'Scheduleresult',
-    component: () => import('@/views/schedules/Scheduleresult')
   },
 ]
 
