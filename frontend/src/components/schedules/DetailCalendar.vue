@@ -230,16 +230,18 @@
                           cols="12"
                           style="padding: 0 12px"
                         >
-                          {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                          <span>
+                            {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                          </span>
                           <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
                             <v-icon>mdi-pencil</v-icon>
                           </v-btn>
                           <v-btn icon v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
                             <v-icon color="red">mdi-close</v-icon>
                           </v-btn>
-                          <!-- <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
-                          <v-icon>mdi-check-circle</v-icon>
-                        </v-btn> -->
+                          <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                            <v-icon>mdi-check-circle</v-icon>
+                          </v-btn>
                         </v-col>
                       </v-row>
                       <v-row>
@@ -283,10 +285,6 @@
                   <v-row v-if="Course.custom_spot_info" style="margin: 5px 5px 4px 12px;">
                     <ScheduleDetailMap :lat="Course.custom_spot_info.lat" :lon="Course.custom_spot_info.lon" :item="Course.custom_spot_info.id"/>
                   </v-row>
-                  <!-- <v-row -->
-                    <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
-                    <!-- <SpotMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon"/> -->
-                  <!-- </v-row> -->
                 </v-col>
               </v-row>
             </v-card-text>
@@ -655,16 +653,13 @@ export default {
       console.log(this.Courses.id)
     },
     CourseUpdate() {
-      // const original_budgets = ['budget_entrance', 'budget_etc', 'budget_food', 'budget_room', 'budget_transport']
       let SubmitCourseData = {}
-      console.log(this.Course)
       let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'budget', 'spot_pk', 'custom_spot_pk', 'user_pk']
       Object.keys(this.Course).forEach(el => {
         if (FormDateKey.includes(el)) {
           SubmitCourseData[el] = this.Course[el]
         }
       })
-      SubmitCourseData.budget_entrance = 4000
       this.$http
         .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${this.Course.id}/`, 
           SubmitCourseData, // body
