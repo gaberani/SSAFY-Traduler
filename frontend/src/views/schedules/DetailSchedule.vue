@@ -735,9 +735,9 @@ export default {
       DHours: [...Array(24)].map((v,i) => i+1),
       DMinutes: [...Array(4)].map((v,i) => i*15),
       DdepartureHour: null,
-      DdepartureMinute: '00',
+      DdepartureMinute: '0',
       DarrivalHour: null,
-			DarrivalMinute: '00',
+			DarrivalMinute: '0',
 			coursestarttime:'',
 			courseendtime:'',
       // 
@@ -849,12 +849,12 @@ export default {
 					this.DarrivalHour = '0'+this.DarrivalHour
         }
         // 분명 에러나서 0추가했었는데 갑자기 다시 빼니까 됨
-				// if (this.DdepartureMinute < 10) {
-				// 	this.DdepartureMinute = '0'+this.DdepartureMinute
-				// }
-				// if (this.DarrivalMinute < 10) {
-				// 	this.DarrivalMinute = this.DarrivalMinute
-        // }
+				if (this.DdepartureMinute < 10) {
+					this.DdepartureMinute = '0'+this.DdepartureMinute
+				}
+				if (this.DarrivalMinute < 10) {
+					this.DarrivalMinute = '0'+this.DarrivalMinute
+        }
         var d1 = new Date(this.startdate)
         var d2 = new Date(this.schedule.start_date)
         var d3 = new Date(this.enddate)
@@ -865,7 +865,7 @@ export default {
         alert("스케줄 날짜와 코스 날짜를 확인해주세요.")
       }
 		} else {
-      alert("커스텀 여행지 생성 버튼을 누르고 빈 칸을 모두 채워주세요.")
+      alert("커스텀 여행지 생성 버튼을 누르고 빈칸을 모두 채워주세요.")
     } 
 		},
 		customcoursePlusunit() {
@@ -895,6 +895,10 @@ export default {
           })
           this.spot2=''
           this.custom_spot_info=null
+          this.DdepartureHour= null
+          this.DdepartureMinute= '0'
+          this.DarrivalHour= null
+          this.DarrivalMinute= '0'
         })
         .catch(error => { 
           console.log(error.response)
@@ -1002,7 +1006,7 @@ export default {
 		},
 		schedulePlus() {
 			if (this.spot2 && this.startdate && this.DdepartureHour &&
-			this.enddate && this.DarrivalHour ) {
+			this.enddate && this.DarrivalHour  ) {
 				if (this.DdepartureHour < 10) {
 					this.DdepartureHour = '0'+this.DdepartureHour
 				}
@@ -1010,12 +1014,12 @@ export default {
 					this.DarrivalHour = '0'+this.DarrivalHour
         }
         // 분명 에러나서 0추가했었는데 갑자기 다시 빼니까 됨
-				// if (this.DdepartureMinute < 10) {
-				// 	this.DdepartureMinute = '0'+this.DdepartureMinute
-				// }
-				// if (this.DarrivalMinute < 10) {
-				// 	this.DarrivalMinute = this.DarrivalMinute
-        // }
+				if (this.DdepartureMinute < 10) {
+					this.DdepartureMinute = '0'+this.DdepartureMinute
+				}
+				if (this.DarrivalMinute < 10) {
+					this.DarrivalMinute = '0'+this.DarrivalMinute
+        }
         var d1 = new Date(this.startdate)
         var d2 = new Date(this.schedule.start_date)
         var d3 = new Date(this.enddate)
@@ -1025,7 +1029,9 @@ export default {
       } else {
         alert("스케줄 날짜와 코스 날짜를 확인해주세요.")
       }
-			} 
+		} else{
+      alert("빈칸을 모두 채워주세요!")
+    } 
 		},
 		schedulePlusunit() {
 			this.coursestarttime = this.startdate + 'T' +this.DdepartureHour +':'+this.DdepartureMinute+':00+09:00'
@@ -1053,6 +1059,10 @@ export default {
             'id': response.data.id
           })
           this.spot2=''
+          this.DdepartureHour= null
+          this.DdepartureMinute= '0'
+          this.DarrivalHour= null
+          this.DarrivalMinute= '0'
         })
         .catch(error => { 
           console.log(error.response)
