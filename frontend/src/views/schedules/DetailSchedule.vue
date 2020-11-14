@@ -14,7 +14,7 @@
           <v-dialog
             v-model="dialog"
             max-width="500"
-            v-if="schedule.together===1 && username != schedule.user.username"
+            v-if="schedule.together===1 && isjoined ===-1 && username != schedule.user.username"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -66,6 +66,65 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <!-- 동행 모집버튼 -->
+          <v-dialog
+            v-model="dialog3"
+            max-width="400"
+            v-if="username == schedule.user.username"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="orange"
+                class="togetherbtn"
+                v-bind="attrs"
+                v-on="on"
+              >
+                초대하기
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title class="headline" >
+                <i class="fas fa-user-friends" style="color:orange;width:5%; height:1.6rem; margin-right:13px;" ></i>
+                <span style="font-family: 'SCDream5';font-size:1.5rem;">
+                  
+                  초대하기
+                </span>
+              </v-card-title>
+              <center>
+                <v-text-field
+                  v-model="inviteusername"
+                  label="초대하는 유저네임"
+                  style="font-family: 'SCDream5'; width:95%;"
+                  placeholder="초대하는 유저의 username을 입력해주세요."
+                  outlined
+                  dense
+                  hide-details
+                ></v-text-field>
+              </center>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="#FF5E5E"
+                  text
+                  style="font-family: 'SCDream4'"
+                  @click="dialog3 = false"
+                >
+                  취소
+                </v-btn>
+                <v-btn
+                  color="rgba( 13, 136, 255)"
+                  text
+                  style="font-family: 'SCDream4'"
+                  @click="InviteUser"
+                >
+                  초대
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+
+
           <v-dialog
               v-model="editdialog"
               max-width="500"
@@ -691,6 +750,9 @@ export default {
   },
   data() {
     return {
+      inviteusername:'',
+      isjoined: -1,
+      dialog3:false,
       custom_spot_info : null,
       schedule: {"user": {
           "username": "",
@@ -838,6 +900,25 @@ export default {
       }
     },
   methods: {
+    InviteUser() {
+      let invitebody = {
+          schedule_pk: this.$route.params.schedule_id,
+          username: this.inviteusername
+        }
+        axios.post(process.env.VUE_APP_SERVER_URL + '/join/invite/', invitebody, {
+            headers: this.headers,
+          })
+          .then(response => {
+            console.log(response)
+            this.inviteusername = '';
+            this.dialog3 = false;
+            alert("초대 요청을 보냈습니다!!");
+          })
+          .catch(error => { 
+            console.log(error.response)
+            alert("초대 요청 실패")
+          })
+    },
     customcoursePlus() {
 			// console.log(this.DdepartureHour.length)
 			if (this.custom_spot_pk && this.startdate && this.DdepartureHour &&
@@ -1081,6 +1162,7 @@ export default {
             console.log(response)
             this.joincontent = '';
             this.dialog = false;
+            this.isjoined = 0;
             alert("동행 신청이 되었습니다!!");
           })
           .catch(error => { 
@@ -1157,6 +1239,7 @@ export default {
         this.SDdetail = response.data;
         this.schedule = response.data.schedule;
         this.SDcourse = response.data.course;
+        this.isjoined = response.data.is_joined;
         // 수정데이터
         this.edittitle = this.schedule.title
         this.editoverview = this.schedule.overview
@@ -1169,7 +1252,7 @@ export default {
         this.editenddate = this.formatEditDate(this.schedule.end_date)
         this.editmax_member = this.schedule.max_member
         // console.log(this.schedule)
-        // console.log(this.SDdetail)
+        console.log(this.SDdetail)
       })
       .catch(error => {
         console.log(error.response)
