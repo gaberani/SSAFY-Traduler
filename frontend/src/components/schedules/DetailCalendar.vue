@@ -175,9 +175,9 @@
                         v-for="budget in budgets"  
                         :key="budget.budget_name"
                         cols="12"
-                        style="padding: 0px 0px 4px 18px;"
+                        style="padding: 0px 0px 4px 24px;"
                       >
-                        <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.budget_name}}</span> 
+                        <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.original_name}}</span> 
                         <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
                         <!-- <v-spacer></v-spacer> -->
                       </v-col>
@@ -195,7 +195,7 @@
                             cols="3"
                             style="padding: 3px 6px;"
                           >
-                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.budget_name}}</span> 
+                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.original_name}}</span> 
                           </v-col>
                           <v-col
                             cols="7"
@@ -215,31 +215,60 @@
                   </v-row>
                   <!-- 메모 -->
                   <v-row class="budget_outline" style="margin: 3px 0">
-                    <v-row style="margin: 5px 5px 4px 12px;">
-                      <div style="text-aling:center">
-                        <h2>메모</h2>
-                      </div>
-                      <v-spacer></v-spacer>
-                      <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
-                        <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                    </v-row>
-                    <v-row>
-                      <v-col
-                        v-for="memo in Course.memos"
-                        :key="memo.id"
-                        cols="12"
-                        style="padding: 0 12px"
-                      >
-                        {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
-                        <v-btn icon @click="onClickmemoDelBtn(memo.id)">
-                          <v-icon color="red">mdi-close</v-icon>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
+                    <v-col cols="12">
+                      <v-row style="margin: 5px 5px 4px 12px;">
+                        <div style="text-aling:center">
+                          <h2>메모</h2>
+                        </div>
+                        <v-spacer></v-spacer>
+                        
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          v-for="memo in Course.memos"
+                          :key="memo.id"
+                          cols="12"
+                          style="padding: 0 12px"
+                        >
+                          <span style="font-family: SCDream5;">
+                            {{memo.user.nickname}}: 
+                          </span>
+                          <span style="font-family: SCDream4;">
+                            {{memo.content}}
+                          </span>
+                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
+                            <v-icon color="red">mdi-close</v-icon>
+                          </v-btn>
+                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                            <v-icon>mdi-check-circle</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="8">
+                          <v-text-field
+                            v-model="newMemoContent"
+                            dense
+                            required
+                            hide-details="auto"
+                            placeholder="메모 작성"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="2">
+                          <v-btn
+                            class="text--white"
+                            color="primary"
+                            @click="onClickMemoCreateBtn"
+                          >
+                            작성
+                          </v-btn>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                      </v-row>
+                    </v-col>
                   </v-row>
                 </v-col>
 
@@ -259,10 +288,6 @@
                   <v-row v-if="Course.custom_spot_info" style="margin: 5px 5px 4px 12px;">
                     <ScheduleDetailMap :lat="Course.custom_spot_info.lat" :lon="Course.custom_spot_info.lon" :item="Course.custom_spot_info.id"/>
                   </v-row>
-                  <!-- <v-row -->
-                    <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
-                    <!-- <SpotMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon"/> -->
-                  <!-- </v-row> -->
                 </v-col>
               </v-row>
             </v-card-text>
@@ -278,7 +303,7 @@
               </v-btn>
               <v-btn
                 color="error"
-                @click="CourseDelete"
+                @click="CourseDelete(Course)"
               >
                 삭제
               </v-btn>
@@ -335,7 +360,8 @@ export default {
       budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
       budgetEditFlag: false,
       memoEditFlag: false,
-      
+      newMemoContent: '',
+
       // 출발, 도착 시간 변수
       Hours: [...Array(24)].map((v,i) => i+1),
       Minutes: [...Array(4)].map((v,i) => i*15),
@@ -529,8 +555,8 @@ export default {
       Object.keys(event).forEach(el => {
         if (el.includes('budget')) {
           this.budgets.push({
-            original_name: el,
-            budget_name: this.budgetsList[idx],
+            original_name: this.budgetsList[idx],
+            budget_name: el,
             budget_value: event[el]
           })
           idx += 1
@@ -540,7 +566,7 @@ export default {
       if (this.budgets.length === 0) {
           this.budgetsList.forEach(el => {
             this.budgets.push({
-              budget_name: el,
+              original_name: el,
               budget_value: 0
             })
           })
@@ -554,7 +580,6 @@ export default {
           this.selectedOpen = true
         }, 10)
       }
-
       // 모달 닫기
       if (this.selectedOpen) {
         this.selectedOpen = false
@@ -588,11 +613,16 @@ export default {
         .post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO,
           {
             "course_pk": this.Course.id,
-            "content": "메모테스트"
+            "content": this.newMemoContent
           },
           {headers: {Authorization: this.config}}
         )
-        .then(res => console.log(res.data))
+        .then(res => {
+          console.log(res)
+          console.log(this.Course.memos.push(res.data))
+          this.newMemoContent = ''
+        })
+        .catch(err => console.log(err))
     },
     onClickmemoDelBtn(memo_id) {
       this.$http
@@ -600,6 +630,7 @@ export default {
           {headers: {Authorization: this.config}}
         )
         .then(() => alert('메모가 삭제되었습니다.'))
+        .catch(err => console.log(err))
     },
     // 메모 임시 수정 시작
     onClickmemoEditBtn() {
@@ -619,25 +650,47 @@ export default {
         .then(res => console.log(res.data))
     },
 
-    // Course U & D
-    CourseDelete() {
-      console.log(this.Courses.id)
+    // Course Delete
+    CourseDelete(Course) {
+      this.$emit('Submit-Delete-Course', Course)
     },
+    // Course Update
     CourseUpdate() {
-      // const original_budgets = ['budget_entrance', 'budget_etc', 'budget_food', 'budget_room', 'budget_transport']
-      console.log(this.Course)
-      this.$http
-        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + this.Course.id, 
-          {headers: {Authorization: this.config}},
-          this.Course
-          )
-        .then(res => console.log(res.data))
-        .catch(err => {
-          console.log(this.Course)
-          if (err.response === 401) {
-            alert('스케줄을 만든 사람만 수정이 가능합니다')
-          }
-        })
+      let SubmitCourseData = {}
+      let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'spot_pk', 'custom_spot_pk', 'user_pk']
+      // Course Model에 맞춰 조립
+      Object.keys(this.Course).forEach(el => {
+        if (FormDateKey.includes(el)) {
+          SubmitCourseData[el] = this.Course[el]
+        }
+      })
+      // budgets도 이름 맞춰서 넣어줌.
+      this.budgets.forEach(el => {
+        SubmitCourseData[el.budget_name] = el.budget_value
+      })
+
+      let submit_start = new Date(SubmitCourseData.start_time) 
+      let s_year = submit_start.getFullYear()
+      let s_month = submit_start.getMonth()
+      let s_day = submit_start.getDate()
+      // let s_month = 10
+      // let s_day = 8
+      SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
+
+      let submit_end = new Date(SubmitCourseData.end_time)
+      let e_year = submit_end.getFullYear()
+      let e_month = submit_end.getMonth()
+      let e_day = submit_end.getDate()
+      // let e_month = 10
+      // let e_day = 8
+      SubmitCourseData.end_time = new Date(e_year, e_month, e_day, this.arrivalHour, this.arrivalMinute)
+
+      // this.departureHour = null
+      // this.departureMinute = null
+      // this.arrivalHour = null
+      // this.arrivalMinute = null
+      // SubmitCourseData['']
+      this.$emit('Submit-Update-Course', SubmitCourseData)
     },
     // 숫자 랜덤(안씀)
     rnd (a, b) {

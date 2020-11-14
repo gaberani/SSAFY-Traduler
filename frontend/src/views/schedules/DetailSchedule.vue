@@ -30,7 +30,6 @@
               <v-card-title class="headline" >
                 <img src="@/assets/friend.png" style="width:7%; height:1.6rem;" >
                 <span style="font-family: 'SCDream5';font-size:1.5rem;">
-                  
                   동행 신청
                 </span>
               </v-card-title>
@@ -718,7 +717,11 @@
 					sm="10"
         >
         <center>
-          <DetailCalendar :Courses="SDcourse" />
+          <DetailCalendar 
+            :Courses="SDcourse"
+            @Submit-Delete-Course="CourseDelete"
+            @Submit-Update-Course="CourseUpdate"
+          />
         </center>
         </v-col>
         <v-col
@@ -1251,8 +1254,6 @@ export default {
         this.editstartdate = this.formatEditDate(this.schedule.start_date)
         this.editenddate = this.formatEditDate(this.schedule.end_date)
         this.editmax_member = this.schedule.max_member
-        // console.log(this.schedule)
-        console.log(this.SDdetail)
       })
       .catch(error => {
         console.log(error.response)
@@ -1273,6 +1274,57 @@ export default {
         console.log(error.response);
       })
     },
+
+    // Course(-> Emit DetailCalendar.vue)
+    CourseDelete(Course) {
+      let idx = 0
+      // 일치하는 코스를 삭제 요청 보냄
+      this.SDcourse.forEach(el => {
+        if (el.id === Course.id) {
+          this.$http
+            .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${Course.id}/`,
+              {headers: {Authorization: this.config} // header
+            })
+            .then(res => {
+              // 그 떄의 코스를 배열에서 제거
+              this.SDcourse.splice(idx-1, 1)
+            })
+            .catch(err => {
+              if (err.response === 401) {
+                alert('스케줄을 만든 사람만 수정이 가능합니다')
+              }
+            })
+        }
+        idx += 1
+      })
+    },
+    CourseUpdate(SubmitCourseData) {
+      let idx = 0
+      this.$http
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${SubmitCourseData.id}/`, 
+          SubmitCourseData, // body
+          {headers: {Authorization: this.config} // header
+        })
+        .then(res => {
+          // 해당 코스를 응답받은 코스 정보로 업데이트해줌
+          this.SDcourse.forEach(el => {
+            if (el.id === SubmitCourseData.id) {
+              for (const [key, value] of Object.entries(res.data)) {
+                if (this.SDcourse.slice(idx, idx+1)) {
+                  this.SDcourse[key] = res.data[value]
+                }
+              }
+              // console.log(this.SDcourse.slice(idx, idx+1), res.data)
+            }
+            idx += 1
+          })
+        })
+        .catch(err => {
+          if (err.response === 401) {
+            alert('스케줄을 만든 사람만 수정이 가능합니다')
+          }
+        })
+    }
   },
   created() {
     this.getDetail();
