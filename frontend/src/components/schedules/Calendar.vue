@@ -531,6 +531,7 @@ export default {
     CourseUpdate() {
       console.log('TRY Course Update')
     },
+    
     // 숫자 랜덤(안씀)
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
