@@ -73,10 +73,10 @@
           >
             <!-- 모달 카드 헤더 -->
             <v-toolbar
-              :color="Courses.color"
+              :color="Course.color"
               dark
             >
-              <v-toolbar-title><h2>{{ Courses.name }}</h2></v-toolbar-title>
+              <v-toolbar-title><h2>{{ Course.name }}</h2></v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
@@ -100,8 +100,8 @@
                     <v-col cols="12" style="padding-bottom:0px;">
                       <h2 style="">일정 </h2> 
                       
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:60px;  ">{{formatDate2(Courses.start_time)}}</span>
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:138px; ">{{formatDate2(Courses.end_time)}}</span>
+                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:60px;  ">{{formatDate2(Course.start_time)}}</span>
+                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:138px; ">{{formatDate2(Course.end_time)}}</span>
                       
                     </v-col>
                     <v-col
@@ -197,7 +197,7 @@
                       class="memo_area"
                     >
                       <v-col
-                        v-for="memo in Courses.memos"
+                        v-for="memo in Course.memos"
                         :key="memo"
                         cols="12"
                       >
@@ -213,11 +213,11 @@
                   sm="6"
                   class="card-right-side"
                 >
-                  <v-row v-if="Courses.spot_info" style="margin: 5px 5px 4px 12px;">
+                  <v-row v-if="Course.spot_info" style="margin: 5px 5px 4px 12px;">
                     <h2>주소 : </h2>
-                    <span style="font-family: 'SCDream6'; font-size:1.2rem; margin-bottom:3px;">{{ Courses.spot_info.address}}</span>
-                    <ScheduleDetailMap :lat="Courses.spot_info.lat" :lon="Courses.spot_info.lon" :item="Courses.spot_info.id"/>
-                    <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Courses.spot_info.image" alt="">
+                    <span style="font-family: 'SCDream6'; font-size:1.2rem; margin-bottom:3px;">{{ Course.spot_info.address}}</span>
+                    <ScheduleDetailMap :lat="Course.spot_info.lat" :lon="Course.spot_info.lon" :item="Course.spot_info.id"/>
+                    <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Course.spot_info.image" alt="">
                   </v-row>
                   <!-- <v-row -->
                     <!-- v-if="Object.keys(Courses.spot_info).includes('lat')"> -->
@@ -283,8 +283,8 @@ export default {
       createEvent: null,
       createStart: null,
       extendOriginal: null,
-
-      Courses: [],
+      Course:{},
+      // Courses: [],
       budgets: [],
       budgets_names: ["식비", "교통비", "입장료", "숙소비", "기타"],
       selectedElement: null,
@@ -302,6 +302,9 @@ export default {
       test: null
     }
   },
+  props: {
+    Courses: Array
+  },
   created() {
     // 지금은 요청해서 받아오고 있음
     this.$http
@@ -313,11 +316,10 @@ export default {
       })
       .then(res => {
         this.test = res.data
-        res.data.course.forEach(el => this.Courses.push(el))
+        // res.data.course.forEach(el => this.Courses.push(el))
         this.schedule = res.data.schedule
-        // console.log(this.schedule)
+        console.log(this.schedule)
         this.getInitialEvents()
-        
       })
     // console.log(this.$attrs.AllCourses)
     // DetailSchedule에서 내려받아서 각 코스를 Courses에 담기
@@ -327,6 +329,15 @@ export default {
     //   this.Courses.push(el)
     // })
   },
+  watch: {
+		Courses: {
+			deep: true,
+			handler() {
+        // console.log(1)
+        this.getInitialEvents()
+			}
+		}
+	},
   mounted () {
     this.$refs.calendar.checkChange()
   },
@@ -505,7 +516,7 @@ export default {
       console.log(this.budgets)
       // 모달 열기
       const open = () => {
-        this.Courses = event
+        this.Course = event
         // 모달창 열 위치를 정함
         this.selectedElement = nativeEvent.target
         setTimeout(() => {

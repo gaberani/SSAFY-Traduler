@@ -93,7 +93,7 @@ export default {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
         // 백 수정하면 리버스 없애야함.
-        this.schedules= response.data.schedule.reverse();
+        this.schedules= response.data.schedule;
       })
       .catch(error => {
         console.log(error.response);

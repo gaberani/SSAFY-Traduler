@@ -131,7 +131,7 @@ export default {
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
       .then(response => {
         // 백 수정하면 리버스 없애야함.
-        this.newschedules = response.data.schedule.reverse().slice(0,3);
+        this.newschedules = response.data.schedule.slice(0,3);
         // console.log(this.newschedules)
       })
       .catch(error => {
