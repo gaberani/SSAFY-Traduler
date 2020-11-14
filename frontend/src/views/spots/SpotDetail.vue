@@ -59,15 +59,10 @@
           <p v-html="spot.overview" />
         </v-col>
       </v-row>
-      <v-row style="margin-top: 5vw;">
+      <v-row v-if="LoginFlag" style="margin-top: 5vw;">
         <v-col cols="1" offset="1">
           <select class="selectrate" v-model="score" >
-            <!-- v-model="" -->
-            <option value="5">5</option>
-            <option value="4">4</option>
-            <option value="3">3</option>
-            <option value="2">2</option>
-            <option value="1">1</option>
+            <option v-for="number in 5" :key="number" :value="number">{{ number }}</option>
           </select>
         </v-col>
         <v-col cols="7" offset="1">
@@ -77,20 +72,7 @@
           <button @click="writecomment" class="commentbtn">작성</button>
         </v-col>
       </v-row>
-      <v-row style="margin-top: 2vw;" v-for="(comment, index) in spotcomments" :key="index">
-        <v-col cols="2" offset="1" style="text-align: center;">
-          <span class="commentbdg">{{comment.score}}</span>
-        </v-col>
-        
-        <v-col cols="6">
-          <span style="font-family: 'SCDream4'" >{{comment.content}}</span>
-        </v-col>
-
-        <v-col cols="3" class="d-flex" style="flex-direction: column;">
-          <button v-if="username == comment.user.username" @click="deleteComment(comment.id,index)" style="margin-left:2%;" ><i class="far fa-times-circle" style="color:red;"></i></button>
-          <span style="font-family: 'SCDream6'; float:right; margin-right:18%;">{{comment.user.nickname}} ({{ dateForm(comment.reg_time) }})</span>
-        </v-col>
-      </v-row>
+      <SpotComment v-for="(comment, index) in spotcomments" :key="comment.id" :comment="comment" :index="index" @deleteComment="deleteComment(comment.id, index)" @updateComment="updateComment" />
       <v-row>
         <v-col cols="4" offset="4">
           <v-pagination
@@ -116,6 +98,7 @@
   import code_dict from '@/assets/code_dict.js'
 
   import SpotDetailMap from '@/components/spots/SpotDetailMap'
+  import SpotComment from '@/components/spots/SpotComment'
 
   export default {
     name: "SpotDetail",
@@ -148,10 +131,11 @@
       }
     },
     components: {
-      SpotDetailMap
+      SpotDetailMap,
+      SpotComment
     },
     computed: {
-      ...mapGetters(["LoginFlag", "config", "userInfo"]),
+      ...mapGetters('accounts', ["LoginFlag", "config", "userInfo"]),
       headers() {
         return (this.LoginFlag ? {headers: {Authorization: this.config}} : null)
       },
@@ -163,27 +147,38 @@
       },
       category_name() {
         return code_dict['category_dict'][this.spot.category_code]
-      }
+      },
     },
     methods: {
-      dateForm(date) {
-        return date.slice(0, 10)
-      },
       likespot() {
-        axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
-        .then(() => {
-          this.spot.is_liked = true;
-          this.spot.total_likes += 1;
-        })
-        .catch(err => console.log(err.response))
+        if (!this.LoginFlag) {
+          let response = confirm('로그인이 필요한 기능입니다!\n\n로그인 페이지로 이동하시겠습니까?')
+          if (response) {
+            this.$router.push({name: 'UsersLogin'})
+          }
+        } else {
+          axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
+          .then(() => {
+            this.spot.is_liked = true;
+            this.spot.total_likes += 1;
+          })
+          .catch(err => console.log(err.response))
+        }
       },
       unlikespot() {
-        axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
-        .then(() => {
-          this.spot.is_liked = false;
-          this.spot.total_likes -= 1;
-        })
-        .catch(err => console.log(err.response))
+        if (!this.LoginFlag) {
+          let response = confirm('로그인이 필요한 기능입니다!\n\n로그인 페이지로 이동하시겠습니까?')
+          if (response) {
+            this.$router.push({name: 'UsersLogin'})
+          }
+        } else {
+          axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
+          .then(() => {
+            this.spot.is_liked = false;
+            this.spot.total_likes -= 1;
+          })
+          .catch(err => console.log(err.response))
+        }
       },
       writecomment() {
         let newComment = new FormData();
@@ -203,12 +198,31 @@
           }
         })
       },
+      updateComment(commentIdx, commentdId, commentInput) {
+        let index = commentIdx;
+        let id = commentdId;
+        let input = commentInput;
+        axios.patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.COMMNET + id + '/', input, this.headers)
+        .then(() => {
+          this.spotcomments[index].score = input.score;
+          this.spotcomments[index].content = input.content;
+        })
+        .catch(err => {
+          if (err.response.status == 401) {
+            alert('비정상적인 접근입니다\n\n댓글 작성자와 현재 작성자가 일치하지 않습니다!');
+          }
+        })
+      },
       deleteComment(commentid, index) {
         axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.COMMNET + commentid, this.headers)
         .then(() => {
           this.spotcomments.splice(index,1);
         })
-        .catch(err => console.log(err.response))
+        .catch(err => {
+          if (err.response.status == 401) {
+            alert('비정상적인 접근입니다\n\n댓글 작성자와 현재 작성자가 일치하지 않습니다!');
+          }
+        })
       }
     },
     watch: {
