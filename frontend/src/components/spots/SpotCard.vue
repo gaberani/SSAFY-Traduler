@@ -14,7 +14,11 @@
           v-bind="attrs"
           v-on="on"
           class="imgbtn"
+          lazy-src="@/assets/images/lazy-loading.jpg"
         >
+          <template v-slot:placeholder>
+            <lazy-loading />
+          </template>
           <button style="margin-left:84%; margin-top:3%; outline:none;">
           <!-- 아이콘 바꾸기 -->
             <i class="fas fa-star" v-if="spot.is_liked==true" @click.stop="unlikespot" style="font-size:1.8vw; color:yellow;"></i>
@@ -138,7 +142,7 @@
       SpotDetailMap,
     },
     computed: {
-      ...mapGetters(["LoginFlag", "config", "userInfo"]),
+      ...mapGetters('accounts', ["LoginFlag", "config", "userInfo"]),
       headers() {
         return (this.LoginFlag ? {headers: {Authorization: this.config}} : null)
       },
@@ -148,20 +152,36 @@
     },
     methods: {
       likespot() {
-        axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
-        .then(() => {
-          this.spot.is_liked = true;
-          this.spot.total_likes += 1;
-        })
-        .catch(err => console.log(err.response))
+        if (!this.LoginFlag) {
+          let response = confirm('로그인이 필요한 기능입니다!\n\n로그인 페이지로 이동하시겠습니까?')
+          if (response) {
+            this.$router.push({name: 'UsersLogin'})
+          }
+        } else {
+          axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, null, this.headers)
+          .then(() => {
+            this.spot.is_liked = true;
+            this.spot.total_likes += 1;
+            this.$emit('like')
+          })
+          .catch(err => console.log(err.response))
+        }
       },
       unlikespot() {
-        axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
-        .then(() => {
-          this.spot.is_liked = false;
-          this.spot.total_likes -= 1;
-        })
-        .catch(err => console.log(err.response))
+        if (!this.LoginFlag) {
+          let response = confirm('로그인이 필요한 기능입니다!\n\n로그인 페이지로 이동하시겠습니까?')
+          if (response) {
+            this.$router.push({name: 'UsersLogin'})
+          }
+        } else {
+          axios.delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS + this.spot.id + SERVER.URL.SPOT.LIKE, this.headers)
+          .then(() => {
+            this.spot.is_liked = false;
+            this.spot.total_likes -= 1;
+            this.$emit('unlike')
+          })
+          .catch(err => console.log(err.response))
+        }
       },
     },
   }

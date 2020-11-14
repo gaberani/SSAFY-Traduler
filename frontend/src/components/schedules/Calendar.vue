@@ -331,7 +331,7 @@ export default {
     this.$refs.calendar.checkChange()
   },
   computed: {
-    ...mapGetters(['config'])
+    ...mapGetters('accounts', ['config'])
   },
   methods: {
     formatDate(date) {

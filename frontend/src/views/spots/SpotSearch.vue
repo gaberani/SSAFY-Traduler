@@ -45,7 +45,7 @@
       SpotCard
     },
     computed: {
-      ...mapGetters(["config", "LoginFlag"]),
+      ...mapGetters('accounts', ["config", "LoginFlag"]),
       headers() {
         return (this.LoginFlag ? {Authorization: this.config} : null)
       },
