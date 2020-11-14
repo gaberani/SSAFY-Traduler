@@ -31,7 +31,14 @@
           </v-col>
         </div>
       </div>
-      
+      <div class="text-center">
+        <v-pagination
+          v-model="curPage"
+          :length="schedulespage.endPage"
+          :total-visible="7"
+          class="mt-5"
+        ></v-pagination>
+      </div>
       </v-col>
       <v-col
         cols="12"
@@ -44,7 +51,7 @@
 
 <script>
 import ScheduleCard from '@/components/schedules/ScheduleCard';
-
+import { mapGetters } from "vuex";
 import axios from 'axios'
 import SERVER from '@/api/api'
 
@@ -79,14 +86,35 @@ export default {
             "avg_coord": [0, 0]
         },
         schedules:[],
+        schedulespage:[],
+        curPage:1,
         }
     },
+  watch: {
+    curPage() {
+      this.movePage();
+    }
+  },
+  computed: {
+      ...mapGetters('accounts', ["config", "LoginFlag"]),
+      headers() {
+        return (this.LoginFlag ? {Authorization: this.config} : null)
+      },
+    },
 	methods: {
+    movePage() {
+        this.$router.push({ query: {
+          curPage: this.curPage
+          }
+        }).catch(()=>{})
+      },
 		getNewSchedule() {
-      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES)
+      axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
+          headers: this.headers
+        })
       .then(response => {
-        // 백 수정하면 리버스 없애야함.
         this.schedules= response.data.schedule;
+        this.schedulespage=response.data.page;
       })
       .catch(error => {
         console.log(error.response);
@@ -94,7 +122,8 @@ export default {
         }
 	},
 	created(){
-			this.getNewSchedule();
+      this.getNewSchedule();
+      this.curPage = this.$route.query.curPage * 1
 		},
 }
 </script>
