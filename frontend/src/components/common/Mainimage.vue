@@ -3,8 +3,8 @@
 	<div class="maincontent">
 		<center>
 			<h1 style="color:white; font-size:2.5vw;">국내 여행엔 Traduler!</h1>
-			<p class="mainp">OOOOO개의 여행지 데이터를 활용한 </p>
-			<p class="mainp">추천과 스케쥴러를 사용해</p>
+			<p class="mainp">5006개의 여행지 데이터를 활용한</p>
+			<p class="mainp">추천과 스케줄러를 사용해</p>
 			<p class="mainp">여행을 계획해보세요!</p>
 			<!-- <button class="mainbtn">Traduler 시작</button> -->
 			<v-dialog
@@ -246,12 +246,12 @@ export default {
 
 <style>
 .mainimg {
-    background-image : url("../../assets/mainimage.jpg");
+    background-image : url("../../assets/headers/main.jpg");
     background-size:cover;
     width:100%;
     min-height: 35vw;
     background-position: center;
-    filter:saturate(150%);
+    filter:saturate(120%);
 }
 .maincontent {
     float:right;

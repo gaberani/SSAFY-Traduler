@@ -1,7 +1,7 @@
 <template>
   <v-app>
 		<SearchSpot/>
-    <div class="spotresult">
+    <div class="spotresult" v-if="spots.length != 0">
       <div>
         <h1 class="mb-5" style="color:#FF5E5E;font-size:2.4vw;">검색 결과</h1>
       </div>
@@ -17,6 +17,9 @@
           class="mt-5"
         ></v-pagination>
       </div>
+    </div>
+    <div v-else style="margin-top: 5vw; margin-left: 10vw;">
+      <h1>해당하는 여행지가 없습니다. 😔</h1>
     </div>
 		<Footer/>
   </v-app>

@@ -66,6 +66,15 @@ const routes = [
     name: 'DetailSchedule',
     component: () => import('@/views/schedules/DetailSchedule')
   },
+  {
+    path: '*',
+    redirect: '/404'
+  },
+  {
+    path: '/404',
+    name: '404Page',
+    component: () => import('@/views/404Page')
+  }
 ]
 
 const router = new VueRouter({

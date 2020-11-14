@@ -45,6 +45,10 @@
         <UserInfoUpdate v-if="viewMode == 'update'" :userInfo="userInfo" @updated="updateUserInfo"/>
 
         <div v-if="viewMode == 'favorite'">
+          <v-row>
+            <h3>즐겨찾기한 여행지</h3>
+          </v-row>
+        
           <div v-for="(favorite_spot, index) in spotDetails" :key="favorite_spot.id" style="display:inline;">
             <!-- v-for -->
             <SpotCard :spot="favorite_spot" @like="likeSpot(index)" @unlike="unlikeSpot(index)" />
@@ -59,6 +63,9 @@
         </div>
 
         <v-row v-if="viewMode == 'written'">
+          <v-col cols="12">
+            <h3>작성한 스케줄</h3>
+          </v-col>
           <v-col
             cols="4"
             style="display:inline-block; padding:6px;"
@@ -77,6 +84,9 @@
         </v-row>
         
         <v-row v-if="viewMode == 'joined'">
+          <v-col cols="12">
+            <h3>참여한 스케줄</h3>
+          </v-col>
           <v-col
             cols="4"
             style="display:inline-block; padding:6px;"
@@ -95,6 +105,9 @@
         </v-row>
 
         <div v-if="viewMode == 'received'">
+          <v-row>
+            <h3>신청받은 스케줄</h3>
+          </v-row>
           <ReceivedScheduleList :receiveds=receiveds @received="received"/>
           
           <v-row style="display: flex; justify-content: center;">
@@ -108,6 +121,9 @@
         </div>
 
         <div v-if="viewMode == 'invited'">
+          <v-row>
+            <h3>초대받은 스케줄</h3>
+          </v-row>
           <InvitedScheduleList :invitations=invitations @invited="invited" />
           
           <v-row style="display: flex; justify-content: center;">
@@ -121,6 +137,9 @@
         </div>
         
         <div v-if="viewMode == 'submit'">
+          <v-row>
+            <h3>참여 신청한 스케줄</h3>
+          </v-row>
           <SubmitList :submits=submits @submitted="submitted" />
           
           <v-row style="display: flex; justify-content: center;">
