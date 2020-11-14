@@ -2,7 +2,7 @@
   <v-container style="padding:0;">
     <center>
 			<!-- <form onsubmit="searchPlaces(); return false;"> -->
-				<input style="font-family: 'SCDream5';border-bottom:1px #707070 solid;" type="text" v-model="query" placeholder="검색어를 입력해주세요." id="keyword" size="20"> 
+				<input style="font-family: 'SCDream5';border-bottom:1px #707070 solid;" type="text" v-model="query" placeholder="검색어를 입력해주세요." id="keyword" size="20" @keydown.enter="searchmap"> 
 				<button class="mapsearchbtn" style="font-family: 'SCDream5';background-color:#FF5E5E;width:20%; border-radius:10px; color:white;" @click.prevent="searchmap">검색</button> 
 			<!-- </form> -->
       <div id="map2" class="map">
@@ -46,9 +46,7 @@ export default {
       const script = document.createElement('script');
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-			// script.src=`http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}&libraries=services,clusterer,drawing`;
-			// script.src=`http://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}&libraries=services,clusterer,drawing`;
-			// script.src=`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}&libraries=services`;
+			// script.src=`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_JS_KEY}&libraries=services&autoload=false`;
       document.head.appendChild(script);
     }
 		},
@@ -109,9 +107,6 @@ export default {
 							self.custom_lat = place.y
 							self.custom_lon = place.x
 							self.custom_title = place.place_name
-							console.log(self.custom_lat)
-							console.log(self.custom_lon)
-							console.log(self.custom_title)
 							infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
 							infowindow.open(map, marker);
 					});

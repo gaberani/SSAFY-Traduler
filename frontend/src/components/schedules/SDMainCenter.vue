@@ -15,9 +15,9 @@
         <div class="mb-3 mt-2">
           <h1 style="display:inline; color:#FF5E5E; font-size:2.7vw;">NEW</h1>
           <h3 style="display:inline; font-size:1.7vw;  "> 스케줄</h3>
-          <img src="@/assets/friend.png" style="margin-left: 8px;width:2%; height:1.2vw;" >
+          <img src="@/assets/friend.png" style="margin-left: 8px; margin-bottom: -0.5vw; height: 2.5vw; filter:saturate(150%);" >
           <span class="imo"> 동행 모집</span>
-          <img src="@/assets/help2.png" style="margin-left: 8px; width:2%; height:1.2vw;">
+          <img src="@/assets/help2.png" style="margin-left: 8px; margin-bottom: -0.5vw; height: 2.5vw; filter:saturate(150%);">
           <span class="imo"> 도움 요청</span>
           <router-link :to="{name: 'NewSchedule'}"><button class="plusbtn">더보기</button></router-link>
         </div>

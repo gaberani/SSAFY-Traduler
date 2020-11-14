@@ -71,11 +71,10 @@
 
 <style scoped>
 .spotimg {
-    background-image : url("../../assets/searchspot.jpg");
+    background-image : url("../../assets/headers/spots.jpg");
     background-size:cover;
     width:100%;
     min-height: 35vw;
-    filter:saturate(150%);
 }
 .spotsearch {
     width:40%;

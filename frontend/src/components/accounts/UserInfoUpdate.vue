@@ -1,47 +1,81 @@
 <template>
     <v-row>
       <v-col cols="12">
+        <h3>내 정보 수정</h3>
+      </v-col>
+      <v-col cols="12">
         <v-form>
           <v-row>
-            <v-col cols="6">
-              <v-text-field
-                :value="userInfo.username"
-                label="아이디"
-                filled
-                disabled
-                color="#37cdc2"
-              ></v-text-field>
+            <v-col cols="3" style="display: flex; justify-content: center;">
+              <input
+                      ref="imageInput"
+                      type="file"
+                      name="photo"
+                      id="image_thumbnail"
+                      hidden
+                      @change="changePhoto"
+              />
+              
+              <v-avatar
+                style="cursor: pointer; width: 8vw; height: 8vw; margin: auto;"
+              >
+                <img
+                  :src="
+                    !!imagePreview
+                      ? imagePreview
+                      : profileURL
+                  "
+                  alt="UserImage"
+                  @click="onClickImage"
+                >
+              </v-avatar>
             </v-col>
-            <v-col cols="3">
-              <v-text-field
-                :value="userInfo.age"
-                label="나이"
-                filled
-                disabled
-                color="#37cdc2"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="3">
-              <v-text-field
-                :value="userInfo.gender"
-                label="성별"
-                filled
-                disabled
-                color="#37cdc2"
-              ></v-text-field>
+            <v-col cols="9">
+
+              <v-row>
+
+                <v-col cols="6">
+                  <v-text-field
+                    :value="userInfo.username"
+                    label="아이디"
+                    filled
+                    disabled
+                    color="#37cdc2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="3">
+                  <v-text-field
+                    :value="userInfo.age"
+                    label="나이"
+                    filled
+                    disabled
+                    color="#37cdc2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="3">
+                  <v-text-field
+                    :value="userInfo.gender"
+                    label="성별"
+                    filled
+                    disabled
+                    color="#37cdc2"
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-text-field
+                    :value="userInfo.nickname"
+                    @input="TypeNickname"
+                    label="닉네임"
+                    filled
+                    color="#37cdc2"
+                  ></v-text-field>
+                </v-col>
+
+              </v-row>
             </v-col>
           </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                :value="userInfo.nickname"
-                @input="TypeNickname"
-                label="닉네임"
-                filled
-                color="#37cdc2"
-              ></v-text-field>
-            </v-col>
-          </v-row>
+
           <v-row>
             <v-col cols="12">
               <v-textarea
@@ -57,34 +91,14 @@
           </v-row>
         </v-form>
 
-        <input
-                ref="imageInput"
-                type="file"
-                name="photo"
-                id="image_thumbnail"
-                hidden
-                @change="changePhoto"
-        />
-        
-        <v-avatar
-          style="cursor: pointer; width: 10vw; height: 10vw;"
-        >
-          <img
-            :src="
-              !!imagePreview
-                ? imagePreview
-                : require(`@/assets/images/${userInfo.gender}.png`)
-            "
-            alt="John"
-          >
-        </v-avatar>
-
-        <a @click="onClickImage">
-          <button pill style="color:white;background-color:rgb(249,99,50);">사진 업로드</button>
-        </a>
-
-        <v-btn large style="float: right;" @click="updateUser" color="primary"> 변경사항 저장 </v-btn>
-        <v-btn large style="float: right;" @click="deleteUser" color="error"> 회원 탈퇴 </v-btn>
+        <v-row>
+          <v-col cols="2" offset="8">
+            <v-btn large @click="updateUser" color="primary"> 변경사항 저장 </v-btn>
+          </v-col>
+          <v-col cols="2">
+            <v-btn large @click="deleteUser" color="error"> 회원 탈퇴 </v-btn>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 </template>
@@ -110,6 +124,9 @@ export default {
   },
   computed: {
     ...mapGetters('accounts', ['config']),
+    profileURL() {
+      return (this.userInfo.profile_image) ? process.env.VUE_APP_SERVER_URL + this.userInfo.profile_image : require(`@/assets/images/${this.userInfo.gender}.png`)
+    },
   },
   methods: {
     ...mapActions('accounts', ["SubmitLogout"]),
