@@ -594,15 +594,6 @@ export default {
     rndElement (arr) {
       return arr[this.rnd(0, arr.length - 1)]
     },
-    // 날짜 랜덤(안씀)
-    rndDate(start, end) {
-      return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    },
-    // 일주일, 4일로 변경해서 볼 수 있게 하는 옵션 메서드(안씀)
-    viewDay ({ date }) {
-      this.focus = date
-      this.type = 'day'
-    },
   },
 }
 </script>
