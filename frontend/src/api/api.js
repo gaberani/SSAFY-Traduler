@@ -13,7 +13,8 @@ export default {
 		},
 		SCHEDULE: {
       SCHEDULES: '/schedule/',
-      ADVICE: '/advice/',
+			ADVICE: '/advice/',
+			MEMO: '/memo/',
 		},
 		USER: {
 			SIGNUP: '/rest-auth/signup/',
@@ -21,6 +22,7 @@ export default {
 			LOGOUT: '/rest-auth/logout/',
 			MYPAGE: '/mypage/',
 			EDITORDEL: '/accounts/', // PATCH: 수정, DELETE: 삭제
-		}
+		},
+		COURSE: '/course/'
 	}
 }

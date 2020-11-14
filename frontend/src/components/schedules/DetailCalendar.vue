@@ -1,59 +1,50 @@
 <template>
   <v-row class="fill-height">
     <v-col>
-      <!-- {{ this.$attrs.AllCourses}} -->
-        <v-btn 
-          class="datebtn" 
-          @click="$refs.calendar.prev()"
-          color="#FF5E5E"
-        >
-          Prev
-        </v-btn>
-        <!-- <v-btn style="margin-left:5%;" class="startendbtn" color="rgba( 13, 136, 255)" @click="$refs.calendar.move()">
-          First
-        </v-btn>
-        <v-btn style="margin-left:1%;" class="startendbtn" color="rgba( 13, 136, 255)" @click="$refs.calendar.prev()">
-          Last
-        </v-btn> -->
-        <v-btn 
-          class="datebtn" 
-          @click="$refs.calendar.next()"
-          color="#FF5E5E"
-          style="margin-left:25%;"
-        >
-          Next
-        </v-btn>
+      <v-btn 
+        class="datebtn" 
+        @click="$refs.calendar.prev()"
+        color="#FF5E5E"
+      >
+        Prev
+      </v-btn>
+      <v-btn 
+        class="datebtn" 
+        @click="$refs.calendar.next()"
+        color="#FF5E5E"
+        style="margin-left:25%;"
+      >
+        Next
+      </v-btn>
       <v-sheet height="100%" width="97%">
         <v-calendar
-            :start="formatDate(schedule.start_date)"
-            :end ="formatDate(schedule.end_date)"
-            ref="calendar"
-            v-model="value"
-            color="primary"
-            type="4day"
-            :events="events"
-            :event-color="getEventColor"
-            :event-ripple="false"
-            @click:event="showEvent"
-            @click:more="viewDay"
-            @click:date="viewDay"
-            @change="getInitialEvents"
-            @mousedown:event="startDrag"
-            @mousedown:time="startTime"
-            @mousemove:time="mouseMove"
-            @mouseup:time="endDrag"
-            @mouseleave.native="cancelDrag"
-            style="font-family: 'SCDream6'"
+          :start="formatDate(schedule.start_date)"
+          :end ="formatDate(schedule.end_date)"
+          ref="calendar"
+          v-model="value"
+          color="primary"
+          type="4day"
+          :events="events"
+          :event-color="getEventColor"
+          :event-ripple="false"
+          @click:event="showEvent"
+          @change="getInitialEvents"
+          @mousedown:event="startDrag"
+          @mousedown:time="startTime"
+          @mousemove:time="mouseMove"
+          @mouseup:time="endDrag"
+          @mouseleave.native="cancelDrag"
+          style="font-family: 'SCDream6'"
         >
           <template v-slot:event="{ event, timed, eventSummary }">
             <div
-                class="v-event-draggable"
-                v-html="eventSummary()"
+              class="v-event-draggable"
+              v-html="eventSummary()"
             ></div>
             <div
-                v-if="timed"
-                class="v-event-drag-bottom"
-                @mousedown.stop="extendBottom(event)"
+              v-if="timed"
+              class="v-event-drag-bottom"
+              @mousedown.stop="extendBottom(event)"
             ></div>
           </template>
         </v-calendar>
@@ -91,6 +82,7 @@
               <v-row>
                 <!-- <span>{{ Courses }}</span> -->
                 <!-- 카드 왼쪽 -->
+                {{ this.$attrs.Courses }}
                 <v-col
                   cols="9"
                   sm="6"
@@ -98,11 +90,9 @@
                   <!-- 출발, 도착 시간 -->
                   <v-row class="time_outline">
                     <v-col cols="12" style="padding-bottom:0px;">
-                      <h2 style="">일정 </h2> 
-                      
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:60px;  ">{{formatDate2(Course.start_time)}}</span>
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:138px; ">{{formatDate2(Course.end_time)}}</span>
-                      
+                      <h2 style="">일정</h2> 
+                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw;  ">{{formatDate2(Course.start_time)}}</span>
+                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw; ">{{formatDate2(Course.end_time)}}</span>
                     </v-col>
                     <v-col
                       cols="6"
@@ -173,34 +163,81 @@
                         <h2>예산</h2>
                       </div>
                       <v-spacer></v-spacer>
-                      <v-btn icon>
+                      <v-btn icon v-if="!budgetEditFlag" @click="onClickBudgetEditBtn()">
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
+                      <v-btn icon v-if="budgetEditFlag" @click="onClickBudgetSubmitBtn()">
+                        <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
                     </v-row>
+                    <v-row v-if="!budgetEditFlag">
                       <v-col
                         v-for="budget in budgets"  
                         :key="budget.budget_name"
                         cols="12"
-                        style="padding: 0px 0px 4px 14px;"
+                        style="padding: 0px 0px 4px 18px;"
                       >
                         <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.budget_name}}</span> 
                         <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
-                        <v-spacer></v-spacer>
+                        <!-- <v-spacer></v-spacer> -->
                       </v-col>
+                    </v-row>
+                    <v-row v-else>
+                      <v-col
+                        v-for="newbudget in Newbudgets"  
+                        :key="newbudget.budget_name"
+                        cols="12"
+                        style="padding: 0;"
+                      >
+                        <v-row>
+                          <v-spacer></v-spacer>
+                          <v-col
+                            cols="3"
+                            style="padding: 3px 6px;"
+                          >
+                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.budget_name}}</span> 
+                          </v-col>
+                          <v-col
+                            cols="7"
+                            style="padding: 0;"
+                          >
+                            <v-text-field
+                              v-model="newbudget.budget_value"
+                              dense
+                              required
+                              hide-details="auto"
+                            ></v-text-field>
+                          </v-col>
+                          <v-spacer></v-spacer>
+                        </v-row>
+                      </v-col>
+                    </v-row>
                   </v-row>
                   <!-- 메모 -->
                   <v-row class="budget_outline" style="margin: 3px 0">
                     <v-row style="margin: 5px 5px 4px 12px;">
-                      <h2>메모</h2>
+                      <div style="text-aling:center">
+                        <h2>메모</h2>
+                      </div>
+                      <v-spacer></v-spacer>
+                      <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                        <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
                     </v-row>
-                    <v-row
-                      class="memo_area"
-                    >
+                    <v-row>
                       <v-col
                         v-for="memo in Course.memos"
-                        :key="memo"
+                        :key="memo.id"
                         cols="12"
+                        style="padding: 0 12px"
                       >
+                        {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                        <v-btn icon @click="onClickmemoDelBtn(memo.id)">
+                          <v-icon color="red">mdi-close</v-icon>
+                        </v-btn>
                       </v-col>
                     </v-row>
                   </v-row>
@@ -275,6 +312,7 @@ export default {
   components: {ScheduleDetailMap},
   data() {
     return {
+      // 캘린더 변수
       schedule:[],
       startcourseday: "2020-11-06",
       value: '',
@@ -286,14 +324,18 @@ export default {
       createEvent: null,
       createStart: null,
       extendOriginal: null,
-      Course:{},
-      // Courses: [],
-      budgets: [],
-      budgets_names: ["식비", "교통비", "입장료", "숙소비", "기타"],
       selectedElement: null,
       selectedOpen: false,
       focus: '',
 
+      // 모달창 코스 1개 변수
+      Course:{},
+      budgets: [],
+      Newbudgets: [],
+      budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
+      budgetEditFlag: false,
+      memoEditFlag: false,
+      
       // 출발, 도착 시간 변수
       Hours: [...Array(24)].map((v,i) => i+1),
       Minutes: [...Array(4)].map((v,i) => i*15),
@@ -301,8 +343,6 @@ export default {
       departureMinute: null,
       arrivalHour: null,
       arrivalMinute: null,
-
-      test: null
     }
   },
   props: {
@@ -312,31 +352,19 @@ export default {
     // 지금은 요청해서 받아오고 있음
     this.$http
       .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
-        // 'http://127.0.0.1:8000/schedule/38/', {
         headers: {
           Authorization: this.config,
         },
       })
       .then(res => {
-        this.test = res.data
-        // res.data.course.forEach(el => this.Courses.push(el))
         this.schedule = res.data.schedule
-        console.log(this.schedule)
         this.getInitialEvents()
       })
-    // console.log(this.$attrs.AllCourses)
-    // DetailSchedule에서 내려받아서 각 코스를 Courses에 담기
-    // DetailSchedule에서 내려받아서 하려고 했는데 created 시점에 비어있는 채로 SDdetail가 들어온뒤에 보이려고 해서
-    // 캘린더가 안만들어지는 문제가 있음
-    // this.$attrs.AllCourses.course.forEach(el => {
-    //   this.Courses.push(el)
-    // })
   },
   watch: {
 		Courses: {
 			deep: true,
 			handler() {
-        // console.log(1)
         this.getInitialEvents()
 			}
 		}
@@ -356,7 +384,6 @@ export default {
       moment.locale('ko');
       return moment(date).format('MM/DD dddd')
     },
-    // allowedMinutes: v => v === 0 | v === 15 | v === 30 | v === 45,
     // 초기 이벤트 설정
     getInitialEvents () {
       const events = []
@@ -367,7 +394,6 @@ export default {
         const start = new Date(this.Courses[i].start_time).getTime()
         const end = new Date(this.Courses[i].end_time).getTime()
         // 서울로 시간을 맞추기 위해 9시간을 ms로 변환해서 더함
-        // const datetimed = [new Date(start + (540 * 60 * 1000)), new Date(end + (540 * 60 * 1000))]
         this.Courses[i]["timed"] = timed
         if (this.Courses[i].spot_pk){
           this.Courses[i]["name"] = this.Courses[i].spot_info.title
@@ -377,14 +403,6 @@ export default {
         this.Courses[i]["start"] = this.roundTime(start)
         this.Courses[i]["end"] = this.roundTime(end)
         this.Courses[i]["color"] = this.rndElement(this.colors)
-        // events.push({
-        //   name: this.Courses[i].spot_info.title,
-        //   color: this.rndElement(this.colors),
-        //   start: this.roundTime(start),
-        //   end: this.roundTime(end),
-        //   timed,
-        //   // datetimed
-        // })
         events.push(this.Courses[i])
       }
       this.events = events
@@ -392,7 +410,6 @@ export default {
     // 드래그 시작 이벤트 처리
     startDrag ({ event, timed }) {
       if (event && timed) {
-        console.log('drag event start OK')
         this.dragEvent = event
         this.dragTime = null
         this.extendOriginal = null
@@ -409,7 +426,7 @@ export default {
       } else {
         this.createStart = this.roundTime(mouse)
         this.createEvent = {
-          name: `일정 #${this.events.length}`,
+          name: `일정 #${this.events.length+1}`,
           color: this.rndElement(this.colors),
           start: this.createStart,
           end: this.createStart,
@@ -430,14 +447,12 @@ export default {
       const mouse = this.toTime(tms)
       // 이미 있는 이벤트 드래그
       if (this.dragEvent && this.dragTime !== null) {
-        console.log(this.dragEvent)
         const start = this.dragEvent.start
         const end = this.dragEvent.end
         const duration = end - start
         const newStartTime = mouse - this.dragTime
         const newStart = this.roundTime(newStartTime)
         const newEnd = newStart + duration
-        console.log(newStartTime, newStart, newEnd)
 
         this.dragEvent.start = newStart
         this.dragEvent.end = newEnd
@@ -502,25 +517,34 @@ export default {
     },
     // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
+      // console.log(event)
       // 이미 있는 코스 조회 시 데이터 엮어주기
-      // console.log('showEvent !')
       this.departureHour = new Date(event.start).getHours()
       this.departureMinute = new Date(event.start).getMinutes()
       this.arrivalHour = new Date(event.end).getHours()
       this.arrivalMinute = new Date(event.end).getMinutes()
       this.budgets = []
       let idx = 0
+      // 이미 만들어져 있던 일정이 선택됬을 경우
       Object.keys(event).forEach(el => {
         if (el.includes('budget')) {
           this.budgets.push({
             original_name: el,
-            budget_name: this.budgets_names[idx],
+            budget_name: this.budgetsList[idx],
             budget_value: event[el]
           })
           idx += 1
         }
       })
-      console.log(this.budgets)
+      // 새로 만들어진 일정이라 예산 안들어가있을 경우
+      if (this.budgets.length === 0) {
+          this.budgetsList.forEach(el => {
+            this.budgets.push({
+              budget_name: el,
+              budget_value: 0
+            })
+          })
+        }
       // 모달 열기
       const open = () => {
         this.Course = event
@@ -541,13 +565,79 @@ export default {
       }
       nativeEvent.stopPropagation()
     },
+    // 예산 임시 수정  시작
+    onClickBudgetEditBtn() {
+      this.budgetEditFlag = !this.budgetEditFlag
+      this.Newbudgets = []
+      this.budgets.forEach(el => {
+        this.Newbudgets.push(el)
+      })
+    },
+    // 예산 임시 수정 적용
+    onClickBudgetSubmitBtn() {
+      this.budgetEditFlag = !this.budgetEditFlag
+      this.budgets = []
+      this.Newbudgets.forEach(el => {
+        this.budgets.push(el)
+      })
+    },
+    // 메모 생성
+    onClickMemoCreateBtn() {
+      this.memoEditFlag = !this.memoEditFlag
+      this.$http
+        .post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO,
+          {
+            "course_pk": this.Course.id,
+            "content": "메모테스트"
+          },
+          {headers: {Authorization: this.config}}
+        )
+        .then(res => console.log(res.data))
+    },
+    onClickmemoDelBtn(memo_id) {
+      this.$http
+        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
+          {headers: {Authorization: this.config}}
+        )
+        .then(() => alert('메모가 삭제되었습니다.'))
+    },
+    // 메모 임시 수정 시작
+    onClickmemoEditBtn() {
+      this.memoEditFlag = !this.memoEditFlag
+    },
+    // 메모 임시 수정 적용
+    onClickmemoSubmitBtn(memo_id) {
+      this.memoEditFlag = !this.memoEditFlag
+      this.$http
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`, 
+          {
+            "course_pk": this.Course.id,
+            "content": "수정할 내용"
+          },
+          {headers: {Authorization: this.config}},
+          )
+        .then(res => console.log(res.data))
+    },
 
     // Course U & D
     CourseDelete() {
       console.log(this.Courses.id)
     },
     CourseUpdate() {
-      console.log('TRY Course Update')
+      // const original_budgets = ['budget_entrance', 'budget_etc', 'budget_food', 'budget_room', 'budget_transport']
+      console.log(this.Course)
+      this.$http
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + this.Course.id, 
+          {headers: {Authorization: this.config}},
+          this.Course
+          )
+        .then(res => console.log(res.data))
+        .catch(err => {
+          console.log(this.Course)
+          if (err.response === 401) {
+            alert('스케줄을 만든 사람만 수정이 가능합니다')
+          }
+        })
     },
     // 숫자 랜덤(안씀)
     rnd (a, b) {
@@ -556,15 +646,6 @@ export default {
     // 이름, 컬러 랜덤(안씀)
     rndElement (arr) {
       return arr[this.rnd(0, arr.length - 1)]
-    },
-    // 날짜 랜덤(안씀)
-    rndDate(start, end) {
-      return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    },
-    // 일주일, 4일로 변경해서 볼 수 있게 하는 옵션 메서드(안씀)
-    viewDay ({ date }) {
-      this.focus = date
-      this.type = 'day'
     },
   },
 }
@@ -589,5 +670,8 @@ export default {
   font-size: 1.4vw;
   color:white;
   margin-bottom:5px;
+}
+.budget-edit-input{
+  margin: auto 30px;
 }
 </style>
