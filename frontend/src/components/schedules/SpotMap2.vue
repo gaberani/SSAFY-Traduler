@@ -22,6 +22,12 @@ export default {
 	watch: {
 		item() {
 			this.makeMap();
+		},
+		SDdetail: {
+			deep: true,
+			handler() {
+				this.initMap();
+			}
 		}
 	},
   methods: {
@@ -127,9 +133,11 @@ export default {
 							infowindow.close();
 					};
 			}
-      polyline.setMap(map)
-			marker.setMap(map);
-			map.setBounds(bounds);
+			if (this.SDdetail.course_coords.length !=0){
+				polyline.setMap(map)
+				marker.setMap(map);
+				map.setBounds(bounds);
+			}
       // 드래그, 확대축소 막기
     //   map.setDraggable(false);
     //   map.setZoomable(false);

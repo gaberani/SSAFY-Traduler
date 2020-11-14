@@ -68,8 +68,10 @@ export default {
         strokeOpacity: 0.7,     // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
         strokeStyle: 'solid'    // 선의 스타일입니다
       });
-      polyline.setMap(map)
-      map.setBounds(bounds);
+      if (this.schedule.coords.length !=0){
+        polyline.setMap(map)
+        map.setBounds(bounds);
+      }
       // 드래그, 확대축소 막기
       map.setDraggable(false);
       map.setZoomable(false);

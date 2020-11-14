@@ -14,6 +14,7 @@
           <v-dialog
             v-model="dialog"
             max-width="500"
+            v-if="schedule.together===1 && username != schedule.user.username"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -65,6 +66,179 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog
+              v-model="editdialog"
+              max-width="500"
+              v-if="username == schedule.user.username"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <button 
+                style="font-size:1.5vw; float:right; margin-right:5%; color:green;"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <i class="fas fa-cog"></i>
+              </button>
+            </template>
+            <v-card>
+            <v-card-title class="headline" >
+              <span style="font-family: 'SCDream5';font-size:1.5rem; margin-bottom:5px;">
+            
+              스케줄 수정/삭제
+              </span>
+            </v-card-title>
+            <center>
+              <v-text-field
+                dense
+                label="스케줄 제목"
+                style="width:80%; font-size:1.5vw; font-family: 'SCDream6'; border:'#FF5E5E'"
+                v-model="edittitle"
+              ></v-text-field>
+              <v-text-field
+                dense
+                label="스케줄 Overview"
+                style="width:90%; font-size:1.2vw; font-family: 'SCDream5'; "
+                v-model="editoverview"
+              ></v-text-field>
+              <v-select
+                :items="member"
+                label="멤버 타입"
+                class="memtypeselect"
+                v-model="editmember_type"
+              ></v-select>
+              <v-select
+                :items="type"
+                label="컨셉"
+                class="memtypeselect"
+                style="margin-left:5px;"
+                v-model="edittravel_type"
+              ></v-select>
+              <v-text-field
+                dense
+                type="number"
+                label="참여 인원(명)"
+                placeholder="숫자로 입력해주세요."
+                style="width:25%; font-size:1vw; font-family: 'SCDream5'; "
+                v-model="editmax_member"
+                hide-details
+              ></v-text-field>
+              <v-menu
+                  v-model="editmenu2"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  width="50%"
+                  >
+                  <template v-slot:activator="{ on, attrs }" >
+                      <v-text-field
+                      v-model="editstartdate"
+                      placeholder="가는날 (이후)"
+                      prepend-icon="mdi-car"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      hide-details
+                      style="width:50%; font-family: 'SCDream5'; "
+                      ></v-text-field>
+                  </template>
+                  <v-date-picker
+                      v-model="editstartdate"
+                      @input="editmenu2 = false"
+                  ></v-date-picker>
+              </v-menu>
+              <v-menu
+                v-model="editmenu3"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                    v-model="editenddate"
+                    placeholder="오는날 (이전)"
+                    prepend-icon="mdi-home"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    style="width:50%; font-family: 'SCDream5';"
+                    ></v-text-field>
+                </template>
+                <v-date-picker
+                    v-model="editenddate"
+                    @input="editmenu3 = false"
+                ></v-date-picker>
+            </v-menu>
+              <v-row no-gutters >
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div style="font-family: 'SCDream5'; font-size:1.3vw;">
+                    <span style="margin-right:2px;">공개</span><input type="radio" name="private" v-model="privatebtn" value="0">
+                  </div>
+                  <div v-if="privatebtn=='0'">
+                    <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" ><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
+                    <input type="checkbox" v-model="edittogether">
+                  </div>
+                  <div v-else>
+                    <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" ><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
+                    <input disabled type="checkbox" v-model="edittogether">
+                  </div>
+                  <div v-if="privatebtn=='0'">
+                    <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
+                    <input type="checkbox" v-model="editadvice">
+                  </div>
+                  <div v-else>
+                    <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
+                    <input disabled type="checkbox" v-model="editadvice">
+                  </div>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  style="border-left:2px #707070 solid;"
+                >
+                  <div style="font-family: 'SCDream5'; font-size:1.3vw;">
+                    <span style="margin-right:2px;">비공개</span><input type="radio" name="private" v-model="privatebtn" value="1">
+                  </div>
+                </v-col>
+              </v-row>
+            </center>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                color="#FF5E5E"
+                text
+                style="font-family: 'SCDream6'; border:2px #FF5E5E solid; margin-right:220px;"
+                @click="deleteSchedule"
+                >
+                스케줄 삭제
+                </v-btn>
+                <v-btn
+                color="#FF5E5E"
+                text
+                style="font-family: 'SCDream4'"
+                @click="editdialog = false"
+                >
+                취소
+                </v-btn>
+                <v-btn
+                color="rgba( 13, 136, 255)"
+                text
+                style="font-family: 'SCDream4'"
+                @click="editScheduler"
+                >
+                수정
+                </v-btn>
+            </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+
+
+
 					<div class="inf">
 						<span style="font-family: 'SCDream5';font-size:1.2vw;">
 							{{formatDate(schedule.start_date)}} - {{formatDate(schedule.end_date)}}
@@ -121,13 +295,167 @@
 							<v-col
 								cols="12"
 								sm="11"
+                style="padding-right:0;"
 							>     
 							<i class="fas fa-flag" style="font-size:2rem;"></i>
-							<div style="width:90%; margin-left:1%; border-left:3.3px black solid">
+              <v-dialog
+                v-model="dialog2"
+                max-width="300"
+                v-if="username == schedule.user.username">
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="courseplusbtn"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    코스 추가
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="headline" >
+                    <span style="font-family: 'SCDream5';font-size:1.5rem;">
+                      
+                      코스 추가
+                    </span>
+                  </v-card-title>
+                  <center>
+                    <!-- <v-select
+                      style="font-family: 'SCDream5';font-size:1.3rem; width:80%;"
+                      :items="selectarea"
+                      label="지역 선택"
+                      dense
+                    ></v-select> -->
+                    <multiselect class="spotselect" :optionsLimit='5' 
+                      v-model="spot2" 
+                      :options="spots2" 
+                      :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name"></multiselect>
+                    <!-- <v-select
+                      style="font-family: 'SCDream5';font-size:1.1rem; width:50%;"
+                      :items="selectarea"
+                      label="여행지 선택"
+                      dense
+                      hide-details
+                    ></v-select> -->
+                    <v-menu
+                      v-model="menu2"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      width="50%"
+                      >
+                      <template v-slot:activator="{ on, attrs }" >
+                          <v-text-field
+                          v-model="startdate"
+                          placeholder="가는날 (이후)"
+                          prepend-icon="mdi-car"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          
+                          style="width:50%; font-family: 'SCDream5';"
+                          ></v-text-field>
+                      </template>
+                      <v-date-picker
+                          v-model="startdate"
+                          @input="menu2 = false"
+                      ></v-date-picker>
+                  </v-menu>
+                  
+                  <v-select
+                    v-model="DdepartureHour"
+                    :items="DHours"
+                    menu-props="auto"
+                    label="출발(시)"
+                    outlined
+                    dense
+                    hide-details
+                    style="width:40%;display:inline-block; font-family: 'SCDream4';"
+                  ></v-select>
+                
+                  <v-select
+                    v-model="DdepartureMinute"
+                    :items="DMinutes"
+                    menu-props="auto"
+                    label="출발(분)"
+                    outlined
+                    dense
+                    hide-details
+                    style="width:40%; margin-left:10px; display:inline-block; font-family: 'SCDream4';"
+                  ></v-select>							
+                  <v-menu
+                      v-model="menu3"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      >
+                      <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                          v-model="enddate"
+                          placeholder="오는날 (이전)"
+                          prepend-icon="mdi-home"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          style="width:50%; font-family: 'SCDream5';"
+                          ></v-text-field>
+                      </template>
+                      <v-date-picker
+                          v-model="enddate"
+                          @input="menu3 = false"
+                      ></v-date-picker>
+                  </v-menu>
+                  <v-select
+                    v-model="DarrivalHour"
+                    :items="DHours"
+                    menu-props="auto"
+                    label="도착(시)"
+                    outlined
+                    dense
+                    hide-details
+                    style="width:40%;display:inline-block;font-family: 'SCDream4';"
+                  ></v-select>
+                
+                  <v-select
+                    v-model="DarrivalMinute"
+                    :items="DMinutes"
+                    menu-props="auto"
+                    label="도착(분)"
+                    outlined
+                    dense
+                    hide-details
+                    style="width:40%;display:inline-block; margin-left:10px;font-family: 'SCDream4';"
+                  ></v-select>
+                  </center>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="#FF5E5E"
+                      text
+                      style="font-family: 'SCDream4'"
+                      @click="dialog2 = false"
+                    >
+                      취소
+                    </v-btn>
+                    <v-btn
+                      color="rgba( 13, 136, 255)"
+                      text
+                      style="font-family: 'SCDream4'"
+                      @click="schedulePlus"
+                    >
+                      추가하기
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+							<div style="width:90%; margin-left:1%; border-left:3.3px black solid; margin-top:3px;">
 								<div v-for="(cour,idx) in SDcourse" :key="cour.id">
 									<p v-if="idx!=0" style="font-size:1.6rem; margin-left:-15px; margin-bottom:5px;"><i class="fas fa-car"></i></p>
 									<button class="courseidx" style="background-color:">{{idx+1}}</button>
 									<span class="spottitle">{{cour.spot_info.title}}</span>
+                  <button v-if="username == schedule.user.username" @click="deletecourse(cour.id,idx)" style="float:right; font-size:2rem; color:green; font-family: 'SCDream6';">-</button>
 									<span class="spottime">{{formattime(cour.start_time)}} ~ {{formattime(cour.end_time)}}</span>
 								</div>
 							</div>
@@ -192,7 +520,7 @@
 					sm="10"
         >
         <center>
-          <Calendar/>
+          <DetailCalendar :Courses="SDcourse" />
         </center>
         </v-col>
         <v-col
@@ -206,24 +534,71 @@
 
 <script>
 import SpotMap2 from '@/components/schedules/SpotMap2.vue'
-import Calendar from '@/components/schedules/Calendar.vue'
+import DetailCalendar from '@/components/schedules/DetailCalendar.vue'
 import { mapGetters } from "vuex";
 import SERVER from '@/api/api'
 import axios from 'axios'
-
+import Multiselect from 'vue-multiselect'
 import moment from 'moment';
 import 'moment/locale/ko'
 
 export default {
   components: {
     SpotMap2,
-    Calendar
+    DetailCalendar,
+    Multiselect
   },
   data() {
     return {
+      schedule: {"user": {
+          "username": "",
+          "nickname": "",
+          "gender": "",
+          "age": 0,
+          "introduce": "",
+          "profile_image": ""
+        },},
+      // 수정
+      edittitle:'',
+      editoverview:'',
+      editdialog:false,
+      privatebtn:"1",
+      edittogether:false,
+      editadvice:false,
+      editmember_type:'',
+      edittravel_type:'',
+      editstartdate: '',
+      editenddate: '',
+      editmax_member:1,
+      editmenu3: false,
+      editmenu2: false,
+      member : ['혼자','가족','커플','3인이상'],
+      type : ['힐링','액티비티','맛집 탐방','역사 탐방'],
+      formatstartdate:'',
+      formatenddate:'',
+      // 
+      // 코스 추가
+      spot2:'',
+			spots2:[],
+      dialog2:false,
+      startdate: '',
+      enddate: '',
+      menu3: false,
+      menu2: false,
+      createcourse: [],
+      custom_spot_pk:null,
+      // 출발, 도착 시간 변수
+      DHours: [...Array(24)].map((v,i) => i+1),
+      DMinutes: [...Array(4)].map((v,i) => i*15),
+      DdepartureHour: null,
+      DdepartureMinute: '00',
+      DarrivalHour: null,
+			DarrivalMinute: '00',
+			coursestarttime:'',
+			courseendtime:'',
+      // 
       joincontent:'',
       dialog:false,
-      schedule: [],
       writecomment:'',
       page:1,
       advicepage:[],
@@ -319,6 +694,151 @@ export default {
       }
     },
   methods: {
+    deleteSchedule() {
+      let res = confirm('스케줄을 삭제 하시겠습니까?')
+      if (res) {
+        axios.delete(process.env.VUE_APP_SERVER_URL +  SERVER.URL.SCHEDULE.SCHEDULES +this.$route.params.schedule_id, {
+            headers: {
+              Authorization : this.config,
+        }})
+        .then(response => {
+          console.log(response)
+          alert("스케줄을 삭제하였습니다.")
+          this.$router.push({name: 'Home'})
+        })
+        .catch(error => { 
+          console.log(error.response)
+        })}
+    },
+    editScheduler() {
+      if (this.edittitle.length !=0 && this.editoverview.length !=0 && this.editstartdate.length !=0 &&
+				this.editenddate.length !=0 ) {
+				this.formatstartdate = this.editstartdate + 'T00:00:00+09:00'
+				this.formatenddate = this.editenddate + 'T23:59:00+09:00'
+				let editbody = {
+					title : this.edittitle,
+					overview :this.editoverview,
+					private : this.privatebtn,
+					advice : this.editadvice*1,
+					together : this.edittogether*1,
+					member_type_pk: this.changeMemtype(),
+					style_type_pk: this.changeStyletype(),
+					start_date: this.formatstartdate,
+					end_date: this.formatenddate,
+					max_member: this.editmax_member,
+        }
+        axios.patch(process.env.VUE_APP_SERVER_URL +  SERVER.URL.SCHEDULE.SCHEDULES +this.$route.params.schedule_id+'/', editbody, {
+            headers: {
+							Authorization : this.config,
+				}})
+				.then(response => {
+					console.log(response)
+          alert("스케줄을 수정하였습니다.")
+          this.schedule.title = response.data.title
+          this.schedule.overview = response.data.overview
+          this.schedule.private = response.data.private
+          this.schedule.advice = response.data.advice
+          this.schedule.together = response.data.together
+          this.schedule.member_type_pk = response.data.member_type_pk
+          this.schedule.style_type_pk = response.data.style_type_pk
+          this.schedule.start_date = response.data.start_date
+          this.schedule.end_date =response.data.end_date
+          this.schedule.max_member = response.data.max_member
+          this.editdialog =false
+				})
+				.catch(error => { 
+					console.log(error.response)
+				})} else {
+					alert("빈칸을 채워주세요!!")
+				}
+    },
+    changeMemtype() {
+			return this.member.indexOf(this.editmember_type) +1
+			},
+		changeStyletype() {
+			return this.type.indexOf(this.edittravel_type) +1
+		},
+    deletecourse(id,index) {
+      let res = confirm('코스를 삭제 하시겠습니까?')
+      if (res) {
+        axios.delete(process.env.VUE_APP_SERVER_URL + `/course/` + id,{
+          headers: this.headers
+        })
+        .then(() => {
+          this.SDcourse.splice(index,1);
+          this.SDdetail.course_coords.splice(index,1);
+        })
+        .catch(err => console.log(err.response))
+      }
+    },
+    spotWithTitle({title}) {
+			return `${title}`
+		},
+		schedulePlus() {
+			console.log(this.DdepartureHour.length)
+			if (this.spot2 && this.startdate && this.DdepartureHour &&
+			this.enddate && this.DarrivalHour ) {
+				if (this.DdepartureHour < 10) {
+					this.DdepartureHour = '0'+this.DdepartureHour
+				}
+				if (this.DarrivalHour < 10) {
+					this.DarrivalHour = '0'+this.DarrivalHour
+				}
+				if (this.DdepartureMinute.length == 1) {
+					this.DdepartureMinute = '0'+this.DdepartureMinute
+				}
+				if (this.DarrivalMinute.length == 1) {
+					this.DarrivalMinute = '0'+this.DarrivalMinute
+        }
+        var d1 = new Date(this.startdate)
+        var d2 = new Date(this.schedule.start_date)
+        var d3 = new Date(this.enddate)
+        var d4 = new Date(this.schedule.end_date)
+        if (d1 >= d2 && d4 >= d3) {
+        console.log(this.DdepartureHour)
+        this.schedulePlusunit()
+      } else {
+        alert("스케줄 날짜와 코스 날짜를 확인해주세요.")
+      }
+			} 
+		},
+		schedulePlusunit() {
+			this.coursestarttime = this.startdate + 'T' +this.DdepartureHour +':'+this.DdepartureMinute+':00+09:00'
+			this.courseendtime = this.enddate + 'T' +this.DarrivalHour +':'+this.DarrivalMinute+':00+09:00'
+       let coursebody = {
+        schedule_pk: this.$route.params.schedule_id,
+        spot_pk: this.spot2.id,
+        content: "test",
+        start_time : this.coursestarttime,
+        end_time : this.courseendtime,
+        custom_spot_pk : this.custom_spot_pk
+      }
+      axios.post(process.env.VUE_APP_SERVER_URL + '/course/', coursebody, {
+          headers: this.headers,
+        })
+        .then(response => {
+          console.log(response)
+          this.SDdetail.course_coords.push([
+            response.data.spot_info.lat,response.data.spot_info.lon
+          ])
+          this.SDcourse.push({
+            'spot_info' : { 
+              'title':this.spot2.title
+            },
+            'spot_pk':this.spot2.id,
+            'start_time' : this.coursestarttime,
+            'end_time' : this.courseendtime,
+          })
+        })
+        .catch(error => { 
+          console.log(error.response)
+        })
+			console.log(this.createcourse)
+			console.log(this.spot2.title)
+			console.log(this.coursestarttime)
+			console.log(this.courseendtime)
+			this.dialog2 = false
+		},
     JoinSchedule() {
         let joinbody = {
           schedule_pk: this.$route.params.schedule_id,
@@ -391,6 +911,10 @@ export default {
       moment.locale('ko');
       return moment(date).format('dddd, MM월 DD일')
     },
+    formatEditDate(date) {
+      moment.locale('ko');
+      return moment(date).format('yyyy-MM-DD')
+    },
     formattime(time) {
       moment.locale('ko');
       return moment(time).format('MM월 DD일 a hh:mm')
@@ -403,6 +927,18 @@ export default {
         this.SDdetail = response.data;
         this.schedule = response.data.schedule;
         this.SDcourse = response.data.course;
+        // 수정데이터
+        this.edittitle = this.schedule.title
+        this.editoverview = this.schedule.overview
+        this.privatebtn =this.schedule.private
+        this.edittogether= this.schedule.together,
+        this.editadvice= this.schedule.advice
+        this.editmember_type = this.member[this.schedule.member_type_pk-1]
+        this.edittravel_type = this.type[this.schedule.style_type_pk-1]
+        this.editstartdate = this.formatEditDate(this.schedule.start_date)
+        this.editenddate = this.formatEditDate(this.schedule.end_date)
+        this.editmax_member = this.schedule.max_member
+        console.log(this.schedule)
         console.log(this.SDdetail)
       })
       .catch(error => {
@@ -428,6 +964,14 @@ export default {
   created() {
     this.getDetail();
     this.getAdvice();
+    axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS +`semi_list/`)
+      .then(response => {
+				this.spots2= response.data
+				// console.log(this.spots)
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
   },
   }
 </script>
@@ -440,6 +984,7 @@ export default {
     border-radius:3px;
     background-color:#FF5E5E;
     margin-top:2px;
+    margin-left:9%;
 }
 .togetherbtn {
     margin-left:3%;
@@ -554,4 +1099,43 @@ export default {
   font-family: 'SCDream4'; 
   width:95%;
 }
+.spotselect {
+	border-bottom:1px #FF5E5E solid;
+	width:80%;
+	font-family: 'SCDream4';
+  cursor: pointer;
+}
+.courseplusbtn {
+	width:40%;
+	color:#FF5E5E;
+	border: 2px #FF5E5E solid; 
+	border-radius:10px;
+	font-size:1.4vw;
+	outline: none;
+  float:right;
+  font-family: 'SCDream4';
+}
+.courseplusbtn:hover {
+	/* background-color:#FF5E5E; */
+	color:#FF5E5E;
+}
+.spottitle {
+    font-family: 'SCDream4';
+    font-size:1.3vw;
+}
+.spottime {
+    font-family: 'SCDream4';
+    font-size:0.8vw;
+    margin-left:10px;
+    color:#707070;
+    display: block;
+    margin-bottom: 5px;
+}
+.memtypeselect {
+	display:inline-block;
+	width:45%; 
+	font-size:1.1vw; 
+	font-family: 'SCDream5';
+}
+
 </style>
