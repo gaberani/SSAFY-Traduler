@@ -137,7 +137,7 @@ export default {
 				
 				} else {
 				var iwContent3='<div style="width:320px; font-family: SCDream4;">' 
-				+'<button style="color:white; margin-top:3px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
+				+'<button style="color:white; margin-top:3px; margin-bottom:4px; width:25px; height:25px; border-radius:100%; background-color:#FF5E5E; margin-right:10px;">'+ Positions[j].course + ' </button>'
 				+ Positions[j].title 
 				
 				var infowindow3 = new kakao.maps.InfoWindow({
