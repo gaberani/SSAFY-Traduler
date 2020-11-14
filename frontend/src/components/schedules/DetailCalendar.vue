@@ -297,16 +297,13 @@ export default {
     // 지금은 요청해서 받아오고 있음
     this.$http
       .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.$route.params.schedule_id, {
-        // 'http://127.0.0.1:8000/schedule/38/', {
         headers: {
           Authorization: this.config,
         },
       })
       .then(res => {
         this.test = res.data
-        // res.data.course.forEach(el => this.Courses.push(el))
         this.schedule = res.data.schedule
-        console.log(this.schedule)
         this.getInitialEvents()
       })
   },
@@ -314,7 +311,6 @@ export default {
 		Courses: {
 			deep: true,
 			handler() {
-        // console.log(1)
         this.getInitialEvents()
 			}
 		}
@@ -356,7 +352,6 @@ export default {
     // 드래그 시작 이벤트 처리
     startDrag ({ event, timed }) {
       if (event && timed) {
-        console.log('drag event start OK')
         this.dragEvent = event
         this.dragTime = null
         this.extendOriginal = null
@@ -394,14 +389,12 @@ export default {
       const mouse = this.toTime(tms)
       // 이미 있는 이벤트 드래그
       if (this.dragEvent && this.dragTime !== null) {
-        console.log(this.dragEvent)
         const start = this.dragEvent.start
         const end = this.dragEvent.end
         const duration = end - start
         const newStartTime = mouse - this.dragTime
         const newStart = this.roundTime(newStartTime)
         const newEnd = newStart + duration
-        console.log(newStartTime, newStart, newEnd)
 
         this.dragEvent.start = newStart
         this.dragEvent.end = newEnd
@@ -483,7 +476,6 @@ export default {
           idx += 1
         }
       })
-      console.log(this.budgets)
       // 모달 열기
       const open = () => {
         this.Course = event
