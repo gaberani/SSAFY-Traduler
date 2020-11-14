@@ -175,7 +175,7 @@
                         v-for="budget in budgets"  
                         :key="budget.budget_name"
                         cols="12"
-                        style="padding: 0px 0px 4px 18px;"
+                        style="padding: 0px 0px 4px 24px;"
                       >
                         <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.original_name}}</span> 
                         <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
@@ -230,16 +230,19 @@
                           cols="12"
                           style="padding: 0 12px"
                         >
-                          <span>
-                            {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                          <span style="font-family: SCDream5;">
+                            {{memo.user.nickname}}: 
                           </span>
-                          <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
+                          <span style="font-family: SCDream4;">
+                            {{memo.content}}
+                          </span>
+                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
                             <v-icon>mdi-pencil</v-icon>
                           </v-btn>
-                          <v-btn icon v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
+                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
                             <v-icon color="red">mdi-close</v-icon>
                           </v-btn>
-                          <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
                             <v-icon>mdi-check-circle</v-icon>
                           </v-btn>
                         </v-col>
@@ -300,7 +303,7 @@
               </v-btn>
               <v-btn
                 color="error"
-                @click="CourseDelete"
+                @click="CourseDelete(Course)"
               >
                 삭제
               </v-btn>
@@ -577,7 +580,6 @@ export default {
           this.selectedOpen = true
         }, 10)
       }
-
       // 모달 닫기
       if (this.selectedOpen) {
         this.selectedOpen = false
@@ -649,8 +651,8 @@ export default {
     },
 
     // Course Delete
-    CourseDelete() {
-      console.log(this.Courses.id)
+    CourseDelete(Course) {
+      this.$emit('Submit-Delete-Course', Course)
     },
     // Course Update
     CourseUpdate() {
@@ -666,17 +668,29 @@ export default {
       this.budgets.forEach(el => {
         SubmitCourseData[el.budget_name] = el.budget_value
       })
-      this.$http
-        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + `${this.Course.id}/`, 
-          SubmitCourseData, // body
-          {headers: {Authorization: this.config} // header
-        })
-        .then(res => console.log(res.data))
-        .catch(err => {
-          if (err.response === 401) {
-            alert('스케줄을 만든 사람만 수정이 가능합니다')
-          }
-        })
+
+      let submit_start = new Date(SubmitCourseData.start_time) 
+      let s_year = submit_start.getFullYear()
+      let s_month = submit_start.getMonth()
+      let s_day = submit_start.getDate()
+      // let s_month = 10
+      // let s_day = 8
+      SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
+
+      let submit_end = new Date(SubmitCourseData.end_time)
+      let e_year = submit_end.getFullYear()
+      let e_month = submit_end.getMonth()
+      let e_day = submit_end.getDate()
+      // let e_month = 10
+      // let e_day = 8
+      SubmitCourseData.end_time = new Date(e_year, e_month, e_day, this.arrivalHour, this.arrivalMinute)
+
+      // this.departureHour = null
+      // this.departureMinute = null
+      // this.arrivalHour = null
+      // this.arrivalMinute = null
+      // SubmitCourseData['']
+      this.$emit('Submit-Update-Course', SubmitCourseData)
     },
     // 숫자 랜덤(안씀)
     rnd (a, b) {
