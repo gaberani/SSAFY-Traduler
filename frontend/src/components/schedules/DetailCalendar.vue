@@ -84,6 +84,7 @@
               <v-row>
                 <!-- <span>{{ Courses }}</span> -->
                 <!-- 카드 왼쪽 -->
+                {{ this.$attrs.Courses }}
                 <v-col
                   cols="9"
                   sm="6"
@@ -92,8 +93,8 @@
                   <v-row class="time_outline">
                     <v-col cols="12" style="padding-bottom:0px;">
                       <h2 style="">일정</h2> 
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:60px;  ">{{formatDate2(Course.start_time)}}</span>
-                        <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:138px; ">{{formatDate2(Course.end_time)}}</span>
+                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw;  ">{{formatDate2(Course.start_time)}}</span>
+                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw; ">{{formatDate2(Course.end_time)}}</span>
                     </v-col>
                     <v-col
                       cols="6"
@@ -164,25 +165,68 @@
                         <h2>예산</h2>
                       </div>
                       <v-spacer></v-spacer>
-                      <v-btn icon>
+                      <v-btn icon v-if="!budgetEditFlag" @click="onClickBudgetEditBtn()">
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
+                      <v-btn icon v-if="budgetEditFlag" @click="onClickBudgetSubmitBtn()">
+                        <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
                     </v-row>
+                    <v-row v-if="!budgetEditFlag">
                       <v-col
                         v-for="budget in budgets"  
                         :key="budget.budget_name"
                         cols="12"
-                        style="padding: 0px 0px 4px 14px;"
+                        style="padding: 0px 0px 4px 18px;"
                       >
                         <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.budget_name}}</span> 
                         <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
-                        <v-spacer></v-spacer>
+                        <!-- <v-spacer></v-spacer> -->
                       </v-col>
+                    </v-row>
+                    <v-row v-else>
+                      <v-col
+                        v-for="newbudget in Newbudgets"  
+                        :key="newbudget.budget_name"
+                        cols="12"
+                        style="padding: 0;"
+                      >
+                        <v-row>
+                          <v-spacer></v-spacer>
+                          <v-col
+                            cols="3"
+                            style="padding: 0 auto;"
+                          >
+                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.budget_name}}</span> 
+                          </v-col>
+                          <v-col
+                            cols="7"
+                            style="padding: 0;"
+                          >
+                            <v-text-field
+                              v-model="newbudget.budget_value"
+                              dense
+                              required
+                            ></v-text-field>
+                          </v-col>
+                          <v-spacer></v-spacer>
+                        </v-row>
+                      </v-col>
+                    </v-row>
                   </v-row>
                   <!-- 메모 -->
                   <v-row class="budget_outline" style="margin: 3px 0">
                     <v-row style="margin: 5px 5px 4px 12px;">
-                      <h2>메모</h2>
+                      <div style="text-aling:center">
+                        <h2>메모</h2>
+                      </div>
+                      <v-spacer></v-spacer>
+                      <v-btn icon v-if="! memoEditFlag" @click="onClickmemoEditBtn()">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                        <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
                     </v-row>
                     <v-row
                       class="memo_area"
@@ -260,6 +304,7 @@ export default {
   components: {ScheduleDetailMap},
   data() {
     return {
+      // 캘린더 변수
       schedule:[],
       startcourseday: "2020-11-06",
       value: '',
@@ -271,14 +316,18 @@ export default {
       createEvent: null,
       createStart: null,
       extendOriginal: null,
-      Course:{},
-      // Courses: [],
-      budgets: [],
-      budgets_names: ["식비", "교통비", "입장료", "숙소비", "기타"],
       selectedElement: null,
       selectedOpen: false,
       focus: '',
 
+      // 모달창 코스 1개 변수
+      Course:{},
+      budgets: [],
+      Newbudgets: [],
+      budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
+      budgetEditFlag: false,
+      memoEditFlag: false,
+      
       // 출발, 도착 시간 변수
       Hours: [...Array(24)].map((v,i) => i+1),
       Minutes: [...Array(4)].map((v,i) => i*15),
@@ -286,8 +335,6 @@ export default {
       departureMinute: null,
       arrivalHour: null,
       arrivalMinute: null,
-
-      test: null
     }
   },
   props: {
@@ -302,7 +349,6 @@ export default {
         },
       })
       .then(res => {
-        this.test = res.data
         this.schedule = res.data.schedule
         this.getInitialEvents()
       })
@@ -470,7 +516,7 @@ export default {
         if (el.includes('budget')) {
           this.budgets.push({
             original_name: el,
-            budget_name: this.budgets_names[idx],
+            budget_name: this.budgetsList[idx],
             budget_value: event[el]
           })
           idx += 1
@@ -496,13 +542,49 @@ export default {
       }
       nativeEvent.stopPropagation()
     },
+    // 예산 임시 수정
+    onClickBudgetEditBtn() {
+      this.budgetEditFlag = !this.budgetEditFlag
+      this.Newbudgets = []
+      this.budgets.forEach(el => {
+        this.Newbudgets.push(el)
+      })
+    },
+    // 예산 수정 적용
+    onClickBudgetSubmitBtn() {
+      this.budgetEditFlag = !this.budgetEditFlag
+      this.budgets = []
+      this.Newbudgets.forEach(el => {
+        this.budgets.push(el)
+      })
+    },
+    // 메모 임시 수정
+    onClickmemoEditBtn() {
+      this.memoEditFlag = !this.memoEditFlag
+    },
+    // 메모 임시 수정 적용
+    onClickmemoSubmitBtn() {
+      this.memoEditFlag = !this.memoEditFlag
+    },
 
     // Course U & D
     CourseDelete() {
       console.log(this.Courses.id)
     },
     CourseUpdate() {
+      console.log(this.Course)
       console.log('TRY Course Update')
+      this.$http
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.Course.id + '/', 
+          {headers: {Authorization: this.config}},
+          this.Course
+          )
+        .then(res => console.log(res.data))
+        .catch(err => {
+          if (err.response === 401) {
+            alert('스케줄을 만든 사람만 수정이 가능합니다')
+          }
+        })
     },
     // 숫자 랜덤(안씀)
     rnd (a, b) {
@@ -544,5 +626,8 @@ export default {
   font-size: 1.4vw;
   color:white;
   margin-bottom:5px;
+}
+.budget-edit-input{
+  margin: auto 30px;
 }
 </style>
