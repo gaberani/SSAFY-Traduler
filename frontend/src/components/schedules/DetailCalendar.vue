@@ -28,8 +28,6 @@
           :event-color="getEventColor"
           :event-ripple="false"
           @click:event="showEvent"
-          @click:more="viewDay"
-          @click:date="viewDay"
           @change="getInitialEvents"
           @mousedown:event="startDrag"
           @mousedown:time="startTime"
@@ -195,7 +193,7 @@
                           <v-spacer></v-spacer>
                           <v-col
                             cols="3"
-                            style="padding: 0 auto;"
+                            style="padding: 3px 6px;"
                           >
                             <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.budget_name}}</span> 
                           </v-col>
@@ -207,6 +205,7 @@
                               v-model="newbudget.budget_value"
                               dense
                               required
+                              hide-details="auto"
                             ></v-text-field>
                           </v-col>
                           <v-spacer></v-spacer>
@@ -221,22 +220,24 @@
                         <h2>메모</h2>
                       </div>
                       <v-spacer></v-spacer>
-                      <v-btn icon v-if="! memoEditFlag" @click="onClickmemoEditBtn()">
+                      <v-btn icon v-if="!memoEditFlag" @click="onClickmemoEditBtn()">
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
                       <v-btn icon v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
                         <v-icon>mdi-check-circle</v-icon>
                       </v-btn>
                     </v-row>
-                    <v-row
-                      class="memo_area"
-                    >
+                    <v-row>
                       <v-col
                         v-for="memo in Course.memos"
-                        :key="memo"
+                        :key="memo.id"
                         cols="12"
+                        style="padding: 0 12px"
                       >
-                        {{memo}}
+                        {{memo.user.nickname}}: {{memo.content}}, {{memo.id}}
+                        <v-btn icon @click="onClickmemoDelBtn(memo.id)">
+                          <v-icon color="red">mdi-close</v-icon>
+                        </v-btn>
                       </v-col>
                     </v-row>
                   </v-row>
@@ -414,7 +415,7 @@ export default {
       } else {
         this.createStart = this.roundTime(mouse)
         this.createEvent = {
-          name: `일정 #${this.events.length}`,
+          name: `일정 #${this.events.length+1}`,
           color: this.rndElement(this.colors),
           start: this.createStart,
           end: this.createStart,
@@ -505,6 +506,7 @@ export default {
     },
     // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
+      // console.log(event)
       // 이미 있는 코스 조회 시 데이터 엮어주기
       this.departureHour = new Date(event.start).getHours()
       this.departureMinute = new Date(event.start).getMinutes()
@@ -512,6 +514,7 @@ export default {
       this.arrivalMinute = new Date(event.end).getMinutes()
       this.budgets = []
       let idx = 0
+      // 이미 만들어져 있던 일정이 선택됬을 경우
       Object.keys(event).forEach(el => {
         if (el.includes('budget')) {
           this.budgets.push({
@@ -522,6 +525,15 @@ export default {
           idx += 1
         }
       })
+      // 새로 만들어진 일정이라 예산 안들어가있을 경우
+      if (this.budgets.length === 0) {
+          this.budgetsList.forEach(el => {
+            this.budgets.push({
+              budget_name: el,
+              budget_value: 0
+            })
+          })
+        }
       // 모달 열기
       const open = () => {
         this.Course = event
@@ -542,7 +554,7 @@ export default {
       }
       nativeEvent.stopPropagation()
     },
-    // 예산 임시 수정
+    // 예산 임시 수정  시작
     onClickBudgetEditBtn() {
       this.budgetEditFlag = !this.budgetEditFlag
       this.Newbudgets = []
@@ -550,7 +562,7 @@ export default {
         this.Newbudgets.push(el)
       })
     },
-    // 예산 수정 적용
+    // 예산 임시 수정 적용
     onClickBudgetSubmitBtn() {
       this.budgetEditFlag = !this.budgetEditFlag
       this.budgets = []
@@ -558,13 +570,42 @@ export default {
         this.budgets.push(el)
       })
     },
-    // 메모 임시 수정
+    // 메모 생성
+    onClickMemoCreateBtn() {
+      this.memoEditFlag = !this.memoEditFlag
+      this.$http
+        .post(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO,
+          {
+            "course_pk": this.Course.id,
+            "content": "메모테스트"
+          },
+          {headers: {Authorization: this.config}}
+        )
+        .then(res => console.log(res.data))
+    },
+    onClickmemoDelBtn(memo_id) {
+      this.$http
+        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
+          {headers: {Authorization: this.config}}
+        )
+        .then(() => alert('메모가 삭제되었습니다.'))
+    },
+    // 메모 임시 수정 시작
     onClickmemoEditBtn() {
       this.memoEditFlag = !this.memoEditFlag
     },
     // 메모 임시 수정 적용
-    onClickmemoSubmitBtn() {
+    onClickmemoSubmitBtn(memo_id) {
       this.memoEditFlag = !this.memoEditFlag
+      this.$http
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`, 
+          {
+            "course_pk": this.Course.id,
+            "content": "수정할 내용"
+          },
+          {headers: {Authorization: this.config}},
+          )
+        .then(res => console.log(res.data))
     },
 
     // Course U & D
@@ -572,15 +613,16 @@ export default {
       console.log(this.Courses.id)
     },
     CourseUpdate() {
+      // const original_budgets = ['budget_entrance', 'budget_etc', 'budget_food', 'budget_room', 'budget_transport']
       console.log(this.Course)
-      console.log('TRY Course Update')
       this.$http
-        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES + this.Course.id + '/', 
+        .patch(process.env.VUE_APP_SERVER_URL + SERVER.URL.COURSE + this.Course.id, 
           {headers: {Authorization: this.config}},
           this.Course
           )
         .then(res => console.log(res.data))
         .catch(err => {
+          console.log(this.Course)
           if (err.response === 401) {
             alert('스케줄을 만든 사람만 수정이 가능합니다')
           }
