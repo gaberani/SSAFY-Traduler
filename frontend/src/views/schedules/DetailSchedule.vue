@@ -525,7 +525,7 @@
         </v-col>
         <v-col
 					cols="12"
-					sm="2"
+					sm="3"
         > 
         </v-col>
       </v-row>
@@ -959,7 +959,7 @@ export default {
       .catch(error => {
         console.log(error.response);
       })
-    }
+    },
   },
   created() {
     this.getDetail();
