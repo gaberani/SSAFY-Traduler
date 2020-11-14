@@ -30,6 +30,14 @@
           </v-col>
         </div>
       </div>
+      <div class="text-center">
+        <v-pagination
+          v-model="curPage"
+          :length="schedulespage.endPage"
+          :total-visible="7"
+          class="mt-5"
+        ></v-pagination>
+      </div>
       
       </v-col>
       <v-col
@@ -43,7 +51,7 @@
 
 <script>
 import ScheduleCard from '@/components/schedules/ScheduleCard';
-
+import { mapGetters } from "vuex";
 import axios from 'axios'
 import SERVER from '@/api/api'
 
@@ -51,6 +59,7 @@ export default {
   components:{ScheduleCard},
   data() {
     return {
+      curPage:1,
       exschedule: 
         {
             "id": 0,
@@ -78,11 +87,36 @@ export default {
             "avg_coord": [0, 0]
         },
       schedules:[],
+      schedulespage:[],
     }
   },
+  watch: {
+      curPage() {
+        this.movePage();
+      }
+    },
+  computed: {
+      ...mapGetters('accounts', ["config", "LoginFlag"]),
+      headers() {
+        return (this.LoginFlag ? {Authorization: this.config} : null)
+      },
+    },
 	methods: {
+    movePage() {
+        this.$router.push({ query: {
+          title: this.$route.query.title,
+          area: this.$route.query.area,
+          member_type: this.$route.query.member_type,
+          style_type: this.$route.query.style_type,
+          together: this.$route.query.together,
+          advice: this.$route.query.advice,
+          start_date: this.$route.query.start_date,
+          end_date: this.$route.query.end_date,
+          curPage: this.curPage
+          }
+        }).catch(()=>{})
+      },
 		getScheduleList() {
-			// pagination이랑 loginflag 해야함
       axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.SCHEDULES, {
         params: {
           title: this.$route.query.title,
@@ -93,10 +127,12 @@ export default {
           advice: this.$route.query.advice,
           start_date: this.$route.query.start_date,
           end_date: this.$route.query.end_date,
-        }
+        },
+        headers: this.headers
       })
       .then(response => {
-        this.schedules = response.data.schedule
+        this.schedules = response.data.schedule;
+        this.schedulespage = response.data.page;
       })
       .catch(error => {
         console.log(error.response)
@@ -104,7 +140,8 @@ export default {
 		}
 	},
 	created(){
-			this.getScheduleList();
+      this.getScheduleList();
+      this.curPage = this.$route.query.curPage * 1
 		},
 }
 </script>
