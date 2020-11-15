@@ -3,9 +3,9 @@
     <SpotMap :data="this.$attrs.data" :schedule="this.$attrs.schedule" class="cardmap"></SpotMap>
 
     <v-row style="display: flex; justify-content: space-around; margin-top: -5vw; margin-bottom: 1vw;">
-      <img v-if="schedule.together==1" src="@/assets/friend.png" alt="" style="width: 4vw; z-index: 100; filter:saturate(150%);">
+      <img v-if="schedule.together==1" src="@/assets/friend.png" alt="" style="width: 8vw; z-index: 100;">
       <img v-if="!test" src="@/assets/trans.png" style="width: 4vw; z-index: 100;"/>
-      <img v-if="schedule.advice==1" src="@/assets/help2.png" alt="" style="width: 4vw; z-index: 100; filter:saturate(150%);">
+      <img v-if="schedule.advice==1" src="@/assets/help2.png" alt="" style="width: 8vw; z-index: 100;">
     </v-row>
 
     <button @click="GotoDetail(schedule.id)" class="SDtitle"><span>{{schedule.title}}</span></button>
