@@ -728,6 +728,7 @@
               @Submit-Delete-Course="CourseDelete"
               @Submit-Update-Course="CourseUpdate"
               @Submit-Delete-Memo="MemoDelete"
+              @Click-Calendar-Empty="ifCourseCreate"
             />
         </v-col>
         <v-col
@@ -1328,6 +1329,13 @@ export default {
             alert('스케줄을 만든 사람만 수정이 가능합니다')
           }
         })
+    },
+    ifCourseCreate() {
+      if (this.username == this.schedule.user.username) {
+        if (this.dialog2 === false) {
+          this.dialog2 = !this.dialog2
+        }
+      }
     },
     MemoDelete(ModalCourse, targetmemoid) {
       let idx = 0
