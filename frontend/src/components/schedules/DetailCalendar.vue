@@ -69,20 +69,21 @@
             >
               <v-toolbar-title><h2>{{ Course.name }}</h2></v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon>
+              <!-- <v-btn icon v-if="!Course.spot_info.is_liked">
                 <v-icon>mdi-heart</v-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon color="red" v-else>
+                <v-icon>mdi-heart</v-icon>
+              </v-btn> -->
+              <!-- <v-btn icon>
                 <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
+              </v-btn> -->
             </v-toolbar>
 
             <!-- 모달 카드 내용 -->
             <v-card-text style="padding-bottom:0px;">
               <v-row>
-                <!-- <span>{{ Courses }}</span> -->
                 <!-- 카드 왼쪽 -->
-                {{ this.$attrs.Courses }}
                 <v-col
                   cols="9"
                   sm="6"
@@ -230,7 +231,12 @@
                           cols="12"
                           style="padding: 0 12px"
                         >
-                          <span style="font-family: SCDream5;">
+                          <CalendarMemo 
+                            :onememo="memo"
+                            @Click-Memo-DelBtn="onClickmemoDelBtn(memo.id)"
+                            @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
+                          />
+                          <!-- <span style="font-family: SCDream5;">
                             {{memo.user.nickname}}: 
                           </span>
                           <span style="font-family: SCDream4;">
@@ -242,9 +248,9 @@
                           <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
                             <v-icon color="red">mdi-close</v-icon>
                           </v-btn>
-                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn(memo.id)">
                             <v-icon>mdi-check-circle</v-icon>
-                          </v-btn>
+                          </v-btn> -->
                         </v-col>
                       </v-row>
                       <v-row>
@@ -329,12 +335,17 @@ import { mapGetters } from 'vuex'
 import SERVER from '@/api/api'
 
 import ScheduleDetailMap from '@/components/schedules/ScheduleDetailMap.vue'
+import CalendarMemo from '@/components/schedules/CalendarMemo.vue'
+
 import moment from 'moment';
 import 'moment/locale/ko'
 // 캘린더 시간은 ms 기준이다.
 export default {
   name: "Calendar",
-  components: {ScheduleDetailMap},
+  components: {
+    ScheduleDetailMap,
+    CalendarMemo
+  },
   data() {
     return {
       // 캘린더 변수
@@ -359,7 +370,6 @@ export default {
       Newbudgets: [],
       budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
       budgetEditFlag: false,
-      memoEditFlag: false,
       newMemoContent: '',
 
       // 출발, 도착 시간 변수
@@ -600,11 +610,24 @@ export default {
     },
     // 예산 임시 수정 적용
     onClickBudgetSubmitBtn() {
+      let numArray = [...Array(9)].map((v,i) => i)
+      let budgetInputFlag = true
+      console.log(numArray)
+
       this.budgetEditFlag = !this.budgetEditFlag
-      this.budgets = []
       this.Newbudgets.forEach(el => {
-        this.budgets.push(el)
+        if (numArray.includes(el) === false) {
+          budgetInputFlag = false
+        }
       })
+      if (budgetInputFlag) {
+          this.budgets = []
+          this.Newbudgets.forEach(el => {
+            this.budgets.push(el)
+          })
+      } else {
+        alert('예산은 숫자로만 입력해주세요')
+      }
     },
     // 메모 생성
     onClickMemoCreateBtn() {
