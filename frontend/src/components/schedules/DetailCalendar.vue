@@ -483,18 +483,23 @@ export default {
       if (this.dragEvent && this.dragTime === null) {
         const start = this.dragEvent.start
         this.dragTime = mouse - start
+      } 
       // 일정이 없는 비어있는 공간을 클릭
-      } else {
-        this.createStart = this.roundTime(mouse)
-        this.createEvent = {
-          name: `일정 #${this.events.length+1}`,
-          color: this.rndElement(this.colors),
-          start: this.createStart,
-          end: this.createStart,
-          timed: true,
-        }
-        this.events.push(this.createEvent)
+      else {
+        this.$emit('Click-Calendar-Empty')
       }
+      
+      // else {
+      //   this.createStart = this.roundTime(mouse)
+      //   this.createEvent = {
+      //     name: `일정 #${this.events.length+1}`,
+      //     color: this.rndElement(this.colors),
+      //     start: this.createStart,
+      //     end: this.createStart,
+      //     timed: true,
+      //   }
+      //   this.events.push(this.createEvent)
+      // }
     },
 
     // 드래그를 아래로 할 경우 영역이 늘어남
