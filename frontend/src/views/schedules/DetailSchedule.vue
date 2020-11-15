@@ -394,13 +394,6 @@
                             v-model="spot2" 
                             :options="spots2" 
                             :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name"></multiselect>
-                          <!-- <v-select
-                            style="font-family: 'SCDream5';font-size:1.1rem; width:50%;"
-                            :items="selectarea"
-                            label="여행지 선택"
-                            dense
-                            hide-details
-                          ></v-select> -->
                           <v-menu
                             v-model="menu7"
                             :close-on-content-click="false"
