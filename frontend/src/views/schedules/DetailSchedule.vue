@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-row no-gutters style="max-height:650px;">
+    <v-row no-gutters style="max-height;">
       <v-col
         cols="12"
         sm="3"
@@ -717,25 +717,23 @@
           </div>    
         </v-col>
       </v-row>
-      <v-row style="margin-top:80px;" no-gutters>
+      <v-row style="margin-top:10vh;" no-gutters>
+        <!-- <v-col cols="1"></v-col> -->
         <v-col
-					cols="12"
+					cols="10"
 					sm="10"
         >
-        <center>
-          <DetailCalendar 
-            :Courses="SDcourse"
-            @Submit-Delete-Course="CourseDelete"
-            @Submit-Update-Course="CourseUpdate"
-            @Submit-Delete-Memo="MemoDelete"
-          />
-        </center>
+            <DetailCalendar 
+              :Courses="SDcourse"
+              @Submit-Delete-Course="CourseDelete"
+              @Submit-Update-Course="CourseUpdate"
+              @Submit-Delete-Memo="MemoDelete"
+            />
         </v-col>
         <v-col
-					cols="12"
-					sm="3"
-        > 
-        </v-col>
+					cols="2"
+					sm="2"
+        ></v-col>
       </v-row>
   </v-app>
 </template>
@@ -1373,92 +1371,90 @@ export default {
     margin-left:8%;
 }
 .togetherbtn {
-    margin-left:3%;
-    /* height:25px; */
-    width:20%;
-    color:white;
-    /* border-radius:3px; */
-    /* background-color:rgba( 13, 136, 255); */
-    font-family: 'SCDream6';
-    font-size:1vw;
+  margin-left:3%;
+  /* height:25px; */
+  width:20%;
+  color:white;
+  /* border-radius:3px; */
+  /* background-color:rgba( 13, 136, 255); */
+  font-family: 'SCDream6';
+  font-size:1vw;
 }
 .inf {
-    margin-top:10px;
-    border-top:4px #FF5E5E solid;
-    border-bottom:4px #FF5E5E solid;
-		border-radius:10px;
-    width: 90%;
-    /* height: 100px;  */
-}
-.SDinf {
-    /* height: 70px; */
+  margin-top:10px;
+  border-top:4px #FF5E5E solid;
+  border-bottom:4px #FF5E5E solid;
+  border-radius:10px;
+  width: 90%;
+  /* height: 100px;  */
 }
 .typefont {
-    font-family: 'SCDream6';
-    font-size:1.2vw;
+  font-family: 'SCDream6';
+  font-size:1.2vw;
 }
 .imo {
-    font-family: 'SCDream6';
-    font-size:1vw;
+  font-family: 'SCDream6';
+  font-size:1vw;
 }
 .courseinf {
-    margin-top: 3px;
-    /* margin-left: 20px; */
-    height:500px;
-    overflow-y: auto;
-    /* width:90%; */
+  margin-top: 3px;
+  /* margin-left: 20px; */
+  height:500px;
+  overflow-y: auto;
+  /* width:90%; */
 }
 /* 스크롤 바 넓이 16px */
 .courseinf::-webkit-scrollbar{width: 16px;}
 /* 스크롤 바 기본 색상 */
 .courseinf::-webkit-scrollbar-track {background-color:#FF5E5E;
-    box-shadow: inset 0px 0px 5px white;
-    border-radius: 10px;
+  box-shadow: inset 0px 0px 5px white;
+  border-radius: 10px;
 }
 /* 스크롤 구간 배경 색상 */
 .courseinf::-webkit-scrollbar-thumb {background-color:#ff9a9a;
-    border-radius: 10px;
+  border-radius: 10px;
 } 
 /* 스크롤 바 위에 마우스 올렸을 때(hover) 색상 */
 .courseinf::-webkit-scrollbar-thumb:hover {background-color: #fd4b4b;} 
 .helptable {
-		right:1.5%;
-    top:10%;
-    /* width: 15%; */
-    width:15vw;
-    height:600px;
-    border-radius:30px;
-    margin-top:20px;
-    position: fixed;
+  /* border: 3px solid black; */
+  right:1.5%;
+  top:10%;
+  /* width: 15%; */
+  width:15vw;
+  height:600px;
+  border-radius:30px;
+  margin-top:20px;
+  position: fixed;
 }
 .spottitle {
-    font-family: 'SCDream4';
-    font-size:1.3vw;
+  font-family: 'SCDream4';
+  font-size:1.3vw;
 }
 .spottime {
-    font-family: 'SCDream4';
-    font-size:0.8vw;
-    margin-left:10px;
-    color:#707070;
-    display: block;
-    margin-bottom: 5px;
+  font-family: 'SCDream4';
+  font-size:0.8vw;
+  margin-left:10px;
+  color:#707070;
+  display: block;
+  margin-bottom: 5px;
 }
 .courseidx {
-    width:27px;
-    height:27px;
-    margin-left:5px;
-    margin-right:5px;
-    background-color:#FF5E5E;
-    color:white;
-    border-radius:100%;
-    /* margin-left:-6%; */
+  width:27px;
+  height:27px;
+  margin-left:5px;
+  margin-right:5px;
+  background-color:#FF5E5E;
+  color:white;
+  border-radius:100%;
+  /* margin-left:-6%; */
 }
 .courseidx:hover {
-    background-color:#850b0b;
+  background-color:#850b0b;
 }
 .car {
-    margin-left:-12px;
-    margin-top:-6px;
+  margin-left:-12px;
+  margin-top:-6px;
 }
 .helpperson {
 	width:1.2vw;
@@ -1506,16 +1502,16 @@ export default {
 	color:#FF5E5E;
 }
 .spottitle {
-    font-family: 'SCDream4';
-    font-size:1.3vw;
+  font-family: 'SCDream4';
+  font-size:1.3vw;
 }
 .spottime {
-    font-family: 'SCDream4';
-    font-size:0.8vw;
-    margin-left:10px;
-    color:#707070;
-    display: block;
-    margin-bottom: 5px;
+  font-family: 'SCDream4';
+  font-size:0.8vw;
+  margin-left:10px;
+  color:#707070;
+  display: block;
+  margin-bottom: 5px;
 }
 .memtypeselect {
 	display:inline-block;
