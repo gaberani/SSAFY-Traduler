@@ -224,7 +224,6 @@ export default {
 							Authorization : this.config,
 				}})
 				.then(response => {
-					console.log(response)
 					alert("스케줄이 생성되었습니다.")
 					this.$router.push({name: 'DetailSchedule', params: {schedule_id: response.data.schedule_pk}})
 				})

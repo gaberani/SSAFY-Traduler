@@ -916,8 +916,7 @@ export default {
         axios.post(process.env.VUE_APP_SERVER_URL + '/join/invite/', invitebody, {
             headers: this.headers,
           })
-          .then(response => {
-            console.log(response)
+          .then(()=> {
             this.inviteusername = '';
             this.dialog3 = false;
             alert("초대 요청을 보냈습니다!!");
@@ -1021,8 +1020,7 @@ export default {
             headers: {
               Authorization : this.config,
         }})
-        .then(response => {
-          console.log(response)
+        .then(() => {
           alert("스케줄을 삭제하였습니다.")
           this.$router.push({name: 'Home'})
         })
@@ -1166,8 +1164,7 @@ export default {
         axios.post(process.env.VUE_APP_SERVER_URL + '/join/', joinbody, {
             headers: this.headers,
           })
-          .then(response => {
-            console.log(response)
+          .then(() => {
             this.joincontent = '';
             this.dialog = false;
             this.isjoined = 0;
@@ -1188,8 +1185,7 @@ export default {
             headers: this.headers
           }
           )
-          .then(response => {
-            console.log(response)
+          .then(()=> {
             alert("스크랩되었습니다!!");
           })
           .catch(error => {
