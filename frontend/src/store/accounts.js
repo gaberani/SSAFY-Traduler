@@ -123,7 +123,6 @@ export default {
             .catch(err => {
               console.log(err.response.data)
               commit("LOGIN_STATE", false)
-              // console.log(err)
             })
         }
       }
