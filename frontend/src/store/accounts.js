@@ -90,6 +90,13 @@ export default {
               router.push({ name:'Home'})
             }
           })
+      } else {
+        alert('로그인한 상태가 아닙니다.')
+        router
+          .push({name: 'UsersLogin'})
+          .catch(err => { 
+            if(err.name !== "NavigationDuplicated" ){ throw err }
+          })
       }
     },
 
