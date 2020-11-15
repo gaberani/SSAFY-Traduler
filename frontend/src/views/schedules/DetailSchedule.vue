@@ -393,7 +393,8 @@
                           <multiselect class="spotselect" :optionsLimit='5' 
                             v-model="spot2" 
                             :options="spots2" 
-                            :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name"></multiselect>
+                            :custom-label="spotWithTitle" placeholder="여행지 검색" label="name" track-by="name">
+                          </multiselect>
                           <v-menu
                             v-model="menu7"
                             :close-on-content-click="false"
@@ -401,7 +402,7 @@
                             transition="scale-transition"
                             offset-y
                             width="50%"
-                            >
+                          >
                             <template v-slot:activator="{ on, attrs }" >
                                 <v-text-field
                                 v-model="startdate"
@@ -418,18 +419,18 @@
                                 v-model="startdate"
                                 @input="menu7 = false"
                             ></v-date-picker>
-                        </v-menu>
+                          </v-menu>
                         
-                        <v-select
-                          v-model="DdepartureHour"
-                          :items="DHours"
-                          menu-props="auto"
-                          label="출발(시)"
-                          outlined
-                          dense
-                          hide-details
-                          style="width:40%;display:inline-block; font-family: 'SCDream4';"
-                        ></v-select>
+                          <v-select
+                            v-model="DdepartureHour"
+                            :items="DHours"
+                            menu-props="auto"
+                            label="출발(시)"
+                            outlined
+                            dense
+                            hide-details
+                            style="width:40%;display:inline-block; font-family: 'SCDream4';"
+                          ></v-select>
                       
                         <v-select
                           v-model="DdepartureMinute"
@@ -714,6 +715,7 @@
             :Courses="SDcourse"
             @Submit-Delete-Course="CourseDelete"
             @Submit-Update-Course="CourseUpdate"
+            @Submit-Delete-Memo="MemoDelete"
           />
         </center>
         </v-col>
@@ -1317,6 +1319,21 @@ export default {
             alert('스케줄을 만든 사람만 수정이 가능합니다')
           }
         })
+    },
+    MemoDelete(ModalCourse, targetmemoid) {
+      let idx = 0
+      // 해당 메모가 들어있는 코스 고르고
+      this.SDcourse.forEach(el => {
+        if (el.id === ModalCourse.id) {
+          // 거기서 메모 탭 찾기
+          for (const value of Object.values(el.memos)) {
+            if (value.id === targetmemoid) {
+              el.memos.splice(idx, 1)
+            }
+            idx += 1
+          }
+        }
+      })
     }
   },
   created() {
