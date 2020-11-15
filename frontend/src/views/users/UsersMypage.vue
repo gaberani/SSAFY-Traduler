@@ -16,7 +16,7 @@
         </v-avatar>
       </v-col>
       <v-col cols="8">
-        <h1>내 정보</h1>
+        <h1 style="color:#ff5e5e; font-size:2vw;">MY PAGE</h1>
         <p>{{ userInfo.nickname }} ({{ userInfo.username }})</p>
 
         <p v-if="userInfo.introduce">{{ userInfo.introduce }}</p>
@@ -24,20 +24,20 @@
 
         <v-row>
           <v-col cols="12">
-            <v-btn @click="changeView('update')" style="margin-right: 1vw;">정보 수정</v-btn>
-            <v-btn @click="changeView('favorite')" style="margin-right: 1vw;">즐겨찾기한 여행지</v-btn>
-            <v-btn @click="changeView('written')" style="margin-right: 1vw;">작성한 스케줄</v-btn>
-            <v-btn @click="changeView('joined')">참여한 스케줄</v-btn>
+            <v-btn color="rgba(13,136,255)" @click="changeView('update')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">정보 수정</v-btn>
+            <v-btn color="rgba(13,136,255)" @click="changeView('favorite')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">즐겨찾기한 여행지</v-btn>
+            <v-btn color="rgba(13,136,255)" @click="changeView('written')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">작성한 스케줄</v-btn>
+            <v-btn color="rgba(13,136,255)" @click="changeView('joined')" style="color:white;font-family: 'SCDream5';">참여한 스케줄</v-btn>
           </v-col>
           <v-col cols="12">
-            <v-btn @click="changeView('received')" style="margin-right: 1vw;">받은 신청들</v-btn>
-            <v-btn @click="changeView('invited')" style="margin-right: 1vw;">초대된 스케줄</v-btn>
-            <v-btn @click="changeView('submit')">참가신청한 스케줄</v-btn>
+            <v-btn color="#FF5E5E" @click="changeView('received')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">받은 신청들</v-btn>
+            <v-btn color="#FF5E5E" @click="changeView('invited')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">초대된 스케줄</v-btn>
+            <v-btn color="#FF5E5E" @click="changeView('submit')" style="color:white; font-family: 'SCDream5';">참가신청한 스케줄</v-btn>
           </v-col>
         </v-row>
-
       </v-col>
     </v-row>
+    <hr style="height:2px; border:1px #ff5e5e solid; background-color:#ff5e5e;">
 
     <v-row>
       <v-col cols="8" offset="2">
@@ -46,7 +46,7 @@
 
         <div v-if="viewMode == 'favorite'">
           <v-row>
-            <h3>즐겨찾기한 여행지</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px;">즐겨찾기한 </h3><h3 style="font-size:1.3vw;margin-top:20px; margin-bottom:15px;" >  여행지</h3>
           </v-row>
         
           <div v-for="(favorite_spot, index) in spotDetails" :key="favorite_spot.id" style="display:inline;">
@@ -64,7 +64,7 @@
 
         <v-row v-if="viewMode == 'written'">
           <v-col cols="12">
-            <h3>작성한 스케줄</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px; display:inline;">작성한</h3><h3 style="font-size:1.3vw;display:inline;margin-top:15px; margin-bottom:15px;" >  스케줄</h3>
           </v-col>
           <v-col
             cols="4"
@@ -85,7 +85,7 @@
         
         <v-row v-if="viewMode == 'joined'">
           <v-col cols="12">
-            <h3>참여한 스케줄</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; display:inline; margin-right:5px;">참여한</h3><h3 style="font-size:1.3vw;margin-top:15px; display:inline; margin-bottom:15px;" >  스케줄</h3>
           </v-col>
           <v-col
             cols="4"
@@ -104,9 +104,9 @@
           </v-col>
         </v-row>
 
-        <div v-if="viewMode == 'received'">
+        <div style="font-family: 'SCDream5';" v-if="viewMode == 'received'">
           <v-row>
-            <h3>신청받은 스케줄</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px;">신청받은 </h3><h3 style="font-size:1.3vw;margin-top:20px; margin-bottom:15px;" > 스케줄</h3>
           </v-row>
           <ReceivedScheduleList :receiveds=receiveds @received="received"/>
           
@@ -120,9 +120,9 @@
           </v-row>
         </div>
 
-        <div v-if="viewMode == 'invited'">
+        <div style="font-family: 'SCDream5';" v-if="viewMode == 'invited'">
           <v-row>
-            <h3>초대받은 스케줄</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px;">초대받은 </h3><h3 style="font-size:1.3vw;margin-top:20px;margin-bottom:15px;" > 스케줄</h3>
           </v-row>
           <InvitedScheduleList :invitations=invitations @invited="invited" />
           
@@ -136,9 +136,9 @@
           </v-row>
         </div>
         
-        <div v-if="viewMode == 'submit'">
+        <div style="font-family: 'SCDream5';" v-if="viewMode == 'submit'">
           <v-row>
-            <h3>참여 신청한 스케줄</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px;">참여 신청한</h3><h3 style="font-size:1.3vw;margin-top:20px;margin-bottom:15px;" >  스케줄</h3>
           </v-row>
           <SubmitList :submits=submits @submitted="submitted" />
           

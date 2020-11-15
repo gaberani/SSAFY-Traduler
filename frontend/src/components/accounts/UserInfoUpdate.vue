@@ -1,7 +1,7 @@
 <template>
     <v-row>
       <v-col cols="12">
-        <h3>내 정보 수정</h3>
+        <h3 style="color:#FF5E5E; font-size:2vw;display:inline;">내 정보</h3><h3 style="font-size:1.3vw; display:inline;"> 수정</h3>
       </v-col>
       <v-col cols="12">
         <v-form>
