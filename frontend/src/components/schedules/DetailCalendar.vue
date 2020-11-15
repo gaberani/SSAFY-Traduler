@@ -285,7 +285,7 @@
                         >
                           <CalendarMemo 
                             :onememo="memo"
-                            @Click-Memo-DelBtn="onClickmemoDelBtn(memo.id)"
+                            @Click-Memo-DelBtn="onClickmemoDelBtn(Course, memo.id)"
                             @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
                           />
                         </v-col>
@@ -703,13 +703,14 @@ export default {
           )
         .then(res => console.log(res.data))
     },
-    onClickmemoDelBtn(memo_id) {
+    onClickmemoDelBtn(Course, memo_id) {
       this.$http
         .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
           {headers: {Authorization: this.config}}
         )
         .then(() => {
           alert('메모가 삭제되었습니다.')
+          this.$emit('Submit-Delete-Memo', Course, memo_id)
         })
         .catch(err => console.log(err))
     },
