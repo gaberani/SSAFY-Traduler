@@ -162,7 +162,6 @@
                     <v-row style="margin: 5px 5px 4px 12px;">
                       <div style="text-aling:center">
                         <h2>예산</h2>
-                        <p>{{Course}}</p>
                       </div>
                       <v-spacer></v-spacer>
                       <v-btn icon v-if="!budgetEditFlag" @click="onClickBudgetEditBtn()">
@@ -232,7 +231,12 @@
                           cols="12"
                           style="padding: 0 12px"
                         >
-                          <span style="font-family: SCDream5;">
+                          <CalendarMemo 
+                            :onememo="memo"
+                            @Click-Memo-DelBtn="onClickmemoDelBtn(memo.id)"
+                            @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
+                          />
+                          <!-- <span style="font-family: SCDream5;">
                             {{memo.user.nickname}}: 
                           </span>
                           <span style="font-family: SCDream4;">
@@ -246,7 +250,7 @@
                           </v-btn>
                           <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn(memo.id)">
                             <v-icon>mdi-check-circle</v-icon>
-                          </v-btn>
+                          </v-btn> -->
                         </v-col>
                       </v-row>
                       <v-row>
@@ -331,12 +335,17 @@ import { mapGetters } from 'vuex'
 import SERVER from '@/api/api'
 
 import ScheduleDetailMap from '@/components/schedules/ScheduleDetailMap.vue'
+import CalendarMemo from '@/components/schedules/CalendarMemo.vue'
+
 import moment from 'moment';
 import 'moment/locale/ko'
 // 캘린더 시간은 ms 기준이다.
 export default {
   name: "Calendar",
-  components: {ScheduleDetailMap},
+  components: {
+    ScheduleDetailMap,
+    CalendarMemo
+  },
   data() {
     return {
       // 캘린더 변수
@@ -361,7 +370,6 @@ export default {
       Newbudgets: [],
       budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
       budgetEditFlag: false,
-      memoEditFlag: false,
       newMemoContent: '',
 
       // 출발, 도착 시간 변수
