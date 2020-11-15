@@ -679,30 +679,22 @@ export default {
       let s_year = submit_start.getFullYear()
       let s_month = submit_start.getMonth()
       let s_day = submit_start.getDate()
-      // let s_month = 10
-      // let s_day = 8
       SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
 
       let submit_end = new Date(SubmitCourseData.end_time)
       let e_year = submit_end.getFullYear()
       let e_month = submit_end.getMonth()
       let e_day = submit_end.getDate()
-      // let e_month = 10
-      // let e_day = 8
       SubmitCourseData.end_time = new Date(e_year, e_month, e_day, this.arrivalHour, this.arrivalMinute)
 
-      // this.departureHour = null
-      // this.departureMinute = null
-      // this.arrivalHour = null
-      // this.arrivalMinute = null
-      // SubmitCourseData['']
       this.$emit('Submit-Update-Course', SubmitCourseData)
     },
-    // 숫자 랜덤(안씀)
+
+    // 숫자 랜덤
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
-    // 이름, 컬러 랜덤(안씀)
+    // 이름, 컬러 랜덤
     rndElement (arr) {
       return arr[this.rnd(0, arr.length - 1)]
     },
