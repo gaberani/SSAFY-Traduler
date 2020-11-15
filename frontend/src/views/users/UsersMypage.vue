@@ -24,10 +24,10 @@
 
         <v-row>
           <v-col cols="12">
-            <v-btn color="rgba(13,136,255)" @click="changeView('update')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">정보 수정</v-btn>
-            <v-btn color="rgba(13,136,255)" @click="changeView('favorite')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">즐겨찾기한 여행지</v-btn>
-            <v-btn color="rgba(13,136,255)" @click="changeView('written')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">작성한 스케줄</v-btn>
-            <v-btn color="rgba(13,136,255)" @click="changeView('joined')" style="color:white;font-family: 'SCDream5';">참여한 스케줄</v-btn>
+            <v-btn color="#FF9617" @click="changeView('update')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">정보 수정</v-btn>
+            <v-btn color="#FF9617" @click="changeView('favorite')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">즐겨찾기한 여행지</v-btn>
+            <v-btn color="#FF9617" @click="changeView('written')" style="color:white;margin-right: 1vw; font-family: 'SCDream5';">작성한 스케줄</v-btn>
+            <v-btn color="#FF9617" @click="changeView('joined')" style="color:white;font-family: 'SCDream5';">참여한 스케줄</v-btn>
           </v-col>
           <v-col cols="12">
             <v-btn color="#FF5E5E" @click="changeView('received')" style="color:white; margin-right: 1vw; font-family: 'SCDream5';">받은 신청들</v-btn>
