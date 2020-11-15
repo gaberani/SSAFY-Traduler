@@ -589,8 +589,6 @@ export default {
       this.arrivalHour = new Date(event.end).getHours()
       this.arrivalMinute = new Date(event.end).getMinutes()
       this.budgets = []
-      // console.log(new Date(event.start_time).getMonth())
-      // console.log(new Date(event.start_time).getDate())
       let idx = 0
       // 이미 만들어져 있던 일정이 선택됬을 경우
       Object.keys(event).forEach(el => {
@@ -645,7 +643,6 @@ export default {
     onClickBudgetSubmitBtn() {
       let numArray = [...Array(9)].map((v,i) => i)
       let budgetInputFlag = true
-      console.log(numArray)
 
       this.budgetEditFlag = !this.budgetEditFlag
       this.Newbudgets.forEach(el => {
@@ -679,7 +676,7 @@ export default {
           this.Course.memos.push(res.data)
           this.newMemoContent = ''
         })
-        .catch(err => console.log(err))
+        // .catch(err => console.log(err))
     },
     // 메모 임시 수정 적용
     onClickmemoSubmitBtn(memo_id) {
@@ -693,6 +690,7 @@ export default {
           {headers: {Authorization: this.config}},
           )
         .then(res => console.log(res.data))
+        .catch(alert('메모 수정에 실패했습니다.'))
     },
     onClickmemoDelBtn(Course, memo_id) {
       this.$http
@@ -703,7 +701,7 @@ export default {
           alert('메모가 삭제되었습니다.')
           this.$emit('Submit-Delete-Memo', Course, memo_id)
         })
-        .catch(err => console.log(err))
+        .catch(() => alert('메모 삭제에 실패했습니다.'))
     },
 
     // Course
@@ -730,14 +728,12 @@ export default {
       if (submit_start !== this.startdate) {
         submit_start = new Date(this.startdate)
       }
-      console.log(submit_start, this.startdate)
       let s_year = submit_start.getFullYear()
       let s_month = submit_start.getMonth()
       let s_day = submit_start.getDate()
       SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
 
       let submit_end = new Date(SubmitCourseData.end_time)
-      console.log(this.enddate, submit_end)
       if (submit_end !== this.enddate) {
         submit_end = new Date(this.enddate)
       }
