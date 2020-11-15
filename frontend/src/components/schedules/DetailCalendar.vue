@@ -77,13 +77,28 @@
               <v-row>
                 <!-- 카드 왼쪽 -->
                 <v-col
-                  cols="9"
-                  sm="6"
+                  cols="8"
+                  class="card-content-upside"
+                >
+                  <v-row v-if="Course.spot_info" style="margin: 5px 5px 4px 12px;">
+                    <ScheduleDetailMap :lat="Course.spot_info.lat" :lon="Course.spot_info.lon" :item="Course.spot_info.id"/>
+                    <!-- <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Course.spot_info.image" alt=""> -->
+                  </v-row>
+                  <v-row v-if="Course.custom_spot_info" style="margin: 5px 5px 4px 12px;">
+                    <ScheduleDetailMap :lat="Course.custom_spot_info.lat" :lon="Course.custom_spot_info.lon" :item="Course.custom_spot_info.id"/>
+                  </v-row>
+                </v-col>
+
+
+                <!-- 카드 오른쪽 -->
+                <v-col
+                  cols="4"
+                  class="card-content-upside"
                 >
                   <!-- 출발, 도착 시간 -->
                   <v-row class="time_outline">
                     <v-col cols="12" style="padding-bottom:0px;">
-                      <h2 style="">일정</h2>
+                      <h2 :style="{ color: Course.color}">일정</h2>
                       <v-row>
                         <v-spacer></v-spacer>
                         <v-menu
@@ -140,8 +155,7 @@
                     </v-col>
                     <v-col
                       cols="6"
-                      sm="6"
-                      md="3"
+                      style="padding: 12px 0 0 12px"
                     >
                       <v-select
                         v-model="departureHour"
@@ -155,8 +169,7 @@
                     </v-col>
                     <v-col
                       cols="6"
-                      sm="6"
-                      md="3"
+                      style="padding: 12px 0 0 12px"
                     >
                       <v-select
                         v-model="departureMinute"
@@ -170,8 +183,7 @@
                     </v-col>
                     <v-col
                       cols="6"
-                      sm="6"
-                      md="3"
+                      style="padding: 12px 0 0 12px"
                     >
                       <v-select
                         v-model="arrivalHour"
@@ -185,8 +197,7 @@
                     </v-col>
                     <v-col
                       cols="6"
-                      sm="6"
-                      md="3"
+                      style="padding: 12px 0 0 12px"
                     >
                       <v-select
                         v-model="arrivalMinute"
@@ -199,12 +210,11 @@
                       ></v-select>
                     </v-col>
                   </v-row>
-
                   <!-- 예산 -->
                   <v-row class="budget_outline" style="margin: 3px 0">
-                    <v-row style="margin: 5px 5px 4px 12px;">
+                    <v-row style="margin: 15px 5px 4px 0px;">
                       <div style="text-aling:center">
-                        <h2>예산</h2>
+                        <h2 :style="{ color: Course.color}">예산</h2>
                       </div>
                       <v-spacer></v-spacer>
                       <v-btn icon v-if="!budgetEditFlag" @click="onClickBudgetEditBtn()">
@@ -219,10 +229,10 @@
                         v-for="budget in budgets"  
                         :key="budget.budget_name"
                         cols="12"
-                        style="padding: 0px 0px 4px 24px;"
+                        style="padding: 0px 0px 4px 10px;"
                       >
-                        <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{budget.original_name}}</span> 
-                        <span style="font-family: 'SCDream5'; font-size:1.3rem;"> : {{budget.budget_value}}</span>
+                        <span style="font-family: 'SCDream6'; font-size:1rem;">{{budget.original_name}}</span> 
+                        <span style="font-family: 'SCDream5'; font-size:1rem;"> : {{budget.budget_value}}</span>
                         <!-- <v-spacer></v-spacer> -->
                       </v-col>
                     </v-row>
@@ -239,7 +249,7 @@
                             cols="3"
                             style="padding: 3px 6px;"
                           >
-                            <span style="font-family: 'SCDream6'; font-size:1.3rem;">{{newbudget.original_name}}</span> 
+                            <span style="font-family: 'SCDream6'; font-size:1rem;">{{newbudget.original_name}}</span> 
                           </v-col>
                           <v-col
                             cols="7"
@@ -257,70 +267,51 @@
                       </v-col>
                     </v-row>
                   </v-row>
-                  <!-- 메모 -->
-                  <v-row class="budget_outline" style="margin: 3px 0">
-                    <v-col cols="12">
-                      <v-row style="margin: 5px 5px 4px 12px;">
-                        <div style="text-aling:center">
-                          <h2>메모</h2>
-                        </div>
-                        <v-spacer></v-spacer>
-                        
-                      </v-row>
-                      <v-row>
-                        <v-col
-                          v-for="memo in Course.memos"
-                          :key="memo.id"
-                          cols="12"
-                          style="padding: 0 12px"
-                        >
-                          <CalendarMemo 
-                            :onememo="memo"
-                            @Click-Memo-DelBtn="onClickmemoDelBtn(Course, memo.id)"
-                            @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
-                          />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="8">
-                          <v-text-field
-                            v-model="newMemoContent"
-                            dense
-                            required
-                            hide-details="auto"
-                            placeholder="메모 작성"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="2">
-                          <v-btn
-                            class="text--white"
-                            color="primary"
-                            @click="onClickMemoCreateBtn"
-                          >
-                            작성
-                          </v-btn>
-                        </v-col>
-                        <v-spacer></v-spacer>
-                      </v-row>
-                    </v-col>
-                  </v-row>
                 </v-col>
-
-
-                <!-- 카드 오른쪽 -->
-                <v-col
-                  cols="3"
-                  sm="6"
-                  class="card-right-side"
-                >
-                  <v-row v-if="Course.spot_info" style="margin: 5px 5px 4px 12px;">
-                    <h2>주소 : </h2>
-                    <span style="font-family: 'SCDream6'; font-size:1.2rem; margin-bottom:3px;">{{ Course.spot_info.address}}</span>
-                    <ScheduleDetailMap :lat="Course.spot_info.lat" :lon="Course.spot_info.lon" :item="Course.spot_info.id"/>
-                    <img style="width:100%; height: 220px; margin-top:3px; border-radius:20px;" :src="Course.spot_info.image" alt="">
+              </v-row>
+              <!-- 메모 -->
+              <v-row class="budget_outline" style="margin: 3px 0">
+                <v-col cols="12">
+                  <v-row style="margin: 5px 5px 4px 0px;">
+                    <div style="text-aling:center">
+                      <h2 :style="{ color: Course.color}">메모</h2>
+                    </div>
+                    <v-spacer></v-spacer>
                   </v-row>
-                  <v-row v-if="Course.custom_spot_info" style="margin: 5px 5px 4px 12px;">
-                    <ScheduleDetailMap :lat="Course.custom_spot_info.lat" :lon="Course.custom_spot_info.lon" :item="Course.custom_spot_info.id"/>
+                  <v-row>
+                    <v-col cols="8">
+                      <v-text-field
+                        v-model="newMemoContent"
+                        dense
+                        required
+                        hide-details="auto"
+                        placeholder="메모 작성"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-btn
+                        class="text--white"
+                        color="primary"
+                        @click="onClickMemoCreateBtn"
+                      >
+                        작성
+                      </v-btn>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                  </v-row>
+                  <v-row>
+                    <v-col
+                      v-for="memo in Course.memos"
+                      :key="memo.id"
+                      cols="12"
+                      style="padding: 0 12px"
+                    >
+                      <CalendarMemo 
+                        :onememo="memo"
+                        @Click-Memo-DelBtn="onClickmemoDelBtn(Course, memo.id)"
+                        @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
+                      />
+                    </v-col>
                   </v-row>
                 </v-col>
               </v-row>
@@ -332,6 +323,7 @@
                 class="text--white"
                 color="#FF9617"
                 @click="CourseUpdate"
+                style="margin: 0 0 0 20px"
               >
                 수정
               </v-btn>
@@ -345,9 +337,8 @@
               <v-spacer></v-spacer>
               <v-btn
                 color="secondary"
-                @click="testdate()"
+                @click="selectedOpen = false"
               >
-              <!-- @click="selectedOpen = false" -->
                 닫기
               </v-btn>
             </v-card-actions>
@@ -752,9 +743,6 @@ export default {
 
       this.$emit('Submit-Update-Course', SubmitCourseData)
     },
-    testdate() {
-      console.log(this.startdate, this.enddate)
-    },
 
     // 숫자 랜덤
     rnd (a, b) {
@@ -769,10 +757,11 @@ export default {
 </script>
 
 <style scoped>
-.budget_outline {border: 2px solid black;border-radius: 20px}
-.time_outline {border: 2px solid black;border-radius: 20px;margin: 5px 0; min-height:100px}
+.v-messages {
+  display: none;
+}
+
 .memo_area {min-height: 160px}
-.card-right-side {border: 2px solid black;border-radius: 20px; margin: 16px 0}
 .v-event-draggable {
   font-size:1.2vw;
 }
@@ -791,5 +780,8 @@ export default {
 }
 .budget-edit-input{
   margin: auto 30px;
+}
+.card-content-upside {
+  padding-bottom: 0;
 }
 </style>
