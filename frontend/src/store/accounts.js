@@ -136,8 +136,8 @@ export default {
         }
         Vue.prototype.$http
           .get(process.env.VUE_APP_SERVER_URL + SERVER.URL.USER.EDITORDEL, config)
-          .then(() => {
-            commit("SET_USER_INFO", {username: 'asdasd'})
+          .then(res => {
+            commit("SET_USER_INFO", res.data)
           })
       }
     }
