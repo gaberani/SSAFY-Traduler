@@ -91,14 +91,11 @@
           </v-row>
         </v-form>
 
-        <v-row>
-          <v-col cols="2" offset="6">
-            <v-btn large @click="updateUser" style="font-size:1vw; margin-left:6vw" color="primary"> 변경사항 저장 </v-btn>
-          </v-col>
-          <v-col cols="2">
-            <v-btn large @click="deleteUser" style="font-size:1vw;margin-left:8vw;" color="error"> 회원 탈퇴 </v-btn>
-          </v-col>
-        </v-row>
+        
+      </v-col>
+      <v-col cols="12">
+        <v-btn large @click="deleteUser" style="float:right; font-size:1vw;" color="error"> 회원 탈퇴 </v-btn>
+        <v-btn large @click="updateUser" style="float:right;margin-right:10px; font-size:1vw;" color="primary"> 변경사항 저장 </v-btn>
       </v-col>
     </v-row>
 </template>
