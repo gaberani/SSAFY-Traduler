@@ -2,8 +2,8 @@
 <template>
   <v-card flat tile>
     <v-toolbar id="navb">
-        <img  style="height:70%;" src="@/assets/tradulerlogo.png" />
-      <v-toolbar-title style="font-family: 'jalnanregular'; font-size:1.5rem" class="headertitle"><router-link :to="{name: 'Home'}" class="nav-btn" style="color: #ff5e5e;">Traduler</router-link></v-toolbar-title>
+        
+      <router-link :to="{name: 'Home'}" class="nav-btn"><img  style="width:10vw; margin-top:10px;" src="@/assets/tradulerlogo.png" /></router-link>
       <v-spacer ></v-spacer>
         <router-link :to="{name: 'Home'}" class="nav-btn"><v-btn text class="navbar-btn">홈</v-btn></router-link>
         <router-link :to="{name: 'ScheduleMain'}" class="nav-btn"><v-btn text class="navbar-btn">스케줄러</v-btn></router-link>
