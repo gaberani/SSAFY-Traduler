@@ -91,9 +91,61 @@
                   <!-- 출발, 도착 시간 -->
                   <v-row class="time_outline">
                     <v-col cols="12" style="padding-bottom:0px;">
-                      <h2 style="">일정</h2> 
-                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw;  ">{{formatDate2(Course.start_time)}}</span>
-                      <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw; ">{{formatDate2(Course.end_time)}}</span>
+                      <h2 style="">일정</h2>
+                      <v-row>
+                        <v-spacer></v-spacer>
+                        <v-menu
+                          v-model="start"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          width="45%"
+                        >
+                          <template v-slot:activator="{ on, attrs }" >
+                              <v-text-field
+                              v-model="startdate"
+                              placeholder="가는날 (이후)"
+                              prepend-icon="mdi-car"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              
+                              style="width:45%; font-family: 'SCDream5';"
+                              ></v-text-field>
+                          </template>
+                          <v-date-picker
+                              v-model="startdate"
+                              @input="start = false"
+                          ></v-date-picker>
+                        </v-menu>
+                        <v-menu
+                          v-model="enddateopen"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          >
+                          <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                              v-model="editenddate"
+                              placeholder="오는날 (이전)"
+                              prepend-icon="mdi-home"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              style="width:45%; font-family: 'SCDream5';"
+                              ></v-text-field>
+                          </template>
+                          <v-date-picker
+                              v-model="editenddate"
+                              @input="enddateopen = false"
+                          ></v-date-picker>
+                        </v-menu>
+                        <v-spacer></v-spacer>
+                      </v-row>
+                      <!-- <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw;  ">{{formatDate2(Course.start_time)}}</span> -->
+                      <!-- <span style="font-family: 'SCDream6'; font-size:0.9rem; margin-left:5vw; ">{{formatDate2(Course.end_time)}}</span> -->
                     </v-col>
                     <v-col
                       cols="6"
@@ -356,6 +408,11 @@ export default {
       budgetsList: ["식비", "교통비", "입장료", "숙소비", "기타"],
       budgetEditFlag: false,
       newMemoContent: '',
+      start: false,
+      enddateopen: false,
+      editenddate: null,
+      startdate: null,
+      checkChange: null,
 
       // 출발, 도착 시간 변수
       Hours: [...Array(24)].map((v,i) => i+1),
@@ -605,7 +662,7 @@ export default {
           budgetInputFlag = false
         }
       })
-      if (budgetInputFlag) {
+      if (typeof(Number(budgetInputFlag)) === 'number') {
           this.budgets = []
           this.Newbudgets.forEach(el => {
             this.budgets.push(el)
@@ -614,6 +671,8 @@ export default {
         alert('예산은 숫자로만 입력해주세요')
       }
     },
+
+    // Memo C U D
     // 메모 생성
     onClickMemoCreateBtn() {
       this.memoEditFlag = !this.memoEditFlag
@@ -631,18 +690,6 @@ export default {
         })
         .catch(err => console.log(err))
     },
-    onClickmemoDelBtn(memo_id) {
-      this.$http
-        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
-          {headers: {Authorization: this.config}}
-        )
-        .then(() => alert('메모가 삭제되었습니다.'))
-        .catch(err => console.log(err))
-    },
-    // 메모 임시 수정 시작
-    onClickmemoEditBtn() {
-      this.memoEditFlag = !this.memoEditFlag
-    },
     // 메모 임시 수정 적용
     onClickmemoSubmitBtn(memo_id) {
       this.memoEditFlag = !this.memoEditFlag
@@ -656,12 +703,23 @@ export default {
           )
         .then(res => console.log(res.data))
     },
+    onClickmemoDelBtn(memo_id) {
+      this.$http
+        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
+          {headers: {Authorization: this.config}}
+        )
+        .then(() => {
+          alert('메모가 삭제되었습니다.')
+        })
+        .catch(err => console.log(err))
+    },
 
-    // Course Delete
+    // Course
+    // 코스 삭제(모달)
     CourseDelete(Course) {
       this.$emit('Submit-Delete-Course', Course)
     },
-    // Course Update
+    // 코스 수정(모달)
     CourseUpdate() {
       let SubmitCourseData = {}
       let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'spot_pk', 'custom_spot_pk', 'user_pk']
@@ -680,30 +738,22 @@ export default {
       let s_year = submit_start.getFullYear()
       let s_month = submit_start.getMonth()
       let s_day = submit_start.getDate()
-      // let s_month = 10
-      // let s_day = 8
       SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
 
       let submit_end = new Date(SubmitCourseData.end_time)
       let e_year = submit_end.getFullYear()
       let e_month = submit_end.getMonth()
       let e_day = submit_end.getDate()
-      // let e_month = 10
-      // let e_day = 8
       SubmitCourseData.end_time = new Date(e_year, e_month, e_day, this.arrivalHour, this.arrivalMinute)
 
-      // this.departureHour = null
-      // this.departureMinute = null
-      // this.arrivalHour = null
-      // this.arrivalMinute = null
-      // SubmitCourseData['']
       this.$emit('Submit-Update-Course', SubmitCourseData)
     },
-    // 숫자 랜덤(안씀)
+
+    // 숫자 랜덤
     rnd (a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
-    // 이름, 컬러 랜덤(안씀)
+    // 이름, 컬러 랜덤
     rndElement (arr) {
       return arr[this.rnd(0, arr.length - 1)]
     },
