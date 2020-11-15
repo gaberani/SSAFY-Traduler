@@ -618,8 +618,7 @@ export default {
           {headers: {Authorization: this.config}}
         )
         .then(res => {
-          console.log(res)
-          console.log(this.Course.memos.push(res.data))
+          this.Course.memos.push(res.data)
           this.newMemoContent = ''
         })
         .catch(err => console.log(err))
