@@ -614,6 +614,8 @@ export default {
         alert('예산은 숫자로만 입력해주세요')
       }
     },
+
+    // Memo C U D
     // 메모 생성
     onClickMemoCreateBtn() {
       this.memoEditFlag = !this.memoEditFlag
@@ -631,18 +633,6 @@ export default {
         })
         .catch(err => console.log(err))
     },
-    onClickmemoDelBtn(memo_id) {
-      this.$http
-        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
-          {headers: {Authorization: this.config}}
-        )
-        .then(() => alert('메모가 삭제되었습니다.'))
-        .catch(err => console.log(err))
-    },
-    // 메모 임시 수정 시작
-    onClickmemoEditBtn() {
-      this.memoEditFlag = !this.memoEditFlag
-    },
     // 메모 임시 수정 적용
     onClickmemoSubmitBtn(memo_id) {
       this.memoEditFlag = !this.memoEditFlag
@@ -656,12 +646,21 @@ export default {
           )
         .then(res => console.log(res.data))
     },
+    onClickmemoDelBtn(memo_id) {
+      this.$http
+        .delete(process.env.VUE_APP_SERVER_URL + SERVER.URL.SCHEDULE.MEMO + `${memo_id}/`,
+          {headers: {Authorization: this.config}}
+        )
+        .then(() => alert('메모가 삭제되었습니다.'))
+        .catch(err => console.log(err))
+    },
 
-    // Course Delete
+    // Course
+    // 코스 삭제(모달)
     CourseDelete(Course) {
       this.$emit('Submit-Delete-Course', Course)
     },
-    // Course Update
+    // 코스 수정(모달)
     CourseUpdate() {
       let SubmitCourseData = {}
       let FormDateKey = ['id', 'start_time', 'end_time', 'content', 'schedule_pk', 'spot_pk', 'custom_spot_pk', 'user_pk']
