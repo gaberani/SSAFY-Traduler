@@ -69,20 +69,21 @@
             >
               <v-toolbar-title><h2>{{ Course.name }}</h2></v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon>
+              <!-- <v-btn icon v-if="!Course.spot_info.is_liked">
                 <v-icon>mdi-heart</v-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon color="red" v-else>
+                <v-icon>mdi-heart</v-icon>
+              </v-btn> -->
+              <!-- <v-btn icon>
                 <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
+              </v-btn> -->
             </v-toolbar>
 
             <!-- 모달 카드 내용 -->
             <v-card-text style="padding-bottom:0px;">
               <v-row>
-                <!-- <span>{{ Courses }}</span> -->
                 <!-- 카드 왼쪽 -->
-                {{ this.$attrs.Courses }}
                 <v-col
                   cols="9"
                   sm="6"
@@ -161,6 +162,7 @@
                     <v-row style="margin: 5px 5px 4px 12px;">
                       <div style="text-aling:center">
                         <h2>예산</h2>
+                        <p>{{Course}}</p>
                       </div>
                       <v-spacer></v-spacer>
                       <v-btn icon v-if="!budgetEditFlag" @click="onClickBudgetEditBtn()">
@@ -242,7 +244,7 @@
                           <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
                             <v-icon color="red">mdi-close</v-icon>
                           </v-btn>
-                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn()">
+                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn(memo.id)">
                             <v-icon>mdi-check-circle</v-icon>
                           </v-btn>
                         </v-col>
@@ -600,11 +602,24 @@ export default {
     },
     // 예산 임시 수정 적용
     onClickBudgetSubmitBtn() {
+      let numArray = [...Array(9)].map((v,i) => i)
+      let budgetInputFlag = true
+      console.log(numArray)
+
       this.budgetEditFlag = !this.budgetEditFlag
-      this.budgets = []
       this.Newbudgets.forEach(el => {
-        this.budgets.push(el)
+        if (numArray.includes(el) === false) {
+          budgetInputFlag = false
+        }
       })
+      if (budgetInputFlag) {
+          this.budgets = []
+          this.Newbudgets.forEach(el => {
+            this.budgets.push(el)
+          })
+      } else {
+        alert('예산은 숫자로만 입력해주세요')
+      }
     },
     // 메모 생성
     onClickMemoCreateBtn() {
