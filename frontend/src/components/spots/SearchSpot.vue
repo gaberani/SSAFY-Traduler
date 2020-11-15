@@ -16,7 +16,7 @@
         cols="12"
         sm="8"
       >
-        <div style="padding:5px; background-color: #ffc5c5; border: 5px solid #ffc5c5; border-radius:5px;">
+        <div style="margin-top:35px; padding:5px; background-color: #ffc5c5; border: 5px solid #ffc5c5; border-radius:5px;">
         <select class="selectspot" v-model="area_code">
           <!-- v-model="" -->
           <option value="">지역</option>
