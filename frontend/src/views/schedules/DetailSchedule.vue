@@ -307,7 +307,13 @@
 									sm="4"
 									style="border-right:1px #707070 solid;"
 								> 
-									<div style="margin-top:1.2vw;">
+									<div v-if="schedule.together!=1 && schedule.advice!=1" style="margin-top:0.6vw; margin-bottom:0.6vw;">
+										<span v-if="schedule.member_type_pk===1" class="typefont">혼자</span>
+										<span v-else-if="schedule.member_type_pk===2" class="typefont">가족</span>
+										<span v-else-if="schedule.member_type_pk===3" class="typefont">커플</span>
+										<span v-else class="typefont">3인이상</span>
+									</div>
+                  <div v-else style="margin-top:1.2vw;">
 										<span v-if="schedule.member_type_pk===1" class="typefont">혼자</span>
 										<span v-else-if="schedule.member_type_pk===2" class="typefont">가족</span>
 										<span v-else-if="schedule.member_type_pk===3" class="typefont">커플</span>
@@ -319,7 +325,13 @@
 									sm="4"
 									style="border-right:1px #707070 solid;"
 								> 
-									<div style="margin-top:1.2vw;">
+									<div v-if="schedule.together!=1 && schedule.advice!=1" style="margin-top:0.6vw; margin-bottom:0.6vw;">
+										<span v-if="schedule.style_type_pk===1" class="typefont">힐링</span>
+										<span v-else-if="schedule.style_type_pk===2" class="typefont">액티비티</span>
+										<span v-else-if="schedule.style_type_pk===3" class="typefont">맛집 탐방</span>
+										<span v-else class="typefont">역사 탐방</span>
+									</div>
+                  <div v-else style="margin-top:1.2vw;">
 										<span v-if="schedule.style_type_pk===1" class="typefont">힐링</span>
 										<span v-else-if="schedule.style_type_pk===2" class="typefont">액티비티</span>
 										<span v-else-if="schedule.style_type_pk===3" class="typefont">맛집 탐방</span>
@@ -1349,7 +1361,7 @@ export default {
     border-radius:3px;
     background-color:#FF5E5E;
     margin-top:2px;
-    margin-left:9%;
+    margin-left:8%;
 }
 .togetherbtn {
     margin-left:3%;
