@@ -68,16 +68,8 @@
               dark
             >
               <v-toolbar-title><h2>{{ Course.name }}</h2></v-toolbar-title>
+              <span v-if="Course.spot_info" style="font-family: 'SCDream6'; font-size:1rem; margin-left:5px; margin-top:10px;">{{ Course.spot_info.address}}</span>
               <v-spacer></v-spacer>
-              <!-- <v-btn icon v-if="!Course.spot_info.is_liked">
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
-              <v-btn icon color="red" v-else>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn> -->
-              <!-- <v-btn icon>
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn> -->
             </v-toolbar>
 
             <!-- 모달 카드 내용 -->
@@ -103,20 +95,19 @@
                           width="45%"
                         >
                           <template v-slot:activator="{ on, attrs }" >
-                              <v-text-field
+                            <v-text-field
                               v-model="startdate"
                               placeholder="가는날 (이후)"
                               prepend-icon="mdi-car"
                               readonly
                               v-bind="attrs"
                               v-on="on"
-                              
                               style="width:45%; font-family: 'SCDream5';"
-                              ></v-text-field>
+                            ></v-text-field>
                           </template>
                           <v-date-picker
-                              v-model="startdate"
-                              @input="start = false"
+                            v-model="startdate"
+                            @input="start = false"
                           ></v-date-picker>
                         </v-menu>
                         <v-menu
@@ -127,19 +118,19 @@
                           offset-y
                           >
                           <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                              v-model="editenddate"
-                              placeholder="오는날 (이전)"
-                              prepend-icon="mdi-home"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              style="width:45%; font-family: 'SCDream5';"
-                              ></v-text-field>
+                            <v-text-field
+                            v-model="enddate"
+                            placeholder="오는날 (이전)"
+                            prepend-icon="mdi-home"
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                            style="width:45%; font-family: 'SCDream5';"
+                            ></v-text-field>
                           </template>
                           <v-date-picker
-                              v-model="editenddate"
-                              @input="enddateopen = false"
+                            v-model="enddate"
+                            @input="enddateopen = false"
                           ></v-date-picker>
                         </v-menu>
                         <v-spacer></v-spacer>
@@ -354,8 +345,9 @@
               <v-spacer></v-spacer>
               <v-btn
                 color="secondary"
-                @click="selectedOpen = false"
+                @click="testdate()"
               >
+              <!-- @click="selectedOpen = false" -->
                 닫기
               </v-btn>
             </v-card-actions>
@@ -410,7 +402,7 @@ export default {
       newMemoContent: '',
       start: false,
       enddateopen: false,
-      editenddate: null,
+      enddate: null,
       startdate: null,
       checkChange: null,
 
@@ -595,13 +587,14 @@ export default {
     },
     // 코스 하나 클릭 시 모달 보여주는 이벤트 관리
     showEvent ({ nativeEvent, event }) {
-      // console.log(event)
       // 이미 있는 코스 조회 시 데이터 엮어주기
       this.departureHour = new Date(event.start).getHours()
       this.departureMinute = new Date(event.start).getMinutes()
       this.arrivalHour = new Date(event.end).getHours()
       this.arrivalMinute = new Date(event.end).getMinutes()
       this.budgets = []
+      // console.log(new Date(event.start_time).getMonth())
+      // console.log(new Date(event.start_time).getDate())
       let idx = 0
       // 이미 만들어져 있던 일정이 선택됬을 경우
       Object.keys(event).forEach(el => {
@@ -626,6 +619,8 @@ export default {
       // 모달 열기
       const open = () => {
         this.Course = event
+        this.startdate = this.Course.start_time.slice(0, 10)
+        this.enddate = this.Course.end_time.slice(0, 10)
         // 모달창 열 위치를 정함
         this.selectedElement = nativeEvent.target
         setTimeout(() => {
@@ -735,19 +730,30 @@ export default {
         SubmitCourseData[el.budget_name] = el.budget_value
       })
 
-      let submit_start = new Date(SubmitCourseData.start_time) 
+      let submit_start = new Date(SubmitCourseData.start_time)
+      if (submit_start !== this.startdate) {
+        submit_start = new Date(this.startdate)
+      }
+      console.log(submit_start, this.startdate)
       let s_year = submit_start.getFullYear()
       let s_month = submit_start.getMonth()
       let s_day = submit_start.getDate()
       SubmitCourseData.start_time = new Date(s_year, s_month, s_day, this.departureHour, this.departureMinute)
 
       let submit_end = new Date(SubmitCourseData.end_time)
+      console.log(this.enddate, submit_end)
+      if (submit_end !== this.enddate) {
+        submit_end = new Date(this.enddate)
+      }
       let e_year = submit_end.getFullYear()
       let e_month = submit_end.getMonth()
       let e_day = submit_end.getDate()
       SubmitCourseData.end_time = new Date(e_year, e_month, e_day, this.arrivalHour, this.arrivalMinute)
 
       this.$emit('Submit-Update-Course', SubmitCourseData)
+    },
+    testdate() {
+      console.log(this.startdate, this.enddate)
     },
 
     // 숫자 랜덤
