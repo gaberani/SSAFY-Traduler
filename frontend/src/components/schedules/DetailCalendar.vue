@@ -236,21 +236,6 @@
                             @Click-Memo-DelBtn="onClickmemoDelBtn(memo.id)"
                             @Click-Memo-SubmitBtn="onClickmemoSubmitBtn(memo.id)"
                           />
-                          <!-- <span style="font-family: SCDream5;">
-                            {{memo.user.nickname}}: 
-                          </span>
-                          <span style="font-family: SCDream4;">
-                            {{memo.content}}
-                          </span>
-                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn(memo.id)">
-                            <v-icon color="red">mdi-close</v-icon>
-                          </v-btn>
-                          <v-btn icon small v-if="memoEditFlag" @click="onClickmemoSubmitBtn(memo.id)">
-                            <v-icon>mdi-check-circle</v-icon>
-                          </v-btn> -->
                         </v-col>
                       </v-row>
                       <v-row>
