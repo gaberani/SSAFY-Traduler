@@ -774,6 +774,7 @@ export default {
   width:30%;
   font-size: 1.4vw;
   color:white;
+  margin-left: 20px;
   margin-bottom:5px;
 }
 .startendbtn {
