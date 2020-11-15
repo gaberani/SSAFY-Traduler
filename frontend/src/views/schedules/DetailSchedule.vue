@@ -1318,10 +1318,9 @@ export default {
             if (el.id === SubmitCourseData.id) {
               for (const [key, value] of Object.entries(res.data)) {
                 if (this.SDcourse.slice(idx, idx+1)) {
-                  this.SDcourse[key] = res.data[value]
+                  el[key] = value
                 }
               }
-              // console.log(this.SDcourse.slice(idx, idx+1), res.data)
             }
             idx += 1
           })
