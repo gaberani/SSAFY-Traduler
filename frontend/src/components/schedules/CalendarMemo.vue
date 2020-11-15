@@ -1,13 +1,12 @@
 <template>
   <div>
-		<!-- {{this.$attrs.onememo}} -->
 		<span style="font-family: SCDream5;">
-			{{memo.user.nickname}}: 
+			{{memo.user.nickname}}: {{userInfo}}
 		</span>
 		<span v-if="!memoEditFlag" style="font-family: SCDream4;">
 			{{memo.content}}
 		</span>
-		<v-row v-else>
+		<v-row v-if="memoEditFlag">
 			<v-col cols="10">
 				<v-text-field
 					v-model="newcontent"
@@ -22,16 +21,21 @@
 				</v-btn>			
 			</v-col>
 		</v-row>
-		<v-btn icon small v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
-			<v-icon>mdi-pencil</v-icon>
-		</v-btn>
-		<v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn()">
-			<v-icon color="red">mdi-close</v-icon>
-		</v-btn>
+		<!-- v-if="memo.user.id === userInfo.id" -->
+		<div>
+			<v-btn icon small v-if="!memoEditFlag" @click="onClickmemoEditBtn()" alt="수정">
+				<v-icon>mdi-pencil</v-icon>
+			</v-btn>
+			<v-btn icon small v-if="!memoEditFlag" @click="onClickmemoDelBtn()">
+				<v-icon color="red">mdi-close</v-icon>
+			</v-btn>
+		</div>
 	</div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex' 
+
 export default {
 	name:'CalendarMemo',
 	data() {
@@ -52,7 +56,10 @@ export default {
 			this.memoEditFlag = !this.memoEditFlag
 			this.$emit('Click-Memo-SubmitBtn')
 		}
-	}
+	},
+	computed: {
+    ...mapGetters(['userInfo'])
+  },
 }
 </script>
 
