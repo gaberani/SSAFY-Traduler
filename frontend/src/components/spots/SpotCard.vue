@@ -19,10 +19,10 @@
           <template v-slot:placeholder>
             <lazy-loading />
           </template>
-          <button style="margin-left:84%; margin-top:3%; outline:none;">
+          <button style="margin-left:87%; margin-top:3%; outline:none;">
           <!-- 아이콘 바꾸기 -->
-            <i class="fas fa-star" v-if="spot.is_liked==true" @click.stop="unlikespot" style="font-size:1.8vw; color:#FFDF00;"></i>
-            <i class="fas fa-star" v-else @click.stop="likespot" style="font-size:1.8vw; color:black;"></i>
+            <i class="fas fa-heart" v-if="spot.is_liked==true" @click.stop="unlikespot" style="font-size:1.8vw; color:#FF5252"></i>
+            <i class="fas fa-heart" v-else @click.stop="likespot" style="font-size:1.8vw; color:black;"></i>
           </button>
         </v-img>
 

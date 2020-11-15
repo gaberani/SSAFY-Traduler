@@ -46,7 +46,7 @@
 
         <div v-if="viewMode == 'favorite'">
           <v-row>
-            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-right:5px;">즐겨찾기한 </h3><h3 style="font-size:1.3vw;margin-top:20px; margin-bottom:15px;" >  여행지</h3>
+            <h3 style="margin-top:10px; margin-bottom:15px; color:#FF5E5E; font-size:2vw; margin-left:15px; margin-right:5px;">즐겨찾기한 </h3><h3 style="font-size:1.3vw;margin-top:20px; margin-bottom:15px;" >  여행지</h3>
           </v-row>
         
           <div v-for="(favorite_spot, index) in spotDetails" :key="favorite_spot.id" style="display:inline;">

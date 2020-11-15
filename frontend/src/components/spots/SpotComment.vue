@@ -1,5 +1,5 @@
 <template>
-  <v-row v-if="!isEdit" style="margin-top: 2vw;">
+  <v-row v-if="!isEdit" style="margin-top: 1vw;">
     <v-col cols="2" offset="1">
       <v-rating
         v-model="comment.score"
@@ -11,21 +11,23 @@
       ></v-rating>
     </v-col>
     
-    <v-col cols="5">
+    <v-col cols="5" style="padding-left:0; margin-top:0.5vw;">
       <span style="font-family: 'SCDream4'" >{{comment.content}}</span>
     </v-col>
 
-    <v-col cols="4" class="d-flex" style="flex-direction: column;">
+    <v-col cols="4" class="d-flex" style="flex-direction: column; margin-top:0.5vw;">
       <div style="margin-right:18%;">
-        <v-btn v-if="username == comment.user.username" @click="deleteComment" text color="error" style="float: right;">삭제</v-btn>
-        <v-btn v-if="username == comment.user.username" @click="changeMod" text color="primary" style="float: right;">수정</v-btn>
+        <span style="font-family: 'SCDream6'; float:left; font-size:0.9vw;">{{comment.user.nickname}} ({{ dateForm(comment.reg_time) }})</span>
       </div>
       <div style="margin-right:18%;">
-        <span style="font-family: 'SCDream6'; float:right;">{{comment.user.nickname}} ({{ dateForm(comment.reg_time) }})</span>
+        <center>
+          <v-btn style="font-size:0.9vw;" v-if="username == comment.user.username" @click="deleteComment" text color="error" >삭제</v-btn>
+          <v-btn style="font-size:0.9vw;" v-if="username == comment.user.username" @click="changeMod" text color="primary" >수정</v-btn>
+        </center>
       </div>
     </v-col>
   </v-row>
-  <v-row v-else style="margin-top: 2vw;">
+  <v-row v-else style="margin-top: 1vw;">
     <v-col cols="2" offset="1">
       <v-rating
         v-model="scoreInput"
@@ -43,10 +45,12 @@
 
     <v-col cols="4" class="d-flex" style="flex-direction: column;">
       <div style="margin-right:18%;">
-        <v-btn v-if="username == comment.user.username" @click="updateComment" text color="primary" style="float: right;">수정 완료</v-btn>
+        <span style="font-family: 'SCDream6'; float:left;">{{comment.user.nickname}} ({{ dateForm(comment.reg_time) }})</span>
       </div>
       <div style="margin-right:18%;">
-        <span style="font-family: 'SCDream6'; float:right;">{{comment.user.nickname}} ({{ dateForm(comment.reg_time) }})</span>
+        <center>
+          <v-btn v-if="username == comment.user.username" @click="updateComment" text color="primary" style=";">수정 완료</v-btn>
+        </center>
       </div>
     </v-col>
   </v-row>

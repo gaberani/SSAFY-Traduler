@@ -24,7 +24,7 @@
           @click.stop="unlikespot" 
         >
           <div>
-            <v-icon color="yellow">mdi-star</v-icon>{{ spot.total_likes }}
+            <v-icon color="#FF5252">mdi-heart</v-icon>{{ spot.total_likes }}
           </div>
         </v-btn>
         <v-btn
@@ -35,7 +35,7 @@
           @click.stop="likespot" 
         >
           <div>
-            <v-icon>mdi-star</v-icon>{{ spot.total_likes }}
+            <v-icon>mdi-heart</v-icon>{{ spot.total_likes }}
           </div>
         </v-btn>
       </div>
@@ -43,33 +43,37 @@
 
     <v-container>
       <v-row style="margin-top: 3vw;">
-        <v-col cols="4" offset="1">
+        <v-col cols="5" offset="1">
           <SpotDetailMap :lat="spot.lat" :lon="spot.lon" :item="spot.id" /> 
         </v-col>
-        <v-col cols="6" offset="1">
-          <h3 class="spot-infos">{{ spot.title }}</h3>
-          <h3 class="spot-infos">{{ area_name }} / {{ category_name }}</h3>
-          <h3 v-if="spot.tel != null" class="spot-infos">{{ spot.tel }} / {{ spot.tel_name }}</h3>
-          <h3 class="spot-infos">평균 평점 : {{ spot.avg_score }} 점</h3>
-          <h3 class="spot-infos">즐겨찾기한 유저 수 : {{ spot.total_likes }}</h3>
+        <v-col cols="6" >
+          <h3 class="spot-infos" style="font-size:2rem;">{{ spot.title }}</h3>
+          <hr style="width:70%;">
+          <h3 class="spot-infos" style="font-family: 'SCDream7';">{{ area_name }} / {{ category_name }}</h3>
+          <h3 v-if="spot.tel != null" class="spot-infos" style="font-family: 'SCDream7'">{{ spot.tel }} / {{ spot.tel_name }}</h3>
+          <h3 class="spot-infos" style="display:inline; font-family: 'SCDream7';">평균 평점 :</h3><h3 style="display:inline; font-family: 'SCDream5';"> {{ spot.avg_score }} 점</h3>
+          <h3 class="spot-infos" style="font-family: 'SCDream7'">즐겨찾기한 유저 수 : {{ spot.total_likes }}</h3>
         </v-col>
       </v-row>
-      <v-row style="margin-top: 3vw;">
-        <v-col cols="10" offset="1">
+      
+      <v-row style="margin-top: 1vw;">
+        <v-col cols="10" offset="1" style="padding-bottom:0px;">
+          <!-- <hr style="background-color:#ffc5c5; margin-bottom:2vw; border:2px #ffc5c5 solid;"> -->
           <p v-html="spot.overview" />
+          <!-- <hr style="background-color:#707070;  border:1px #ffc5c5 solid;"> -->
         </v-col>
       </v-row>
-      <v-row v-if="LoginFlag" style="margin-top: 5vw;">
-        <v-col cols="1" offset="1">
-          <select class="selectrate" v-model="score" >
-            <option v-for="number in 5" :key="number" :value="number">{{ number }}</option>
-          </select>
-        </v-col>
-        <v-col cols="7" offset="1">
-          <input class="commentinput" style="width:70%;" v-model="content" @keydown.enter="writecomment" placeholder="댓글을 입력해주세요.">
-        </v-col>
-        <v-col cols="2">
-          <button @click="writecomment" class="commentbtn">작성</button>
+      <v-row v-if="LoginFlag" >
+        <v-col cols="10" offset="1" style="margin-top:2vw;padding-top:0px;">
+          <center>
+            <div style="padding:5px; background-color: #ffc5c5; border: 5px solid #ffc5c5; border-radius:5px;">
+              <select style="background-color:#FF5E5E; color:white;" class="selectrate" v-model="score" >
+                <option v-for="number in 5" :key="number" :value="number">{{ number }}</option>
+              </select>
+              <input class="commentinput" style="background-color:white; width:70%;" v-model="content" @keydown.enter="writecomment" placeholder="댓글을 입력해주세요.">
+              <button @click="writecomment" class="commentbtn">작성</button>
+            </div>
+          </center>
         </v-col>
       </v-row>
       <SpotComment v-for="(comment, index) in spotcomments" :key="comment.id" :comment="comment" :index="index" @deleteComment="deleteComment(comment.id, index)" @updateComment="updateComment" />
@@ -389,8 +393,8 @@
     border:2px #FF5E5E solid;
     appearance: button;
     font-size:1rem;
-    margin-left:10px;
-    width: 100%;
+    /* margin-left:10px; */
+    width: 5%;
     font-family: 'SCDream4';
     border-radius: 15px;
     outline:none;
