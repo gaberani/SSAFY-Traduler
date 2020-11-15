@@ -39,8 +39,8 @@ export default {
     }
   },
   actions: {
-    SubmitLoginData({ state, commit }, UserLoginData) {
-      if (state.LoginFlag === false) {
+    SubmitLoginData({ getters, commit }, UserLoginData) {
+      if (getters.LoginFlag === false) {
         if (UserLoginData.username.trim() && UserLoginData.password.trim()) {
           axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.USER.LOGIN, UserLoginData, { headers: { 'X-CSRFToken': cookies.get('csrftoken')}})
           .then(res => {
@@ -63,15 +63,19 @@ export default {
           })
         }
       } else {
-        router.push({ name: 'Home'})
         alert('이미 로그인 상태입니다.')
+        router
+          .push({ name: 'Home'})
+          .catch(err => { 
+            if(err.name !== "NavigationDuplicated" ){ throw err }
+          })
       }
     },
 
-    SubmitLogout({ state, getters, commit }) {
+    SubmitLogout({ getters, commit }) {
       if (getters.LoginFlag === true) {
         const config = {
-          headers: {'Authorization': `jwt ${state.authToken}`}
+          headers: {'Authorization': getters.authToken}
         }
         axios.post(process.env.VUE_APP_SERVER_URL + SERVER.URL.USER.LOGOUT, null, config)
           .catch(err => {
