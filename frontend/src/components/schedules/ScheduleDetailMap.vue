@@ -70,7 +70,7 @@ export default {
 <style scoped>
 .map {
   width: 100%;
-  height: 206px;
+  height: 350px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-bottom-left-radius: 20px;
