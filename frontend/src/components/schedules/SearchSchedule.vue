@@ -117,19 +117,23 @@
                       <span style="margin-right:2px;">공개</span><input class="privateradio" type="radio" name="private" v-model="privatebtn" value="0">
                     </div>
                     <div v-if="privatebtn=='0'">
-                      <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" ><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
+                      <!-- <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" > -->
+                      <span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
                       <input type="checkbox" v-model="together2">
                     </div>
                     <div v-else>
-                      <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" ><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
+                      <!-- <img src="@/assets/friend.png" style="width:5%; height:1.1vw;" > -->
+                      <span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">동행 모집</span>
                       <input disabled type="checkbox" v-model="together2">
                     </div>
                     <div v-if="privatebtn=='0'">
-                      <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
+                      <!-- <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"> -->
+                      <span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
                       <input type="checkbox" v-model="advice">
                     </div>
                     <div v-else>
-                      <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"><span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
+                      <!-- <img src="@/assets/help2.png" style="width:5%; height:1.1vw;"> -->
+                      <span style="margin-right:2px;font-family: 'SCDream4';font-size:1.1vw;">도움 요청</span>
                       <input disabled type="checkbox" v-model="advice">
                     </div>
                   </v-col>
