@@ -9,7 +9,13 @@
       >
         <center>
 					<h1 style="font-size:2.2vw;">{{schedule.title}}</h1>
-					<button class="sharebtn" @click.prevent="ScrapSchedule"><i class="fas fa-share" style="font-size:1.3vw; color:white"></i></button>
+					<v-btn 
+            color="#FF5E5E"
+            class="sharebtn" 
+            @click.prevent="ScrapSchedule"
+          >
+            <i class="fas fa-share" style="font-size:1.3vw; color:white"></i>
+          </v-btn>
           <!-- <button v-if="schedule.together===1" class="togetherbtn" v-bind="attrs" v-on="on">동행 신청</button> -->
           <v-dialog
             v-model="dialog"
@@ -917,7 +923,7 @@ export default {
         axios.post(process.env.VUE_APP_SERVER_URL + '/join/invite/', invitebody, {
             headers: this.headers,
           })
-          .then(() => {
+          .then(()=> {
             this.inviteusername = '';
             this.dialog3 = false;
             alert("초대 요청을 보냈습니다!!");
@@ -1184,7 +1190,7 @@ export default {
             headers: this.headers
           }
           )
-          .then(() => {
+          .then(()=> {
             alert("스크랩되었습니다!!");
           })
           .catch(error => {
@@ -1363,11 +1369,10 @@ export default {
 .sharebtn {
     /* margin-left:3%; */
     width:20%;
-    height:35px;
-    border-radius:3px;
-    background-color:#FF5E5E;
-    margin-top:2px;
-    margin-left:8%;
+    font-size:1vw;
+    color:white;
+    /* margin-top:2px; */
+    margin-left:3%;
 }
 .togetherbtn {
   margin-left:3%;

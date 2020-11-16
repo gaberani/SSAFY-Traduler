@@ -392,7 +392,6 @@ export default {
 							Authorization : this.config,
 				}})
 				.then(response => {
-					console.log(response)
 					alert("스케줄이 생성되었습니다.")
 					this.$router.push({name: 'DetailSchedule', params: {schedule_id: response.data.schedule_pk}})
 				})
@@ -465,7 +464,7 @@ export default {
     width:40%;
     height:37px;
     background-color:white;
-    border:3px #FF1313 solid;
+    border:3px #EB7878 solid;
     border-radius:50px;
     outline:none;
     padding-left: 10px;

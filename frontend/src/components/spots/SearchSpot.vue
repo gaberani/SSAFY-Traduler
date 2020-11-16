@@ -1,7 +1,22 @@
 <template>
-  <div class="spotimg">
-    <div class="searchbox">
-      <center>
+  <div>
+    <div class="spotimg">
+      <div class="spotmessage">
+        <p style="margin-bottom:3px; font-family: 'SCDream8';">당신이 찾는 그 곳,</p>
+        <p style="font-family: 'SCDream8';">Traduler와 떠나세요</p>
+      </div>
+    </div>
+    <v-row no-gutters>
+      <v-col
+        cols="12"
+        sm="2"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        sm="8"
+      >
+        <div style="margin-top:35px; padding:5px; background-color: #ffc5c5; border: 5px solid #ffc5c5; border-radius:5px;">
         <select class="selectspot" v-model="area_code">
           <!-- v-model="" -->
           <option value="">지역</option>
@@ -34,13 +49,20 @@
           <option value="B01" >교통</option>
           <option value="B02" >숙박</option>
           <option value="C01" >추천코스</option>
-        </select>
-        <div>
-          <input v-model="query" @keydown.enter="searchspots" class="spotsearch" placeholder="원하는 여행지를 입력하세요.">
-          <button @click.prevent="searchspots" style="margin-left:-40px;"><i style="font-size:1.7vw" class="fas fa-search"></i></button>
-        </div>
-      </center>
-    </div>
+        </select>     
+        <input class="spotsearch" @keydown.enter="searchspots" placeholder="원하는 여행지를 입력하세요." v-model="query">
+        <button @click.prevent="searchspots" class="searchbtn" ><i style="font-size:1.4vw" class="fas fa-search"></i></button>
+      </div>
+      </v-col>
+      <v-col
+        cols="12"
+        sm="2"
+      >
+      </v-col>
+    </v-row>
+    <!-- <center>
+      <hr style="margin-top:16px; width:66.6%; background-color:#FF5E5E;">
+    </center> -->
   </div>
 </template>
 
@@ -77,8 +99,8 @@
     min-height: 35vw;
 }
 .spotsearch {
-    width:40%;
-    height:50px;
+    width:63%;
+    height:38px;
     background-color:white;
     border:3px #EB7878 solid;
     border-radius:50px;
@@ -88,36 +110,55 @@
     font-size:1.2vw;
     font-family: 'SCDream5'
 }
+.spotsearch::placeholder {
+  color:#EB7878;
+}
 .selectspot {
-    height:5%;
-    width:7%;
-    background-color:white;
-    border:3px #EB7878 solid;
-    margin:1px;
+    height:30px;
+    min-width:46px;
+    width:9%;
+    background-color:#EB7878;
+    border:2px #EB7878 solid;
     outline:none;
     appearance: button;
-    font-size:1.2vw;
-    color: #EB7878;
-    font-family: 'SCDream5'
+    font-size:0.9vw;
+    color: white;
+    font-family: 'SCDream5';
+    margin-right:10px;
 }
 .selectcategory {
-    height:5%;
-    width:14%;
-    background-color:white;
-    border:3px #EB7878 solid;
-    margin:1px;
+    height:30px;
+    min-width:46px;
+    width:16%;
+    background-color:#EB7878;
+    border:2px #EB7878 solid;
     outline:none;
     appearance: button;
-    font-size:1.2vw;
-    color: #EB7878;
-    font-family: 'SCDream5'
+    font-size:0.9vw;
+    color: white;
+    font-family: 'SCDream5';
+    margin-right:10px;
 }
-.searchbox {
-    margin-top:40vh;
-}
-.spotsearch::placeholder {
-    color:#EB7878;
+.spotmessage {
+  font-weight: 900;
+  color:white;
+  position: absolute;
+  font-family: 'SCDream9';
+  margin-top:23vw;
+  margin-left: 15%;
+  font-size:3vw;
 }
 .spotsearch:focus::-webkit-input-placeholder { /* WebKit browsers */ color:transparent; }
-
+.searchbtn {
+    background-color:#EB7878;
+    width:8%;
+    height:38px;
+    margin-bottom:2px;
+    outline:none;
+    min-width:50px;
+    border-top:3px #EB7878 solid;
+    border-radius:50px;
+    color:white;
+    margin-left:3px;
+}
 </style>
