@@ -1,6 +1,6 @@
 <template>
   <v-container style="padding:0;">
-    <div id="map2" class="map"></div>
+    <div id="map3" class="map"></div>
   </v-container>
 </template>
 
@@ -30,7 +30,7 @@ export default {
       }
     },
     initMap() {
-      let mapContainer = document.getElementById("map2"), // 지도를 표시할 div 
+      let mapContainer = document.getElementById("map3"), // 지도를 표시할 div 
         mapOption = { 
           center: new kakao.maps.LatLng(this.lat, this.lon), // 지도의 중심좌표
           level: 3 // 지도의 확대 레벨
