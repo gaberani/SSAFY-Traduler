@@ -81,7 +81,7 @@ export default {
 									displayMarker(data[i]);    
 									bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
 							}       
-
+							map.relayout();
 							// 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
 							map.setBounds(bounds);
 					} 

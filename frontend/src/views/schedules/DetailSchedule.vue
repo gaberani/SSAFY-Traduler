@@ -928,13 +928,11 @@ export default {
             this.dialog3 = false;
             alert("초대 요청을 보냈습니다!!");
           })
-          .catch(error => { 
-            console.log(error.response)
+          .catch(() => { 
             alert("초대 요청 실패")
           })
     },
     customcoursePlus() {
-			// console.log(this.DdepartureHour.length)
 			if (this.custom_spot_pk && this.startdate && this.DdepartureHour &&
 			this.enddate && this.DarrivalHour ) {
 				if (this.DdepartureHour < 10) {
@@ -1361,11 +1359,8 @@ export default {
     axios.get(process.env.VUE_APP_SERVER_URL + SERVER.URL.SPOT.SPOTS +`semi_list/`)
       .then(response => {
 				this.spots2= response.data
-				// console.log(this.spots)
       })
-      .catch(error => {
-        console.log(error.response);
-      })
+      // .catch(err => console.log(err))
   },
   }
 </script>
